@@ -3,11 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { stripExifMany } from "@/lib/image-utils";
-
-
-
-const MAX_PHOTOS = 6;
+import { stripExifAndCompress } from "@/lib/image-utils";
 
 export const Route = createFileRoute("/_authenticated/answer/$questionId")({
   head: () => ({ meta: [{ title: "답변 — 결" }] }),
@@ -17,8 +13,8 @@ export const Route = createFileRoute("/_authenticated/answer/$questionId")({
 function AnswerPage() {
   const { questionId } = Route.useParams();
   const navigate = useNavigate();
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [submitting, setSubmitting] = useState(false);
 
@@ -34,63 +30,47 @@ function AnswerPage() {
     },
   });
 
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const incoming = Array.from(e.target.files ?? []);
-    if (incoming.length === 0) return;
-    const valid: File[] = [];
-    for (const f of incoming) {
-      if (f.size > 5 * 1024 * 1024) {
-        toast.error(`${f.name}: 5MB 이하만 가능해요`);
-        continue;
-      }
-      if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-        toast.error(`${f.name}: jpg, png, webp만 가능해요`);
-        continue;
-      }
-      valid.push(f);
-    }
-    const next = [...files, ...valid].slice(0, MAX_PHOTOS);
-    setFiles(next);
-    setPreviews(next.map((f) => URL.createObjectURL(f)));
+  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
     e.target.value = "";
-  };
-
-  const removeAt = (idx: number) => {
-    const next = files.filter((_, i) => i !== idx);
-    setFiles(next);
-    setPreviews(next.map((f) => URL.createObjectURL(f)));
+    if (!f) return;
+    if (f.size > 10 * 1024 * 1024) {
+      toast.error("10MB 이하만 가능해요");
+      return;
+    }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
+      toast.error("jpg, png, webp만 가능해요");
+      return;
+    }
+    if (preview) URL.revokeObjectURL(preview);
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
   };
 
   const onSubmit = async () => {
-    if (files.length === 0) return toast.error("사진을 선택해 주세요.");
+    if (!file) return toast.error("사진을 선택해 주세요.");
     setSubmitting(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user!.id;
-      const cleaned = await stripExifMany(files);
-      const urls: string[] = [];
-      for (let i = 0; i < cleaned.length; i++) {
-        const f = cleaned[i];
-        const path = `${uid}/${questionId}-${Date.now()}-${i}.jpg`;
-        const { error: upErr } = await supabase.storage
-          .from("answers")
-          .upload(path, f, { upsert: true, contentType: f.type });
-        if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from("answers").getPublicUrl(path);
-        urls.push(pub.publicUrl);
-      }
+      const cleaned = await stripExifAndCompress(file);
+      const path = `${uid}/${questionId}-${Date.now()}.jpg`;
+      const { error: upErr } = await supabase.storage
+        .from("answers")
+        .upload(path, cleaned, { upsert: true, contentType: cleaned.type });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from("answers").getPublicUrl(path);
 
       const { error: insErr } = await supabase.from("answers").upsert(
         {
           user_id: uid,
           question_id: Number(questionId),
-          photos: urls,
+          photos: [pub.publicUrl],
           visibility,
         },
         { onConflict: "user_id,question_id" }
       );
       if (insErr) throw insErr;
-
 
       toast.success("결이 남았어요.");
       navigate({ to: "/me" });
@@ -119,60 +99,42 @@ function AnswerPage() {
           </div>
         )}
 
-        {previews.length === 0 ? (
+        {!preview ? (
           <label className="block cursor-pointer">
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={onFiles}
+              onChange={onFile}
               className="hidden"
             />
             <div className="w-full aspect-square bg-surface border border-border rounded-2xl grid place-items-center">
               <div className="text-center">
                 <div className="text-2xl mb-2">＋</div>
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                  사진 고르기
+                  사진 한 장 고르기
                 </span>
-                <p className="text-[11px] text-muted-foreground mt-2">최대 {MAX_PHOTOS}장까지</p>
+                <p className="text-[11px] text-muted-foreground mt-2">
+                  이 질문엔 단 한 장으로 답해요
+                </p>
               </div>
             </div>
           </label>
         ) : (
-          <div>
-            <div className="grid grid-cols-3 gap-2">
-              {previews.map((src, i) => (
-                <div key={i} className="relative aspect-square">
-                  <img
-                    src={src}
-                    alt=""
-                    className="w-full h-full object-cover rounded-lg border border-border"
-                  />
-                  <button
-                    onClick={() => removeAt(i)}
-                    className="absolute top-1 right-1 size-6 rounded-full bg-background/85 text-foreground text-xs grid place-items-center border border-border"
-                    aria-label="삭제"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-              {previews.length < MAX_PHOTOS && (
-                <label className="aspect-square bg-surface border border-dashed border-border rounded-lg grid place-items-center cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    onChange={onFiles}
-                    className="hidden"
-                  />
-                  <span className="text-2xl text-muted-foreground">＋</span>
-                </label>
-              )}
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-2 text-right">
-              {previews.length} / {MAX_PHOTOS}
-            </p>
+          <div className="relative">
+            <img
+              src={preview}
+              alt=""
+              className="w-full aspect-square object-cover rounded-2xl border border-border"
+            />
+            <label className="absolute bottom-3 right-3 cursor-pointer bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={onFile}
+                className="hidden"
+              />
+              다시 고르기
+            </label>
           </div>
         )}
 
@@ -203,7 +165,7 @@ function AnswerPage() {
 
         <button
           onClick={onSubmit}
-          disabled={submitting || files.length === 0}
+          disabled={submitting || !file}
           className="w-full bg-foreground text-background py-4 rounded-xl text-sm font-medium mt-8 disabled:opacity-40"
         >
           {submitting ? "남기는 중..." : "결 남기기"}
