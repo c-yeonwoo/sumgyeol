@@ -75,20 +75,30 @@ function HomePage() {
                 </p>
               </div>
             ) : (
-              <Link
-                to="/answer/$questionId"
-                params={{ questionId: String(data.question.id) }}
-                className="block"
-              >
-                <div className="w-full aspect-square bg-surface rounded-2xl border border-border grid place-items-center hover:bg-secondary transition-colors">
-                  <div className="text-center">
-                    <div className="text-2xl mb-2">＋</div>
-                    <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                      사진으로 답하기
-                    </span>
+              <>
+                <Link
+                  to="/answer/$questionId"
+                  params={{ questionId: String(data.question.id) }}
+                  className="block"
+                >
+                  <div className="w-full aspect-square bg-surface rounded-2xl border border-border grid place-items-center hover:bg-secondary transition-colors">
+                    <div className="text-center">
+                      <div className="text-2xl mb-2">＋</div>
+                      <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                        사진으로 답하기
+                      </span>
+                    </div>
                   </div>
+                </Link>
+                <div className="mt-4 text-center">
+                  <Link
+                    to="/backlog"
+                    className="text-xs text-muted-foreground underline underline-offset-4"
+                  >
+                    다음에 답할게요 →
+                  </Link>
                 </div>
-              </Link>
+              </>
             )}
           </>
         )}
