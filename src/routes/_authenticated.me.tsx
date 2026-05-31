@@ -17,7 +17,7 @@ function MePage() {
     queryFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user!.id;
-      const [profileRes, answersRes, personaRes] = await Promise.all([
+      const [profileRes, answersRes, personaRes, followersRes, followingRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
         supabase
           .from("answers")
@@ -31,11 +31,21 @@ function MePage() {
           .order("generated_at", { ascending: false })
           .limit(1)
           .maybeSingle(),
+        supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("following_id", uid),
+        supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("follower_id", uid),
       ]);
       return {
         profile: profileRes.data,
         answers: answersRes.data ?? [],
         persona: personaRes.data,
+        followers: followersRes.count ?? 0,
+        following: followingRes.count ?? 0,
       };
     },
   });
@@ -90,9 +100,11 @@ function MePage() {
             {data.profile.bio}
           </p>
         )}
-        <p className="text-[13px] text-muted-foreground mt-3">
-          {answerCount}개의 조각을 모으셨어요
-        </p>
+        <div className="flex items-center gap-8 mt-6">
+          <Stat label="기록" value={answerCount} />
+          <Stat label="팔로워" value={data?.followers ?? 0} />
+          <Stat label="팔로잉" value={data?.following ?? 0} />
+        </div>
         <Link
           to="/me/edit"
           className="mt-4 text-[11px] uppercase tracking-widest text-accent border border-accent/40 rounded-full px-4 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
@@ -192,5 +204,16 @@ function MePage() {
         )}
       </section>
     </main>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="text-center">
+      <div className="font-serif text-lg">{value}</div>
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">
+        {label}
+      </div>
+    </div>
   );
 }

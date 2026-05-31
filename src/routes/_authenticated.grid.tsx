@@ -152,9 +152,17 @@ function GridPage() {
                 )}
               </Link>
               <div className="flex items-center justify-between px-2">
-                <p className="text-[11px] text-muted-foreground">
-                  @{a.profiles?.handle ?? "anon"}
-                </p>
+                {a.profiles?.handle ? (
+                  <Link
+                    to="/u/$handle"
+                    params={{ handle: a.profiles.handle }}
+                    className="text-[11px] text-muted-foreground hover:text-foreground"
+                  >
+                    @{a.profiles.handle}
+                  </Link>
+                ) : (
+                  <p className="text-[11px] text-muted-foreground">@anon</p>
+                )}
                 <Link
                   to="/answer-detail/$answerId"
                   params={{ answerId: String(a.id) }}
