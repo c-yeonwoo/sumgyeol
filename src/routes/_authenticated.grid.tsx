@@ -8,81 +8,45 @@ export const Route = createFileRoute("/_authenticated/grid")({
   component: GridPage,
 });
 
-type FeedItem = {
+type QCard = {
   id: number;
-  photos: string[];
-  question_id: number;
-  questions: { id: number; text: string } | null;
-  profiles: { handle: string | null; display_name: string | null } | null;
-  similar: boolean;
+  text: string;
+  category: string | null;
+  count: number;
+  covers: string[];
 };
 
 function GridPage() {
   const { data, isLoading } = useQuery({
-    queryKey: ["explore-feed"],
-    queryFn: async (): Promise<{ hasPersona: boolean; items: FeedItem[] }> => {
-      const { data: userData } = await supabase.auth.getUser();
-      const uid = userData.user!.id;
-
-      const { data: mine } = await supabase
-        .from("persona_reads")
-        .select("keywords")
-        .eq("user_id", uid)
-        .order("generated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      const myKw: string[] = mine?.keywords ?? [];
-
-      let similarUserIds: string[] = [];
-      if (myKw.length > 0) {
-        const { data: others } = await supabase
-          .from("persona_reads")
-          .select("user_id, keywords")
-          .neq("user_id", uid)
-          .limit(200);
-        similarUserIds = (others ?? [])
-          .map((p: any) => ({
-            uid: p.user_id,
-            overlap: (p.keywords ?? []).filter((k: string) => myKw.includes(k))
-              .length,
-          }))
-          .filter((p) => p.overlap > 0)
-          .sort((a, b) => b.overlap - a.overlap)
-          .slice(0, 30)
-          .map((p) => p.uid);
-      }
-
-      const { data: recent } = await supabase
+    queryKey: ["explore-questions"],
+    queryFn: async (): Promise<QCard[]> => {
+      const { data: answers } = await supabase
         .from("answers")
-        .select(
-          "id, photos, question_id, questions(id, text), profiles(handle, display_name), user_id",
-        )
+        .select("question_id, photos, created_at, questions(id, text, category)")
         .eq("visibility", "public")
-        .neq("user_id", uid)
         .order("created_at", { ascending: false })
-        .limit(40);
+        .limit(500);
 
-      const all = (recent ?? []) as any[];
-      const similarSet = new Set(similarUserIds);
-      const similarItems: FeedItem[] = [];
-      const otherItems: FeedItem[] = [];
-      for (const a of all) {
-        const item: FeedItem = {
-          id: a.id,
-          photos: a.photos ?? [],
-          question_id: a.question_id,
-          questions: a.questions,
-          profiles: a.profiles,
-          similar: similarSet.has(a.user_id),
-        };
-        if (item.similar) similarItems.push(item);
-        else otherItems.push(item);
+      const map = new Map<number, QCard>();
+      for (const a of (answers ?? []) as any[]) {
+        if (!a.questions) continue;
+        const qid = a.questions.id as number;
+        const existing = map.get(qid);
+        const cover: string | undefined = a.photos?.[0];
+        if (!existing) {
+          map.set(qid, {
+            id: qid,
+            text: a.questions.text,
+            category: a.questions.category,
+            count: 1,
+            covers: cover ? [cover] : [],
+          });
+        } else {
+          existing.count += 1;
+          if (existing.covers.length < 4 && cover) existing.covers.push(cover);
+        }
       }
-
-      return {
-        hasPersona: !!mine,
-        items: [...similarItems, ...otherItems],
-      };
+      return Array.from(map.values()).sort((a, b) => b.count - a.count);
     },
   });
 
@@ -94,9 +58,7 @@ function GridPage() {
             탐색
           </span>
           <h2 className="font-serif text-xl mt-1 leading-snug">
-            {data?.hasPersona
-              ? "결이 닿는 기록들"
-              : "다른 분들의 결을 만나보세요"}
+            질문별로 모아보기
           </h2>
         </div>
         <Link
@@ -108,80 +70,51 @@ function GridPage() {
         </Link>
       </header>
 
-      <section className="px-4 py-6 space-y-10">
+      <section className="px-4 py-6 space-y-4">
         {isLoading ? (
-          Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="space-y-3">
-              <div className="h-4 w-3/4 bg-muted rounded animate-pulse" />
-              <div className="aspect-square bg-muted rounded-2xl animate-pulse" />
-            </div>
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-44 bg-muted rounded-2xl animate-pulse" />
           ))
-        ) : !data || data.items.length === 0 ? (
+        ) : !data || data.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-16">
-            아직 보여드릴 기록이 없어요.
+            아직 모인 결이 없어요.
           </p>
         ) : (
-          data.items.map((a) => (
-            <article key={a.id} className="space-y-3">
-              {a.questions && (
-                <Link
-                  to="/question/$questionId"
-                  params={{ questionId: String(a.questions.id) }}
-                  className="block px-2"
-                >
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[10px] uppercase tracking-widest text-accent">
-                      질문
-                    </span>
-                    {a.similar && (
-                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                        · 결이 닿아요
-                      </span>
-                    )}
-                  </div>
-                  <p className="font-serif text-lg leading-snug mt-1 hover:underline underline-offset-4">
-                    {a.questions.text}
-                  </p>
-                </Link>
-              )}
-              <Link
-                to="/answer-detail/$answerId"
-                params={{ answerId: String(a.id) }}
-                className="block relative"
-              >
-                <img
-                  src={a.photos[0]}
-                  alt=""
-                  className="w-full aspect-square object-cover rounded-2xl border border-border"
-                  loading="lazy"
-                />
-                {a.photos.length > 1 && (
-                  <span className="absolute top-3 right-3 text-[10px] bg-background/80 backdrop-blur rounded-full px-2.5 py-0.5">
-                    +{a.photos.length - 1}
+          data.map((q) => (
+            <Link
+              key={q.id}
+              to="/question/$questionId"
+              params={{ questionId: String(q.id) }}
+              className="block border border-border rounded-2xl overflow-hidden hover:border-foreground/30 transition-colors"
+            >
+              <div className="px-5 pt-5 pb-3">
+                {q.category && (
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {q.category}
                   </span>
                 )}
-              </Link>
-              <div className="flex items-center justify-between px-2">
-                {a.profiles?.handle ? (
-                  <Link
-                    to="/u/$handle"
-                    params={{ handle: a.profiles.handle }}
-                    className="text-[11px] text-muted-foreground hover:text-foreground"
-                  >
-                    @{a.profiles.handle}
-                  </Link>
-                ) : (
-                  <p className="text-[11px] text-muted-foreground">@anon</p>
-                )}
-                <Link
-                  to="/answer-detail/$answerId"
-                  params={{ answerId: String(a.id) }}
-                  className="text-[11px] text-muted-foreground underline underline-offset-4"
-                >
-                  댓글 남기기
-                </Link>
+                <p className="font-serif text-[16px] mt-1 leading-snug">
+                  {q.text}
+                </p>
+                <span className="text-[11px] text-muted-foreground">
+                  결 {q.count}개
+                </span>
               </div>
-            </article>
+              <div className="grid grid-cols-4 gap-px bg-border">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="aspect-square bg-background">
+                    {q.covers[i] ? (
+                      <img
+                        src={q.covers[i]}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </Link>
           ))
         )}
       </section>
