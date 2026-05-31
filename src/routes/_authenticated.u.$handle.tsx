@@ -141,9 +141,9 @@ function UserProfilePage() {
         )}
 
         <div className="flex items-center gap-8 mt-6">
-          <Stat label="기록" value={data.answers.length} />
-          <Stat label="팔로워" value={data.counts.followers} />
-          <Stat label="팔로잉" value={data.counts.following} />
+          <StatBlock label="기록" value={data.answers.length} />
+          <StatBlock label="팔로워" value={data.counts.followers} />
+          <StatBlock label="팔로잉" value={data.counts.following} />
         </div>
 
         {data.isMe ? (
@@ -201,7 +201,7 @@ function UserProfilePage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function StatBlock({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
       <div className="font-serif text-lg">{value}</div>
