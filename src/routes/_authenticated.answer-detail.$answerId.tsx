@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -31,7 +32,22 @@ function AnswerDetailPage() {
         .eq("answer_id", Number(answerId))
         .order("created_at", { ascending: true });
       const { data: userData } = await supabase.auth.getUser();
-      return { answer, comments: comments ?? [], me: userData.user?.id };
+      const me = userData.user?.id;
+      const { count: likeCount } = await supabase
+        .from("likes")
+        .select("*", { count: "exact", head: true })
+        .eq("answer_id", Number(answerId));
+      let liked = false;
+      if (me) {
+        const { data: myLike } = await supabase
+          .from("likes")
+          .select("user_id")
+          .eq("answer_id", Number(answerId))
+          .eq("user_id", me)
+          .maybeSingle();
+        liked = !!myLike;
+      }
+      return { answer, comments: comments ?? [], me, likeCount: likeCount ?? 0, liked };
     },
   });
 
@@ -58,6 +74,28 @@ function AnswerDetailPage() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
+  });
+
+  const toggleLike = useMutation({
+    mutationFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user!.id;
+      if (data?.liked) {
+        const { error } = await supabase
+          .from("likes")
+          .delete()
+          .eq("answer_id", Number(answerId))
+          .eq("user_id", uid);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("likes")
+          .insert({ answer_id: Number(answerId), user_id: uid });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
+    onError: (e: any) => toast.error(e?.message ?? "잠시 후 다시 시도해 주세요."),
   });
 
   if (isLoading) {
@@ -133,12 +171,28 @@ function AnswerDetailPage() {
             </>
           )}
         </div>
+
+        <div className="mt-5 flex items-center gap-2">
+          <button
+            onClick={() => toggleLike.mutate()}
+            disabled={toggleLike.isPending}
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            aria-label={data.liked ? "좋아요 취소" : "좋아요"}
+          >
+            <Heart
+              size={20}
+              className={data.liked ? "fill-accent text-accent" : ""}
+            />
+            <span className="tabular-nums">{data.likeCount}</span>
+          </button>
+        </div>
       </section>
 
       <section className="px-6 pb-10">
         <h3 className="text-[11px] uppercase tracking-widest text-muted-foreground mb-4">
           댓글 {data.comments.length}
         </h3>
+
 
         <ul className="space-y-3 mb-5">
           {data.comments.length === 0 && (

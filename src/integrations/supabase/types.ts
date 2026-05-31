@@ -144,6 +144,32 @@ export type Database = {
           },
         ]
       }
+      likes: {
+        Row: {
+          answer_id: number
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          answer_id: number
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          answer_id?: number
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "answers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       persona_reads: {
         Row: {
           based_on_count: number
