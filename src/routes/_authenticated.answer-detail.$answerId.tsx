@@ -79,7 +79,9 @@ function AnswerDetailPage() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
+    onError: (e: any) => toast.error(e?.message ?? "삭제하지 못했어요."),
   });
+
 
   const toggleLike = useMutation({
     mutationFn: async () => {
