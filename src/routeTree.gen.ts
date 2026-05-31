@@ -21,7 +21,6 @@ import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_a
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
 import { Route as AuthenticatedAnswerQuestionIdRouteImport } from './routes/_authenticated.answer.$questionId'
 import { Route as AuthenticatedAnswerDetailAnswerIdRouteImport } from './routes/_authenticated.answer-detail.$answerId'
-import { Route as AuthenticatedUHandleRouteImport } from './routes/_authenticated.u.$handle'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -85,6 +84,11 @@ const AuthenticatedAnswerDetailAnswerIdRoute =
     path: '/answer-detail/$answerId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedUHandleRoute = AuthenticatedUHandleRouteImport.update({
+  id: '/u/$handle',
+  path: '/u/$handle',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
