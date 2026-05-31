@@ -14,7 +14,178 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      answers: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          id: number
+          photo_url: string
+          question_id: number
+          user_id: string
+          visibility: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          id?: never
+          photo_url: string
+          question_id: number
+          user_id: string
+          visibility?: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          id?: never
+          photo_url?: string
+          question_id?: number
+          user_id?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_questions: {
+        Row: {
+          date: string
+          question_id: number
+        }
+        Insert: {
+          date: string
+          question_id: number
+        }
+        Update: {
+          date?: string
+          question_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_questions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      persona_reads: {
+        Row: {
+          based_on_count: number
+          generated_at: string | null
+          id: number
+          keywords: string[] | null
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          based_on_count?: number
+          generated_at?: string | null
+          id?: never
+          keywords?: string[] | null
+          summary: string
+          user_id: string
+        }
+        Update: {
+          based_on_count?: number
+          generated_at?: string | null
+          id?: never
+          keywords?: string[] | null
+          summary?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "persona_reads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          display_name: string | null
+          handle: string | null
+          id: string
+          onboarded: boolean | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          handle?: string | null
+          id: string
+          onboarded?: boolean | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          handle?: string | null
+          id?: string
+          onboarded?: boolean | null
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          answer_style: string | null
+          category: string | null
+          created_at: string | null
+          id: number
+          is_active: boolean | null
+          season: string | null
+          sort_order: number | null
+          source: string | null
+          text: string
+          tone: string | null
+        }
+        Insert: {
+          answer_style?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: never
+          is_active?: boolean | null
+          season?: string | null
+          sort_order?: number | null
+          source?: string | null
+          text: string
+          tone?: string | null
+        }
+        Update: {
+          answer_style?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: never
+          is_active?: boolean | null
+          season?: string | null
+          sort_order?: number | null
+          source?: string | null
+          text?: string
+          tone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
