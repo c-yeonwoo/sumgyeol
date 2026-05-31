@@ -249,7 +249,19 @@ function UserProfilePage() {
       </section>
 
       <section className="px-6">
-        {data.answers.length === 0 ? (
+        {data.isBlocked ? (
+          <div className="text-center py-10">
+            <p className="text-sm text-muted-foreground">
+              차단한 사용자예요. 결을 보지 않으려면 차단을 유지하세요.
+            </p>
+            <button
+              onClick={() => toggleBlock.mutate()}
+              className="mt-3 text-xs text-accent underline underline-offset-4"
+            >
+              차단 해제
+            </button>
+          </div>
+        ) : data.answers.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-10">
             아직 공개된 기록이 없어요.
           </p>
@@ -272,6 +284,12 @@ function UserProfilePage() {
           </div>
         )}
       </section>
+
+      <ReportDialog
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        target={{ type: "user", userId: p.id }}
+      />
     </main>
   );
 }
