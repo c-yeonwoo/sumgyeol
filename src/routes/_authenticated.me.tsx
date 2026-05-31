@@ -206,3 +206,14 @@ function MePage() {
     </main>
   );
 }
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="text-center">
+      <div className="font-serif text-lg">{value}</div>
+      <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">
+        {label}
+      </div>
+    </div>
+  );
+}
