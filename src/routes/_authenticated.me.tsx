@@ -101,9 +101,21 @@ function MePage() {
           </p>
         )}
         <div className="flex items-center gap-8 mt-6">
-          <Stat label="기록" value={answerCount} />
-          <Stat label="팔로워" value={data?.followers ?? 0} />
-          <Stat label="팔로잉" value={data?.following ?? 0} />
+          <StatBlock label="기록" value={answerCount} />
+          {data?.profile?.handle ? (
+            <Link to="/u/$handle/followers" params={{ handle: data.profile.handle }}>
+              <StatBlock label="팔로워" value={data?.followers ?? 0} />
+            </Link>
+          ) : (
+            <StatBlock label="팔로워" value={data?.followers ?? 0} />
+          )}
+          {data?.profile?.handle ? (
+            <Link to="/u/$handle/following" params={{ handle: data.profile.handle }}>
+              <StatBlock label="팔로잉" value={data?.following ?? 0} />
+            </Link>
+          ) : (
+            <StatBlock label="팔로잉" value={data?.following ?? 0} />
+          )}
         </div>
         <Link
           to="/me/edit"
@@ -207,7 +219,7 @@ function MePage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function StatBlock({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
       <div className="font-serif text-lg">{value}</div>

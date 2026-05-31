@@ -15,12 +15,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated.me'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
 import { Route as AuthenticatedGridRouteImport } from './routes/_authenticated.grid'
+import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
 import { Route as AuthenticatedBacklogRouteImport } from './routes/_authenticated.backlog'
 import { Route as AuthenticatedUHandleRouteImport } from './routes/_authenticated.u.$handle'
 import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_authenticated.question.$questionId'
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
 import { Route as AuthenticatedAnswerQuestionIdRouteImport } from './routes/_authenticated.answer.$questionId'
 import { Route as AuthenticatedAnswerDetailAnswerIdRouteImport } from './routes/_authenticated.answer-detail.$answerId'
+import { Route as AuthenticatedUHandleFollowingRouteImport } from './routes/_authenticated.u.$handle.following'
+import { Route as AuthenticatedUHandleFollowersRouteImport } from './routes/_authenticated.u.$handle.followers'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -49,6 +52,11 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
 const AuthenticatedGridRoute = AuthenticatedGridRouteImport.update({
   id: '/grid',
   path: '/grid',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedBacklogRoute = AuthenticatedBacklogRouteImport.update({
@@ -84,11 +92,24 @@ const AuthenticatedAnswerDetailAnswerIdRoute =
     path: '/answer-detail/$answerId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedUHandleFollowingRoute =
+  AuthenticatedUHandleFollowingRouteImport.update({
+    id: '/following',
+    path: '/following',
+    getParentRoute: () => AuthenticatedUHandleRoute,
+  } as any)
+const AuthenticatedUHandleFollowersRoute =
+  AuthenticatedUHandleFollowersRouteImport.update({
+    id: '/followers',
+    path: '/followers',
+    getParentRoute: () => AuthenticatedUHandleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/backlog': typeof AuthenticatedBacklogRoute
+  '/feed': typeof AuthenticatedFeedRoute
   '/grid': typeof AuthenticatedGridRoute
   '/home': typeof AuthenticatedHomeRoute
   '/me': typeof AuthenticatedMeRouteWithChildren
@@ -96,12 +117,15 @@ export interface FileRoutesByFullPath {
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
-  '/u/$handle': typeof AuthenticatedUHandleRoute
+  '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
+  '/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/backlog': typeof AuthenticatedBacklogRoute
+  '/feed': typeof AuthenticatedFeedRoute
   '/grid': typeof AuthenticatedGridRoute
   '/home': typeof AuthenticatedHomeRoute
   '/me': typeof AuthenticatedMeRouteWithChildren
@@ -109,7 +133,9 @@ export interface FileRoutesByTo {
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
-  '/u/$handle': typeof AuthenticatedUHandleRoute
+  '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
+  '/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,6 +143,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/backlog': typeof AuthenticatedBacklogRoute
+  '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/grid': typeof AuthenticatedGridRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
@@ -124,7 +151,9 @@ export interface FileRoutesById {
   '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/_authenticated/me/edit': typeof AuthenticatedMeEditRoute
   '/_authenticated/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
-  '/_authenticated/u/$handle': typeof AuthenticatedUHandleRoute
+  '/_authenticated/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/_authenticated/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
+  '/_authenticated/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,6 +161,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/backlog'
+    | '/feed'
     | '/grid'
     | '/home'
     | '/me'
@@ -140,11 +170,14 @@ export interface FileRouteTypes {
     | '/me/edit'
     | '/question/$questionId'
     | '/u/$handle'
+    | '/u/$handle/followers'
+    | '/u/$handle/following'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/backlog'
+    | '/feed'
     | '/grid'
     | '/home'
     | '/me'
@@ -153,12 +186,15 @@ export interface FileRouteTypes {
     | '/me/edit'
     | '/question/$questionId'
     | '/u/$handle'
+    | '/u/$handle/followers'
+    | '/u/$handle/following'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/backlog'
+    | '/_authenticated/feed'
     | '/_authenticated/grid'
     | '/_authenticated/home'
     | '/_authenticated/me'
@@ -167,6 +203,8 @@ export interface FileRouteTypes {
     | '/_authenticated/me/edit'
     | '/_authenticated/question/$questionId'
     | '/_authenticated/u/$handle'
+    | '/_authenticated/u/$handle/followers'
+    | '/_authenticated/u/$handle/following'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -219,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGridRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/feed': {
+      id: '/_authenticated/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof AuthenticatedFeedRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/backlog': {
       id: '/_authenticated/backlog'
       path: '/backlog'
@@ -261,6 +306,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnswerDetailAnswerIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/u/$handle/following': {
+      id: '/_authenticated/u/$handle/following'
+      path: '/following'
+      fullPath: '/u/$handle/following'
+      preLoaderRoute: typeof AuthenticatedUHandleFollowingRouteImport
+      parentRoute: typeof AuthenticatedUHandleRoute
+    }
+    '/_authenticated/u/$handle/followers': {
+      id: '/_authenticated/u/$handle/followers'
+      path: '/followers'
+      fullPath: '/u/$handle/followers'
+      preLoaderRoute: typeof AuthenticatedUHandleFollowersRouteImport
+      parentRoute: typeof AuthenticatedUHandleRoute
+    }
   }
 }
 
@@ -276,19 +335,34 @@ const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
   AuthenticatedMeRouteChildren,
 )
 
+interface AuthenticatedUHandleRouteChildren {
+  AuthenticatedUHandleFollowersRoute: typeof AuthenticatedUHandleFollowersRoute
+  AuthenticatedUHandleFollowingRoute: typeof AuthenticatedUHandleFollowingRoute
+}
+
+const AuthenticatedUHandleRouteChildren: AuthenticatedUHandleRouteChildren = {
+  AuthenticatedUHandleFollowersRoute: AuthenticatedUHandleFollowersRoute,
+  AuthenticatedUHandleFollowingRoute: AuthenticatedUHandleFollowingRoute,
+}
+
+const AuthenticatedUHandleRouteWithChildren =
+  AuthenticatedUHandleRoute._addFileChildren(AuthenticatedUHandleRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedBacklogRoute: typeof AuthenticatedBacklogRoute
+  AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedGridRoute: typeof AuthenticatedGridRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
   AuthenticatedAnswerDetailAnswerIdRoute: typeof AuthenticatedAnswerDetailAnswerIdRoute
   AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
   AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
-  AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRoute
+  AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBacklogRoute: AuthenticatedBacklogRoute,
+  AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedGridRoute: AuthenticatedGridRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
@@ -296,7 +370,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedAnswerDetailAnswerIdRoute,
   AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
   AuthenticatedQuestionQuestionIdRoute: AuthenticatedQuestionQuestionIdRoute,
-  AuthenticatedUHandleRoute: AuthenticatedUHandleRoute,
+  AuthenticatedUHandleRoute: AuthenticatedUHandleRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
