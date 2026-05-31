@@ -19,7 +19,7 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="font-serif text-6xl text-foreground">404</h1>
-        <p className="mt-4 text-sm text-muted-foreground">없는 페이지야.</p>
+        <p className="mt-4 text-sm text-muted-foreground">없는 페이지예요.</p>
         <Link
           to="/"
           className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
@@ -41,8 +41,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="font-serif text-2xl text-foreground">문제가 생겼어</h1>
-        <p className="mt-2 text-sm text-muted-foreground">잠시 후 다시 시도해줘.</p>
+        <h1 className="font-serif text-2xl text-foreground">문제가 생겼어요</h1>
+        <p className="mt-2 text-sm text-muted-foreground">잠시 후 다시 시도해 주세요.</p>
         <div className="mt-6 flex justify-center gap-2">
           <button
             onClick={() => {
@@ -65,7 +65,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1" },
       { title: "결 — 사진으로 답하는 성향 SNS" },
-      { name: "description", content: "매일 던져지는 질문에 사진 한 장으로 답하면, 너의 결이 보여." },
+      { name: "description", content: "매일 던져지는 질문에 사진 한 장으로 답하면, 당신의 결이 보입니다." },
       { name: "theme-color", content: "#F9F8F6" },
       { property: "og:title", content: "결" },
       { property: "og:description", content: "사진으로 답하는 chill한 성향 SNS" },

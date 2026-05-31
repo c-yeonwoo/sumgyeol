@@ -34,14 +34,14 @@ function LoginPage() {
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast.success("가입 완료. 너의 결을 만들러 가자.");
+        toast.success("가입이 완료되었어요. 결을 만들러 가볼까요?");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
       navigate({ to: "/home" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "다시 시도해줘.");
+      toast.error(err instanceof Error ? err.message : "다시 시도해 주세요.");
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ function LoginPage() {
       });
       if (result.error) throw result.error;
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "구글 로그인 실패");
+      toast.error(err instanceof Error ? err.message : "구글 로그인에 실패했어요.");
       setLoading(false);
     }
   };
@@ -65,7 +65,7 @@ function LoginPage() {
       <div className="w-full max-w-sm">
         <Link to="/" className="block text-center mb-12">
           <h1 className="font-serif text-5xl tracking-tighter text-foreground">결</h1>
-          <p className="mt-3 text-sm text-muted-foreground">사진 한 장으로 답하는 곳</p>
+          <p className="mt-3 text-sm text-muted-foreground">사진 한 장으로 답하는 공간</p>
         </Link>
 
         <form onSubmit={onSubmit} className="space-y-4">
@@ -95,7 +95,7 @@ function LoginPage() {
             disabled={loading}
             className="w-full bg-foreground text-background py-3 rounded-md text-sm font-medium mt-6 disabled:opacity-50"
           >
-            {loading ? "잠시만..." : mode === "signin" ? "들어가기" : "가입하기"}
+            {loading ? "잠시만요..." : mode === "signin" ? "들어가기" : "가입하기"}
           </button>
         </form>
 
@@ -115,7 +115,7 @@ function LoginPage() {
         </button>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          {mode === "signin" ? "처음이야?" : "이미 가입했어?"}{" "}
+          {mode === "signin" ? "처음이신가요?" : "이미 가입하셨나요?"}{" "}
           <button
             type="button"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}

@@ -95,7 +95,7 @@ function GridPage() {
           </div>
         ) : !todayData || todayData.answers.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-12">
-            아직 아무도 답하지 않았어. 첫 결을 남겨봐.
+            아직 아무도 답하지 않았어요. 첫 결을 남겨보세요.
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-3">
@@ -135,13 +135,13 @@ function GridPage() {
           </span>
           <p className="text-[13px] text-muted-foreground mt-1">
             {similar?.hasPersona
-              ? "너와 결이 통할 것 같은 기록들이야."
-              : "더 많이 기록할수록 결이 통하는 사람들이 모일 거야."}
+              ? "당신과 결이 통할 것 같은 기록들이에요."
+              : "더 많이 기록하실수록 결이 통하는 분들이 모일 거예요."}
           </p>
         </div>
         {!similar || similar.items.length === 0 ? (
           <p className="text-xs text-muted-foreground text-center py-6">
-            아직 추천할 기록이 없어.
+            아직 추천할 기록이 없어요.
           </p>
         ) : (
           <div className="grid grid-cols-3 gap-1.5">

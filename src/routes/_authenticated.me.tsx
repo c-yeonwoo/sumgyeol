@@ -44,10 +44,10 @@ function MePage() {
   const generate = useMutation({
     mutationFn: () => genFn({ data: {} }),
     onSuccess: () => {
-      toast.success("너의 결을 새로 읽었어.");
+      toast.success("결을 새로 읽었어요.");
       qc.invalidateQueries({ queryKey: ["my-gyeol"] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "다시 시도해줘"),
+    onError: (e: any) => toast.error(e?.message ?? "다시 시도해 주세요."),
   });
 
   const answerCount = data?.answers.length ?? 0;
@@ -74,7 +74,7 @@ function MePage() {
           {data?.profile?.display_name ?? "..."}의 결
         </h2>
         <p className="text-[13px] text-muted-foreground mt-2">
-          {answerCount}개의 조각을 모았어
+          {answerCount}개의 조각을 모으셨어요
         </p>
       </section>
 
@@ -117,7 +117,7 @@ function MePage() {
           ) : canGenerate ? (
             <div>
               <p className="text-sm text-muted-foreground mb-4">
-                지금까지 모은 {answerCount}개의 결로 너를 읽어줄게.
+                지금까지 모은 {answerCount}개의 결로 당신을 읽어드릴게요.
               </p>
               <button
                 onClick={() => generate.mutate()}
@@ -129,7 +129,7 @@ function MePage() {
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              {3 - answerCount}개 더 답하면 너의 결을 읽어줄게.
+              {3 - answerCount}개 더 답하시면 당신의 결을 읽어드릴게요.
             </p>
           )}
         </div>
@@ -147,7 +147,7 @@ function MePage() {
             <Link to="/home" className="underline underline-offset-4">
               오늘의 질문
             </Link>
-            에 첫 결을 남겨봐.
+            에 첫 결을 남겨보세요.
           </p>
         ) : (
           <div className="grid grid-cols-3 gap-1.5">

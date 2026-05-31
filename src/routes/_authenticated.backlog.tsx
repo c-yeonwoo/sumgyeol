@@ -47,7 +47,7 @@ function BacklogPage() {
           </div>
         ) : !data || data.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-20">
-            모든 질문에 답했어. 대단해.
+            모든 질문에 답하셨어요. 대단하세요.
           </p>
         ) : (
           <ul className="space-y-2">

@@ -43,7 +43,7 @@ function HomePage() {
           <div className="aspect-square bg-muted rounded-2xl animate-pulse" />
         ) : !data ? (
           <p className="text-sm text-muted-foreground text-center py-20">
-            오늘의 질문이 아직 준비되지 않았어.
+            오늘의 질문이 아직 준비되지 않았어요.
           </p>
         ) : (
           <>
@@ -68,9 +68,9 @@ function HomePage() {
                   </p>
                 )}
                 <p className="mt-6 text-xs text-muted-foreground text-center">
-                  오늘의 결을 남겼어.{" "}
+                  오늘의 결을 남기셨어요.{" "}
                   <Link to="/grid" className="underline underline-offset-4">
-                    다른 이들의 결 보러가기
+                    다른 분들의 결 보러가기
                   </Link>
                 </p>
               </div>
@@ -99,7 +99,7 @@ function HomePage() {
           to="/backlog"
           className="block text-center text-sm text-muted-foreground underline underline-offset-4"
         >
-          다른 질문도 답하기
+          다른 질문에도 답하기
         </Link>
       </section>
     </main>

@@ -37,11 +37,11 @@ function AnswerPage() {
     const valid: File[] = [];
     for (const f of incoming) {
       if (f.size > 5 * 1024 * 1024) {
-        toast.error(`${f.name}: 5MB 이하만 가능해`);
+        toast.error(`${f.name}: 5MB 이하만 가능해요`);
         continue;
       }
       if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-        toast.error(`${f.name}: jpg, png, webp만 가능해`);
+        toast.error(`${f.name}: jpg, png, webp만 가능해요`);
         continue;
       }
       valid.push(f);
@@ -59,7 +59,7 @@ function AnswerPage() {
   };
 
   const onSubmit = async () => {
-    if (files.length === 0) return toast.error("사진을 골라줘.");
+    if (files.length === 0) return toast.error("사진을 선택해 주세요.");
     setSubmitting(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
@@ -88,10 +88,10 @@ function AnswerPage() {
       );
       if (insErr) throw insErr;
 
-      toast.success("너의 결이 남았어.");
+      toast.success("결이 남았어요.");
       navigate({ to: "/me" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "업로드 실패");
+      toast.error(err instanceof Error ? err.message : "업로드에 실패했어요.");
     } finally {
       setSubmitting(false);
     }
@@ -130,7 +130,7 @@ function AnswerPage() {
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">
                   사진 고르기
                 </span>
-                <p className="text-[11px] text-muted-foreground mt-2">최대 {MAX_PHOTOS}장</p>
+                <p className="text-[11px] text-muted-foreground mt-2">최대 {MAX_PHOTOS}장까지</p>
               </div>
             </div>
           </label>
