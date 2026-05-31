@@ -219,7 +219,7 @@ function MePage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function StatBlock({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
       <div className="font-serif text-lg">{value}</div>
