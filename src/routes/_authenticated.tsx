@@ -27,9 +27,10 @@ function AuthenticatedLayout() {
 }
 
 function TabBar({ pathname }: { pathname: string }) {
-  const items: Array<{ to: "/home" | "/grid" | "/me"; label: string }> = [
-    { to: "/home", label: "오늘" },
+  const items: Array<{ to: "/feed" | "/grid" | "/home" | "/me"; label: string }> = [
+    { to: "/feed", label: "홈" },
     { to: "/grid", label: "탐색" },
+    { to: "/home", label: "오늘" },
     { to: "/me", label: "나" },
   ];
   return (
