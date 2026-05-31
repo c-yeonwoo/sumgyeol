@@ -26,6 +26,7 @@ import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_a
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
 import { Route as AuthenticatedMeBlockedRouteImport } from './routes/_authenticated.me.blocked'
 import { Route as AuthenticatedAnswerQuestionIdRouteImport } from './routes/_authenticated.answer.$questionId'
+import { Route as AuthenticatedAnswerEditAnswerIdRouteImport } from './routes/_authenticated.answer-edit.$answerId'
 import { Route as AuthenticatedAnswerDetailAnswerIdRouteImport } from './routes/_authenticated.answer-detail.$answerId'
 import { Route as AuthenticatedUHandleFollowingRouteImport } from './routes/_authenticated.u.$handle.following'
 import { Route as AuthenticatedUHandleFollowersRouteImport } from './routes/_authenticated.u.$handle.followers'
@@ -117,6 +118,12 @@ const AuthenticatedAnswerQuestionIdRoute =
     path: '/answer/$questionId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAnswerEditAnswerIdRoute =
+  AuthenticatedAnswerEditAnswerIdRouteImport.update({
+    id: '/answer-edit/$answerId',
+    path: '/answer-edit/$answerId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAnswerDetailAnswerIdRoute =
   AuthenticatedAnswerDetailAnswerIdRouteImport.update({
     id: '/answer-detail/$answerId',
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
+  '/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
@@ -170,6 +178,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
+  '/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
@@ -193,6 +202,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
+  '/_authenticated/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
   '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/_authenticated/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/_authenticated/me/edit': typeof AuthenticatedMeEditRoute
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/onboarding'
     | '/answer-detail/$answerId'
+    | '/answer-edit/$answerId'
     | '/answer/$questionId'
     | '/me/blocked'
     | '/me/edit'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/onboarding'
     | '/answer-detail/$answerId'
+    | '/answer-edit/$answerId'
     | '/answer/$questionId'
     | '/me/blocked'
     | '/me/edit'
@@ -259,6 +271,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/answer-detail/$answerId'
+    | '/_authenticated/answer-edit/$answerId'
     | '/_authenticated/answer/$questionId'
     | '/_authenticated/me/blocked'
     | '/_authenticated/me/edit'
@@ -397,6 +410,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnswerQuestionIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/answer-edit/$answerId': {
+      id: '/_authenticated/answer-edit/$answerId'
+      path: '/answer-edit/$answerId'
+      fullPath: '/answer-edit/$answerId'
+      preLoaderRoute: typeof AuthenticatedAnswerEditAnswerIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/answer-detail/$answerId': {
       id: '/_authenticated/answer-detail/$answerId'
       path: '/answer-detail/$answerId'
@@ -457,6 +477,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedAnswerDetailAnswerIdRoute: typeof AuthenticatedAnswerDetailAnswerIdRoute
+  AuthenticatedAnswerEditAnswerIdRoute: typeof AuthenticatedAnswerEditAnswerIdRoute
   AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
   AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
   AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRouteWithChildren
@@ -472,6 +493,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedAnswerDetailAnswerIdRoute:
     AuthenticatedAnswerDetailAnswerIdRoute,
+  AuthenticatedAnswerEditAnswerIdRoute: AuthenticatedAnswerEditAnswerIdRoute,
   AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
   AuthenticatedQuestionQuestionIdRoute: AuthenticatedQuestionQuestionIdRoute,
   AuthenticatedUHandleRoute: AuthenticatedUHandleRouteWithChildren,
@@ -491,3 +513,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
