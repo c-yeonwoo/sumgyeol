@@ -22,6 +22,7 @@ import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_a
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
 import { Route as AuthenticatedAnswerQuestionIdRouteImport } from './routes/_authenticated.answer.$questionId'
 import { Route as AuthenticatedAnswerDetailAnswerIdRouteImport } from './routes/_authenticated.answer-detail.$answerId'
+import { Route as AuthenticatedUHandleFollowersRouteImport } from './routes/_authenticated.u.$handle.followers'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -90,6 +91,12 @@ const AuthenticatedAnswerDetailAnswerIdRoute =
     path: '/answer-detail/$answerId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedUHandleFollowersRoute =
+  AuthenticatedUHandleFollowersRouteImport.update({
+    id: '/followers',
+    path: '/followers',
+    getParentRoute: () => AuthenticatedUHandleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,7 +110,8 @@ export interface FileRoutesByFullPath {
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
-  '/u/$handle': typeof AuthenticatedUHandleRoute
+  '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,7 +125,8 @@ export interface FileRoutesByTo {
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
-  '/u/$handle': typeof AuthenticatedUHandleRoute
+  '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -133,7 +142,8 @@ export interface FileRoutesById {
   '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/_authenticated/me/edit': typeof AuthenticatedMeEditRoute
   '/_authenticated/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
-  '/_authenticated/u/$handle': typeof AuthenticatedUHandleRoute
+  '/_authenticated/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/_authenticated/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/me/edit'
     | '/question/$questionId'
     | '/u/$handle'
+    | '/u/$handle/followers'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/me/edit'
     | '/question/$questionId'
     | '/u/$handle'
+    | '/u/$handle/followers'
   id:
     | '__root__'
     | '/'
@@ -179,6 +191,7 @@ export interface FileRouteTypes {
     | '/_authenticated/me/edit'
     | '/_authenticated/question/$questionId'
     | '/_authenticated/u/$handle'
+    | '/_authenticated/u/$handle/followers'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -280,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnswerDetailAnswerIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/u/$handle/followers': {
+      id: '/_authenticated/u/$handle/followers'
+      path: '/followers'
+      fullPath: '/u/$handle/followers'
+      preLoaderRoute: typeof AuthenticatedUHandleFollowersRouteImport
+      parentRoute: typeof AuthenticatedUHandleRoute
+    }
   }
 }
 
@@ -295,6 +315,17 @@ const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
   AuthenticatedMeRouteChildren,
 )
 
+interface AuthenticatedUHandleRouteChildren {
+  AuthenticatedUHandleFollowersRoute: typeof AuthenticatedUHandleFollowersRoute
+}
+
+const AuthenticatedUHandleRouteChildren: AuthenticatedUHandleRouteChildren = {
+  AuthenticatedUHandleFollowersRoute: AuthenticatedUHandleFollowersRoute,
+}
+
+const AuthenticatedUHandleRouteWithChildren =
+  AuthenticatedUHandleRoute._addFileChildren(AuthenticatedUHandleRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedBacklogRoute: typeof AuthenticatedBacklogRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
@@ -304,7 +335,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAnswerDetailAnswerIdRoute: typeof AuthenticatedAnswerDetailAnswerIdRoute
   AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
   AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
-  AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRoute
+  AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -317,7 +348,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedAnswerDetailAnswerIdRoute,
   AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
   AuthenticatedQuestionQuestionIdRoute: AuthenticatedQuestionQuestionIdRoute,
-  AuthenticatedUHandleRoute: AuthenticatedUHandleRoute,
+  AuthenticatedUHandleRoute: AuthenticatedUHandleRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
