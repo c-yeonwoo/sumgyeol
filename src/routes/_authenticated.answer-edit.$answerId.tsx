@@ -179,30 +179,22 @@ function AnswerEditPage() {
               alt=""
               className="w-full aspect-square object-cover rounded-2xl border border-border"
             />
-            <label className="absolute bottom-3 right-3 cursor-pointer bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5">
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={onPick}
-                className="hidden"
-              />
+            <button
+              type="button"
+              onClick={choosePhoto}
+              className="absolute bottom-3 right-3 bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5"
+            >
               다시 고르기
-            </label>
+            </button>
           </div>
         ) : (
-          <label className="block cursor-pointer">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={onPick}
-              className="hidden"
-            />
+          <button type="button" onClick={choosePhoto} className="block w-full text-left">
             <div className="w-full aspect-square bg-surface border border-dashed border-border rounded-2xl grid place-items-center">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">
                 사진 고르기
               </span>
             </div>
-          </label>
+          </button>
         )}
 
         <div className="flex gap-2 mt-8">
