@@ -76,6 +76,28 @@ function AnswerDetailPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
   });
 
+  const toggleLike = useMutation({
+    mutationFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user!.id;
+      if (data?.liked) {
+        const { error } = await supabase
+          .from("likes")
+          .delete()
+          .eq("answer_id", Number(answerId))
+          .eq("user_id", uid);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("likes")
+          .insert({ answer_id: Number(answerId), user_id: uid });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
+    onError: (e: any) => toast.error(e?.message ?? "잠시 후 다시 시도해 주세요."),
+  });
+
   if (isLoading) {
     return <div className="p-10 text-center text-sm text-muted-foreground">불러오는 중...</div>;
   }
