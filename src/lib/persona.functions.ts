@@ -9,7 +9,7 @@ export const generatePersonaRead = createServerFn({ method: "POST" })
   .inputValidator(z.object({}).optional())
   .handler(async ({ context }) => {
     const apiKey = process.env[LOVABLE_API_KEY_ENV];
-    if (!apiKey) throw new Error("AI 키가 설정되지 않았어.");
+    if (!apiKey) throw new Error("AI 키가 설정되지 않았어요.");
 
     const { supabase, userId } = context;
     const { data: answers, error } = await supabase
@@ -21,7 +21,7 @@ export const generatePersonaRead = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
     if (!answers || answers.length < 3) {
-      throw new Error("기록이 3개 이상 모이면 너의 결을 읽어줄 수 있어.");
+      throw new Error("기록이 3개 이상 모이면 결을 읽어드릴 수 있어요.");
     }
 
     const corpus = answers
@@ -35,8 +35,8 @@ export const generatePersonaRead = createServerFn({ method: "POST" })
     const systemPrompt = `너는 사진 답변형 SNS '결'의 따뜻한 큐레이터야. 사용자가 어떤 질문에 사진으로 답했는지를 보고, 그 사람이 어디에 시선이 머무는지 그 결을 부드럽게 해석해줘.
 
 규칙:
-- 반드시 한국어 반말로.
-- 단정/평가/진단하지 마. "이런 결이 느껴져", "~인 것 같아" 같은 해석체로.
+- 반드시 한국어 존댓말로 (해요체). 예: "~인 것 같아요", "이런 결이 느껴져요".
+- 단정/평가/진단하지 말기. 해석체로 부드럽게.
 - 부정적이거나 평가하는 표현 금지.
 - 3~4문장의 따뜻한 요약 + 그 사람을 압축하는 짧은 키워드 4~6개.
 - 키워드는 한국어 단어, 띄어쓰기 없이 (예: "오후의빛", "조용한관찰자").
@@ -63,9 +63,9 @@ export const generatePersonaRead = createServerFn({ method: "POST" })
 
     if (!res.ok) {
       const text = await res.text();
-      if (res.status === 429) throw new Error("잠시 후 다시 시도해줘.");
-      if (res.status === 402) throw new Error("AI 사용량이 부족해.");
-      throw new Error(`AI 호출 실패: ${text.slice(0, 200)}`);
+      if (res.status === 429) throw new Error("잠시 후 다시 시도해 주세요.");
+      if (res.status === 402) throw new Error("AI 사용량이 부족해요.");
+      throw new Error(`AI 호출에 실패했어요: ${text.slice(0, 200)}`);
     }
 
     const json = (await res.json()) as any;
@@ -74,7 +74,7 @@ export const generatePersonaRead = createServerFn({ method: "POST" })
     try {
       parsed = JSON.parse(content);
     } catch {
-      throw new Error("AI 응답을 읽지 못했어.");
+      throw new Error("AI 응답을 읽지 못했어요.");
     }
 
     const summary = String(parsed.summary ?? "").slice(0, 600);

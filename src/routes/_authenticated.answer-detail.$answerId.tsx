@@ -49,7 +49,7 @@ function AnswerDetailPage() {
       setBody("");
       qc.invalidateQueries({ queryKey: ["answer-detail", answerId] });
     },
-    onError: (e: any) => toast.error(e?.message ?? "댓글을 남기지 못했어."),
+    onError: (e: any) => toast.error(e?.message ?? "댓글을 남기지 못했어요."),
   });
 
   const delComment = useMutation({
@@ -66,7 +66,7 @@ function AnswerDetailPage() {
   if (!data?.answer) {
     return (
       <div className="p-10 text-center text-sm text-muted-foreground">
-        없는 결이야.
+        없는 결이에요.
       </div>
     );
   }
@@ -142,7 +142,7 @@ function AnswerDetailPage() {
 
         <ul className="space-y-3 mb-5">
           {data.comments.length === 0 && (
-            <p className="text-sm text-muted-foreground">아직 댓글이 없어. 첫 마음을 남겨봐.</p>
+            <p className="text-sm text-muted-foreground">아직 댓글이 없어요. 첫 마음을 남겨보세요.</p>
           )}
           {data.comments.map((c: any) => (
             <li key={c.id} className="flex gap-3">
@@ -171,7 +171,7 @@ function AnswerDetailPage() {
             value={body}
             onChange={(e) => setBody(e.target.value.slice(0, 300))}
             rows={2}
-            placeholder="너의 마음을 한 줄로"
+            placeholder="마음을 한 줄로 남겨주세요"
             className="flex-1 bg-transparent outline-none resize-none text-[14px] placeholder:text-muted-foreground"
           />
           <button
