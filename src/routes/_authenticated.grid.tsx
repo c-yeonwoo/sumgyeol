@@ -20,6 +20,7 @@ type QCard = {
 
 function GridPage() {
   const { data: blockedIds } = useBlockedIds();
+  const [query, setQuery] = useState("");
   const { data, isLoading } = useQuery({
     queryKey: ["explore-questions", Array.from(blockedIds ?? []).sort().join(",")],
     queryFn: async (): Promise<QCard[]> => {
