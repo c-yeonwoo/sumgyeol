@@ -171,12 +171,28 @@ function AnswerDetailPage() {
             </>
           )}
         </div>
+
+        <div className="mt-5 flex items-center gap-2">
+          <button
+            onClick={() => toggleLike.mutate()}
+            disabled={toggleLike.isPending}
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            aria-label={data.liked ? "좋아요 취소" : "좋아요"}
+          >
+            <Heart
+              size={20}
+              className={data.liked ? "fill-accent text-accent" : ""}
+            />
+            <span className="tabular-nums">{data.likeCount}</span>
+          </button>
+        </div>
       </section>
 
       <section className="px-6 pb-10">
         <h3 className="text-[11px] uppercase tracking-widest text-muted-foreground mb-4">
           댓글 {data.comments.length}
         </h3>
+
 
         <ul className="space-y-3 mb-5">
           {data.comments.length === 0 && (
