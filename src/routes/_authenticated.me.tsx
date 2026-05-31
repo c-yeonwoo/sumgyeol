@@ -17,7 +17,7 @@ function MePage() {
     queryFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user!.id;
-      const [profileRes, answersRes, personaRes] = await Promise.all([
+      const [profileRes, answersRes, personaRes, followersRes, followingRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
         supabase
           .from("answers")
@@ -31,11 +31,21 @@ function MePage() {
           .order("generated_at", { ascending: false })
           .limit(1)
           .maybeSingle(),
+        supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("following_id", uid),
+        supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("follower_id", uid),
       ]);
       return {
         profile: profileRes.data,
         answers: answersRes.data ?? [],
         persona: personaRes.data,
+        followers: followersRes.count ?? 0,
+        following: followingRes.count ?? 0,
       };
     },
   });
