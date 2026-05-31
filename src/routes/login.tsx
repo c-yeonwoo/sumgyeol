@@ -1,0 +1,130 @@
+import { createFileRoute, useNavigate, redirect, Link } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [{ title: "로그인 — 결" }],
+  }),
+  beforeLoad: async () => {
+    if (typeof window === "undefined") return;
+    const { data } = await supabase.auth.getSession();
+    if (data.session) throw redirect({ to: "/home" });
+  },
+  component: LoginPage,
+});
+
+function LoginPage() {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
+        if (error) throw error;
+        toast.success("가입 완료. 너의 결을 만들러 가자.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      }
+      navigate({ to: "/home" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "다시 시도해줘.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onGoogle = async () => {
+    setLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin + "/home",
+      });
+      if (result.error) throw result.error;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "구글 로그인 실패");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="w-full max-w-sm">
+        <Link to="/" className="block text-center mb-12">
+          <h1 className="font-serif text-5xl tracking-tighter text-foreground">결</h1>
+          <p className="mt-3 text-sm text-muted-foreground">사진 한 장으로 답하는 곳</p>
+        </Link>
+
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div>
+            <label className="text-xs uppercase tracking-widest text-muted-foreground">이메일</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full bg-transparent border-b border-border py-2 outline-none focus:border-foreground transition-colors"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-widest text-muted-foreground">비밀번호</label>
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full bg-transparent border-b border-border py-2 outline-none focus:border-foreground transition-colors"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-foreground text-background py-3 rounded-md text-sm font-medium mt-6 disabled:opacity-50"
+          >
+            {loading ? "잠시만..." : mode === "signin" ? "들어가기" : "가입하기"}
+          </button>
+        </form>
+
+        <div className="flex items-center my-6 gap-3">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground">또는</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        <button
+          type="button"
+          onClick={onGoogle}
+          disabled={loading}
+          className="w-full border border-border py-3 rounded-md text-sm font-medium hover:bg-secondary transition-colors disabled:opacity-50"
+        >
+          Google로 계속하기
+        </button>
+
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          {mode === "signin" ? "처음이야?" : "이미 가입했어?"}{" "}
+          <button
+            type="button"
+            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            className="text-foreground underline underline-offset-4"
+          >
+            {mode === "signin" ? "가입하기" : "로그인하기"}
+          </button>
+        </p>
+      </div>
+    </main>
+  );
+}

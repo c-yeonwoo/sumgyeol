@@ -1,0 +1,94 @@
+import { createFileRoute, Outlet, redirect, Link, useLocation } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+export const Route = createFileRoute("/_authenticated")({
+  beforeLoad: async () => {
+    if (typeof window === "undefined") return;
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) throw redirect({ to: "/login" });
+  },
+  component: AuthenticatedLayout,
+});
+
+function AuthenticatedLayout() {
+  const location = useLocation();
+  const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarded")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+      if (!cancelled) setNeedsOnboarding(!profile?.onboarded);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Soft redirect to onboarding for new users
+  useEffect(() => {
+    if (
+      needsOnboarding === true &&
+      !location.pathname.startsWith("/onboarding") &&
+      !location.pathname.startsWith("/answer")
+    ) {
+      window.history.replaceState(null, "", "/onboarding");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    }
+  }, [needsOnboarding, location.pathname]);
+
+  const showTabs = !location.pathname.startsWith("/onboarding") && !location.pathname.startsWith("/answer/");
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="max-w-md mx-auto min-h-screen relative pb-24">
+        <Outlet />
+        {showTabs && <TabBar pathname={location.pathname} />}
+      </div>
+    </div>
+  );
+}
+
+function TabBar({ pathname }: { pathname: string }) {
+  const items: Array<{ to: "/home" | "/grid" | "/me"; label: string }> = [
+    { to: "/home", label: "오늘" },
+    { to: "/grid", label: "탐색" },
+    { to: "/me", label: "나" },
+  ];
+  return (
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-20 bg-background/85 backdrop-blur-xl border-t border-border flex justify-around items-center px-10 z-40">
+      {items.map((it) => {
+        const active = pathname === it.to;
+        return (
+          <Link
+            key={it.to}
+            to={it.to}
+            className="flex flex-col items-center gap-1.5 py-2"
+          >
+            <span
+              className={
+                "text-[11px] uppercase tracking-widest font-medium transition-colors " +
+                (active ? "text-foreground" : "text-muted-foreground")
+              }
+            >
+              {it.label}
+            </span>
+            <span
+              className={
+                "size-1 rounded-full transition-all " +
+                (active ? "bg-foreground" : "bg-transparent")
+              }
+            />
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
