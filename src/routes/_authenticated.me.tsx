@@ -100,9 +100,11 @@ function MePage() {
             {data.profile.bio}
           </p>
         )}
-        <p className="text-[13px] text-muted-foreground mt-3">
-          {answerCount}개의 조각을 모으셨어요
-        </p>
+        <div className="flex items-center gap-8 mt-6">
+          <Stat label="기록" value={answerCount} />
+          <Stat label="팔로워" value={data?.followers ?? 0} />
+          <Stat label="팔로잉" value={data?.following ?? 0} />
+        </div>
         <Link
           to="/me/edit"
           className="mt-4 text-[11px] uppercase tracking-widest text-accent border border-accent/40 rounded-full px-4 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
