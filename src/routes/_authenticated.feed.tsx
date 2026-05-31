@@ -33,8 +33,9 @@ type PromptItem = {
 type FeedItem = AnswerItem | PromptItem;
 
 function FeedPage() {
+  const { data: blockedIds } = useBlockedIds();
   const { data, isLoading } = useQuery({
-    queryKey: ["home-feed"],
+    queryKey: ["home-feed", Array.from(blockedIds ?? []).sort().join(",")],
     queryFn: async (): Promise<FeedItem[]> => {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
