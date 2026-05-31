@@ -168,7 +168,30 @@ function UserProfilePage() {
         <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
           @{p.handle}
         </span>
-        <span className="w-6" />
+        {data.isMe ? (
+          <span className="w-6" />
+        ) : (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setReportOpen(true)}
+              aria-label="신고하기"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Flag className="size-4" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={() => toggleBlock.mutate()}
+              disabled={toggleBlock.isPending}
+              aria-label={data.isBlocked ? "차단 해제" : "차단"}
+              className={
+                "hover:text-foreground " +
+                (data.isBlocked ? "text-destructive" : "text-muted-foreground")
+              }
+            >
+              <Ban className="size-4" strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
       </header>
 
       <section className="px-6 py-10 flex flex-col items-center text-center">
