@@ -251,14 +251,15 @@ function AnswerDetailPage() {
                   {c.body}
                 </p>
               </div>
-              {data.me === c.user_id && (
+              {(data.me === c.user_id || data.me === a.user_id) && (
                 <button
                   onClick={() => delComment.mutate(c.id)}
-                  className="text-[11px] text-muted-foreground self-start"
+                  className="text-[11px] text-muted-foreground self-start hover:text-foreground"
                 >
                   삭제
                 </button>
               )}
+
             </li>
           ))}
         </ul>
