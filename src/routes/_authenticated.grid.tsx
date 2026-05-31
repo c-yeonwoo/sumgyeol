@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useBlockedIds } from "@/lib/blocks";
 
 export const Route = createFileRoute("/_authenticated/grid")({
   head: () => ({ meta: [{ title: "탐색 — 결" }] }),
