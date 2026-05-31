@@ -31,21 +31,18 @@ function AnswerPage() {
     },
   });
 
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    e.target.value = "";
-    if (!f) return;
-    if (f.size > 10 * 1024 * 1024) {
-      toast.error("10MB 이하만 가능해요");
-      return;
+  const choosePhoto = async () => {
+    try {
+      const f = await pickPhoto();
+      if (!f) return;
+      const err = validatePickedPhoto(f);
+      if (err) return toast.error(err);
+      if (preview) URL.revokeObjectURL(preview);
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "사진을 불러오지 못했어요");
     }
-    if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-      toast.error("jpg, png, webp만 가능해요");
-      return;
-    }
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
   };
 
   const onSubmit = async () => {
