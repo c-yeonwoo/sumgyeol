@@ -14,6 +14,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated.notifications'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated.me'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
@@ -52,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/me': typeof AuthenticatedMeRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/me': typeof AuthenticatedMeRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
   '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/_authenticated/me/blocked': typeof AuthenticatedMeBlockedRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/me'
     | '/notifications'
+    | '/onboarding'
     | '/answer-detail/$answerId'
     | '/answer/$questionId'
     | '/me/blocked'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/me'
     | '/notifications'
+    | '/onboarding'
     | '/answer-detail/$answerId'
     | '/answer/$questionId'
     | '/me/blocked'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/me'
     | '/_authenticated/notifications'
+    | '/_authenticated/onboarding'
     | '/_authenticated/answer-detail/$answerId'
     | '/_authenticated/answer/$questionId'
     | '/_authenticated/me/blocked'
@@ -300,6 +312,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
@@ -436,6 +455,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedAnswerDetailAnswerIdRoute: typeof AuthenticatedAnswerDetailAnswerIdRoute
   AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
   AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
@@ -449,6 +469,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedAnswerDetailAnswerIdRoute:
     AuthenticatedAnswerDetailAnswerIdRoute,
   AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
@@ -470,3 +491,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
