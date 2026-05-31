@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { stripExifAndCompress } from "@/lib/image-utils";
+import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
 
 export const Route = createFileRoute("/_authenticated/answer/$questionId")({
   head: () => ({ meta: [{ title: "답변 — 결" }] }),
@@ -30,21 +31,18 @@ function AnswerPage() {
     },
   });
 
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    e.target.value = "";
-    if (!f) return;
-    if (f.size > 10 * 1024 * 1024) {
-      toast.error("10MB 이하만 가능해요");
-      return;
+  const choosePhoto = async () => {
+    try {
+      const f = await pickPhoto();
+      if (!f) return;
+      const err = validatePickedPhoto(f);
+      if (err) return toast.error(err);
+      if (preview) URL.revokeObjectURL(preview);
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "사진을 불러오지 못했어요");
     }
-    if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-      toast.error("jpg, png, webp만 가능해요");
-      return;
-    }
-    if (preview) URL.revokeObjectURL(preview);
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
   };
 
   const onSubmit = async () => {
@@ -100,13 +98,7 @@ function AnswerPage() {
         )}
 
         {!preview ? (
-          <label className="block cursor-pointer">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={onFile}
-              className="hidden"
-            />
+          <button type="button" onClick={choosePhoto} className="block w-full text-left">
             <div className="w-full aspect-square bg-surface border border-border rounded-2xl grid place-items-center">
               <div className="text-center">
                 <div className="text-2xl mb-2">＋</div>
@@ -118,7 +110,7 @@ function AnswerPage() {
                 </p>
               </div>
             </div>
-          </label>
+          </button>
         ) : (
           <div className="relative">
             <img
@@ -126,15 +118,13 @@ function AnswerPage() {
               alt=""
               className="w-full aspect-square object-cover rounded-2xl border border-border"
             />
-            <label className="absolute bottom-3 right-3 cursor-pointer bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5">
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={onFile}
-                className="hidden"
-              />
+            <button
+              type="button"
+              onClick={choosePhoto}
+              className="absolute bottom-3 right-3 bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5"
+            >
               다시 고르기
-            </label>
+            </button>
           </div>
         )}
 

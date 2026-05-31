@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { stripExifAndCompress } from "@/lib/image-utils";
+import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
 
 export const Route = createFileRoute("/_authenticated/answer-edit/$answerId")({
   head: () => ({ meta: [{ title: "결 수정 — 결" }] }),
@@ -46,21 +47,18 @@ function AnswerEditPage() {
     setVisibility(a.visibility === "private" ? "private" : "public");
   }, [a]);
 
-  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    e.target.value = "";
-    if (!f) return;
-    if (f.size > 10 * 1024 * 1024) {
-      toast.error("10MB 이하만 가능해요");
-      return;
+  const choosePhoto = async () => {
+    try {
+      const f = await pickPhoto();
+      if (!f) return;
+      const err = validatePickedPhoto(f);
+      if (err) return toast.error(err);
+      if (newPreview) URL.revokeObjectURL(newPreview);
+      setNewFile(f);
+      setNewPreview(URL.createObjectURL(f));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "사진을 불러오지 못했어요");
     }
-    if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-      toast.error("jpg, png, webp만 가능해요");
-      return;
-    }
-    if (newPreview) URL.revokeObjectURL(newPreview);
-    setNewFile(f);
-    setNewPreview(URL.createObjectURL(f));
   };
 
   const onSave = async () => {
@@ -181,30 +179,22 @@ function AnswerEditPage() {
               alt=""
               className="w-full aspect-square object-cover rounded-2xl border border-border"
             />
-            <label className="absolute bottom-3 right-3 cursor-pointer bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5">
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={onPick}
-                className="hidden"
-              />
+            <button
+              type="button"
+              onClick={choosePhoto}
+              className="absolute bottom-3 right-3 bg-background/85 backdrop-blur text-[11px] uppercase tracking-widest border border-border rounded-full px-3 py-1.5"
+            >
               다시 고르기
-            </label>
+            </button>
           </div>
         ) : (
-          <label className="block cursor-pointer">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={onPick}
-              className="hidden"
-            />
+          <button type="button" onClick={choosePhoto} className="block w-full text-left">
             <div className="w-full aspect-square bg-surface border border-dashed border-border rounded-2xl grid place-items-center">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">
                 사진 고르기
               </span>
             </div>
-          </label>
+          </button>
         )}
 
         <div className="flex gap-2 mt-8">
