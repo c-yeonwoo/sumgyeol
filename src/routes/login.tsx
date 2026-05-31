@@ -75,6 +75,23 @@ function LoginPage() {
     }
   };
 
+  const onResend = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: window.location.origin + "/home" },
+      });
+      if (error) throw error;
+      toast.success("인증 메일을 다시 보냈어요.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "다시 시도해 주세요.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (confirmSent) {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center px-6">
@@ -88,11 +105,18 @@ function LoginPage() {
             메일이 안 보이면 스팸함을 확인해 주세요.
           </p>
           <button
+            onClick={onResend}
+            disabled={loading}
+            className="mt-6 block mx-auto text-[12px] text-foreground underline underline-offset-4 disabled:opacity-50"
+          >
+            {loading ? "보내는 중..." : "메일 다시 보내기"}
+          </button>
+          <button
             onClick={() => {
               setConfirmSent(false);
               setMode("signin");
             }}
-            className="mt-8 text-[11px] uppercase tracking-widest text-accent underline underline-offset-4"
+            className="mt-6 text-[11px] uppercase tracking-widest text-accent underline underline-offset-4"
           >
             로그인 화면으로
           </button>
