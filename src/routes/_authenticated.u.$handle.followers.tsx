@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/u/$handle/followers")({
   head: ({ params }) => ({ meta: [{ title: `@${params.handle}의 팔로워` }] }),
@@ -88,7 +89,7 @@ function UserList({
               className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl"
             >
               {u.avatar_url ? (
-                <img
+                <StorageImg
                   src={u.avatar_url}
                   alt=""
                   className="size-11 rounded-full object-cover border border-border"

@@ -5,6 +5,7 @@ import { Flag, Ban } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReportDialog } from "@/components/report-dialog";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/u/$handle")({
   head: ({ params }) => ({ meta: [{ title: `@${params.handle} — 결` }] }),
@@ -196,7 +197,7 @@ function UserProfilePage() {
 
       <section className="px-6 py-10 flex flex-col items-center text-center">
         {p.avatar_url ? (
-          <img
+          <StorageImg
             src={p.avatar_url}
             alt=""
             className="size-20 rounded-full object-cover border border-border mb-4"
@@ -273,7 +274,7 @@ function UserProfilePage() {
                 to="/answer-detail/$answerId"
                 params={{ answerId: String(a.id) }}
               >
-                <img
+                <StorageImg
                   src={a.photos?.[0]}
                   alt=""
                   className="w-full aspect-square object-cover rounded-sm border border-border"

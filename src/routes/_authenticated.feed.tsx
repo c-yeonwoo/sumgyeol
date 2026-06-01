@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedIds } from "@/lib/blocks";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({ meta: [{ title: "홈 — 결" }] }),
@@ -197,7 +198,7 @@ function FeedPage() {
                 <div className="flex items-center justify-between gap-3 px-2">
                   <div className="flex items-center gap-3">
                     {it.profiles?.avatar_url ? (
-                      <img
+                      <StorageImg
                         src={it.profiles.avatar_url}
                         alt=""
                         className="size-8 rounded-full object-cover border border-border"
@@ -244,7 +245,7 @@ function FeedPage() {
                     params={{ answerId: String(it.id) }}
                     className="block relative"
                   >
-                    <img
+                    <StorageImg
                       src={it.photos[0]}
                       alt=""
                       className="w-full aspect-square object-cover rounded-2xl border border-border"

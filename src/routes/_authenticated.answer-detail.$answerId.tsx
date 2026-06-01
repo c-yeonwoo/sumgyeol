@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReportDialog } from "@/components/report-dialog";
 import { useBlockedIds } from "@/lib/blocks";
+import { StorageImg } from "@/components/storage-img";
 
 
 export const Route = createFileRoute("/_authenticated/answer-detail/$answerId")({
@@ -181,7 +182,7 @@ function AnswerDetailPage() {
         </div>
 
         <div className="relative">
-          <img
+          <StorageImg
             src={photos[idx]}
             alt=""
             className="w-full aspect-square object-cover rounded-2xl border border-border"

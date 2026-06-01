@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/me/blocked")({
   head: () => ({ meta: [{ title: "차단 목록 — 결" }] }),
@@ -79,7 +80,7 @@ function BlockedListPage() {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {b.profile?.avatar_url ? (
-                    <img
+                    <StorageImg
                       src={b.profile.avatar_url}
                       alt=""
                       className="size-9 rounded-full object-cover border border-border"

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { generatePersonaRead } from "@/lib/persona.functions";
 import { toast } from "sonner";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/me/")({
   head: () => ({ meta: [{ title: "내 결 — 결" }] }),
@@ -91,7 +92,7 @@ function MePage() {
 
       <section className="px-6 py-10 text-center flex flex-col items-center">
         {data?.profile?.avatar_url ? (
-          <img
+          <StorageImg
             src={data.profile.avatar_url}
             alt=""
             className="size-20 rounded-full object-cover border border-border mb-4"
@@ -214,7 +215,7 @@ function MePage() {
                 to="/answer-detail/$answerId"
                 params={{ answerId: String(a.id) }}
               >
-                <img
+                <StorageImg
                   src={a.photos?.[0]}
                   alt=""
                   className="w-full aspect-square object-cover rounded-sm border border-border"

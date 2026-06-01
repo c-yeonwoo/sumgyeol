@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { stripExifAndCompress } from "@/lib/image-utils";
+import { StorageImg } from "@/components/storage-img";
+
 
 
 export const Route = createFileRoute("/_authenticated/me/edit")({
@@ -107,8 +109,7 @@ function EditProfilePage() {
           .from("answers")
           .upload(path, cleaned, { upsert: true, contentType: cleaned.type });
         if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from("answers").getPublicUrl(path);
-        nextAvatarUrl = pub.publicUrl;
+        nextAvatarUrl = path;
       }
 
 
@@ -160,7 +161,7 @@ function EditProfilePage() {
           />
           <div className="size-28 rounded-full bg-surface border border-border overflow-hidden grid place-items-center">
             {avatarUrl ? (
-              <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              <StorageImg src={avatarUrl} alt="" className="w-full h-full object-cover" />
             ) : (
               <span className="text-2xl text-muted-foreground">＋</span>
             )}

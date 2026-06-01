@@ -4,6 +4,7 @@ import { Bell, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedIds } from "@/lib/blocks";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/grid")({
   head: () => ({ meta: [{ title: "탐색 — 결" }] }),
@@ -146,7 +147,7 @@ function GridPage() {
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="aspect-square bg-background">
                     {q.covers[i] ? (
-                      <img
+                      <StorageImg
                         src={q.covers[i]}
                         alt=""
                         className="w-full h-full object-cover"
