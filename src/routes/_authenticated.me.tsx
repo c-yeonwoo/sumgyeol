@@ -7,7 +7,7 @@ import { generatePersonaRead } from "@/lib/persona.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/me")({
-  head: () => ({ meta: [{ title: "내 결 — Ditto" }] }),
+  head: () => ({ meta: [{ title: "내 결 — 결" }] }),
   component: MePage,
 });
 
