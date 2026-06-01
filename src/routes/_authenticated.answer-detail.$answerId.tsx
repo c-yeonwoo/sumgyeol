@@ -10,7 +10,7 @@ import { StorageImg } from "@/components/storage-img";
 
 
 export const Route = createFileRoute("/_authenticated/answer-detail/$answerId")({
-  head: () => ({ meta: [{ title: "결 — 결" }] }),
+  head: () => ({ meta: [{ title: "숨 — 숨결" }] }),
   component: AnswerDetailPage,
 });
 
@@ -112,7 +112,7 @@ function AnswerDetailPage() {
   if (!data?.answer) {
     return (
       <div className="p-10 text-center text-sm text-muted-foreground">
-        없는 결이에요.
+        없는 숨이에요.
       </div>
     );
   }
@@ -127,7 +127,7 @@ function AnswerDetailPage() {
   if (isBlockedAuthor) {
     return (
       <main className="p-10 text-center text-sm text-muted-foreground">
-        차단한 사용자의 결이에요.
+        차단한 사용자의 숨이에요.
         <div>
           <button
             onClick={() => navigate({ to: "/feed" })}
@@ -146,7 +146,7 @@ function AnswerDetailPage() {
         <button onClick={() => navigate({ to: "/grid" })} className="text-sm text-muted-foreground">
           ← 뒤로
         </button>
-        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">결</span>
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">숨</span>
         {data.me === a.user_id ? (
           <Link
             to="/answer-edit/$answerId"

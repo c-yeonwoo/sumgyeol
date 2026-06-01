@@ -9,7 +9,7 @@ import { StorageImg } from "@/components/storage-img";
 import { extractAnswersPath } from "@/lib/storage-url";
 
 export const Route = createFileRoute("/_authenticated/answer-edit/$answerId")({
-  head: () => ({ meta: [{ title: "결 수정 — 결" }] }),
+  head: () => ({ meta: [{ title: "숨 수정 — 숨결" }] }),
   component: AnswerEditPage,
 });
 
@@ -97,7 +97,7 @@ function AnswerEditPage() {
         await supabase.storage.from("answers").remove(removedPaths);
       }
 
-      toast.success("결을 수정했어요.");
+      toast.success("숨을 수정했어요.");
       navigate({ to: "/answer-detail/$answerId", params: { answerId } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "수정에 실패했어요.");
@@ -108,12 +108,12 @@ function AnswerEditPage() {
 
   const onDelete = async () => {
     if (!a || !isOwner) return;
-    if (!confirm("이 결을 정말 삭제할까요? 되돌릴 수 없어요.")) return;
+    if (!confirm("이 숨을 정말 삭제할까요? 되돌릴 수 없어요.")) return;
     setDeleting(true);
     try {
       const { error } = await supabase.from("answers").delete().eq("id", a.id);
       if (error) throw error;
-      toast.success("결을 삭제했어요.");
+      toast.success("숨을 삭제했어요.");
       navigate({ to: "/me" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "삭제에 실패했어요.");
@@ -125,12 +125,12 @@ function AnswerEditPage() {
     return <div className="p-10 text-center text-sm text-muted-foreground">불러오는 중...</div>;
   }
   if (!a) {
-    return <div className="p-10 text-center text-sm text-muted-foreground">없는 결이에요.</div>;
+    return <div className="p-10 text-center text-sm text-muted-foreground">없는 숨이에요.</div>;
   }
   if (!isOwner) {
     return (
       <div className="p-10 text-center text-sm text-muted-foreground">
-        본인의 결만 수정할 수 있어요.
+        본인의 숨만 수정할 수 있어요.
       </div>
     );
   }
@@ -147,7 +147,7 @@ function AnswerEditPage() {
         >
           ← 취소
         </Link>
-        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">결 수정</span>
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">숨 수정</span>
         <button
           onClick={onSave}
           disabled={saving || (!existingUrl && !newFile)}
@@ -169,7 +169,7 @@ function AnswerEditPage() {
 
         {originalUrls.length > 1 && (
           <p className="text-[11px] text-muted-foreground mb-3">
-            이 결은 여러 장이었어요. 저장하면 한 장으로 정리됩니다.
+            이 숨은 여러 장이었어요. 저장하면 한 장으로 정리됩니다.
           </p>
         )}
 
@@ -229,7 +229,7 @@ function AnswerEditPage() {
             disabled={deleting}
             className="text-[11px] uppercase tracking-widest text-destructive hover:underline underline-offset-4 disabled:opacity-50"
           >
-            {deleting ? "삭제 중..." : "이 결 삭제하기"}
+            {deleting ? "삭제 중..." : "이 숨 삭제하기"}
           </button>
         </div>
       </section>

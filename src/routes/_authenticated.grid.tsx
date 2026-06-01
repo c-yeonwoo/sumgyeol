@@ -7,7 +7,7 @@ import { useBlockedIds } from "@/lib/blocks";
 import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/grid")({
-  head: () => ({ meta: [{ title: "탐색 — 결" }] }),
+  head: () => ({ meta: [{ title: "탐색 — 숨결" }] }),
   component: GridPage,
 });
 
@@ -120,7 +120,7 @@ function GridPage() {
           ))
         ) : filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-16">
-            {query ? `"${query}"에 맞는 질문이 없어요.` : "아직 모인 결이 없어요."}
+            {query ? `"${query}"에 맞는 질문이 없어요.` : "아직 모인 숨이 없어요."}
           </p>
         ) : (
           filtered.map((q) => (
@@ -140,7 +140,7 @@ function GridPage() {
                   {q.text}
                 </p>
                 <span className="text-[11px] text-muted-foreground">
-                  결 {q.count}개
+                  숨 {q.count}개
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-px bg-border">

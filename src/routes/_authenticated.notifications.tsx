@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
-  head: () => ({ meta: [{ title: "알림 — 결" }] }),
+  head: () => ({ meta: [{ title: "알림 — 숨결" }] }),
   component: NotificationsPage,
 });
 
@@ -19,7 +19,7 @@ function NotificationsPage() {
           아직 알림이 없어요.
         </p>
         <p className="text-[12px] text-muted-foreground mt-2">
-          누군가 당신의 결에 반응하면 여기에 모일 거예요.
+          누군가 당신의 숨에 반응하면 여기에 모일 거예요.
         </p>
       </section>
     </main>

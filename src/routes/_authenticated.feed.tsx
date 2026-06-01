@@ -7,7 +7,7 @@ import { useBlockedIds } from "@/lib/blocks";
 import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/feed")({
-  head: () => ({ meta: [{ title: "홈 — 결" }] }),
+  head: () => ({ meta: [{ title: "홈 — 숨결" }] }),
   component: FeedPage,
 });
 
@@ -140,7 +140,7 @@ function FeedPage() {
           <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
             피드
           </span>
-          <h2 className="font-serif text-xl mt-1 leading-snug">새로운 결</h2>
+          <h2 className="font-serif text-xl mt-1 leading-snug">새로운 숨</h2>
         </div>
         <Link
           to="/notifications"
@@ -162,10 +162,10 @@ function FeedPage() {
         ) : items.length === 0 ? (
           <div className="border border-dashed border-border rounded-2xl p-8 text-center">
             <p className="text-sm text-muted-foreground">
-              아직 보여드릴 결이 없어요.
+              아직 보여드릴 숨이 없어요.
             </p>
             <p className="text-[12px] text-muted-foreground mt-2">
-              질문에 먼저 답하면, 비슷한 결의 사람들이 모입니다.
+              질문에 먼저 답하면, 결이 닿는 사람들이 모입니다.
             </p>
             <Link
               to="/home"
@@ -190,7 +190,7 @@ function FeedPage() {
                   {it.text}
                 </p>
                 <span className="inline-block mt-4 text-[11px] uppercase tracking-widest">
-                  결 남기러 가기 →
+                  숨 남기러 가기 →
                 </span>
               </Link>
             ) : (

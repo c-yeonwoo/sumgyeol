@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/question/$questionId")({
-  head: () => ({ meta: [{ title: "질문 — 결" }] }),
+  head: () => ({ meta: [{ title: "질문 — 숨결" }] }),
   component: QuestionPage,
   errorComponent: ({ error }) => (
     <div className="p-8 text-sm text-muted-foreground">
@@ -60,7 +60,7 @@ function QuestionPage() {
         </h1>
         {data?.answers && (
           <p className="text-[11px] text-muted-foreground mt-3">
-            {data.answers.length}개의 결
+            {data.answers.length}개의 숨
           </p>
         )}
       </header>
@@ -85,7 +85,7 @@ function QuestionPage() {
               params={{ questionId }}
               className="inline-block text-xs underline underline-offset-4"
             >
-              첫 결을 남겨보세요 →
+              첫 숨을 남겨보세요 →
             </Link>
           </div>
         ) : (

@@ -7,7 +7,7 @@ import { stripExifAndCompress } from "@/lib/image-utils";
 import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
 
 export const Route = createFileRoute("/_authenticated/answer/$questionId")({
-  head: () => ({ meta: [{ title: "답변 — 결" }] }),
+  head: () => ({ meta: [{ title: "답변 — 숨결" }] }),
   component: AnswerPage,
 });
 
@@ -68,7 +68,7 @@ function AnswerPage() {
       );
       if (insErr) throw insErr;
 
-      toast.success("결이 남았어요.");
+      toast.success("오늘의 숨이 남았어요.");
       navigate({ to: "/me" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "업로드에 실패했어요.");
@@ -156,7 +156,7 @@ function AnswerPage() {
           disabled={submitting || !file}
           className="w-full bg-foreground text-background py-4 rounded-xl text-sm font-medium mt-8 disabled:opacity-40"
         >
-          {submitting ? "남기는 중..." : "결 남기기"}
+          {submitting ? "남기는 중..." : "숨 남기기"}
         </button>
       </section>
     </main>
