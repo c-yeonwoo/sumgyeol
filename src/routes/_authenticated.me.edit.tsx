@@ -161,7 +161,7 @@ function EditProfilePage() {
           />
           <div className="size-28 rounded-full bg-surface border border-border overflow-hidden grid place-items-center">
             {avatarUrl ? (
-              <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              <StorageImg src={avatarUrl} alt="" className="w-full h-full object-cover" />
             ) : (
               <span className="text-2xl text-muted-foreground">＋</span>
             )}
