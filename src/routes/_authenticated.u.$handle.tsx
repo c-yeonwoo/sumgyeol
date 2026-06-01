@@ -8,7 +8,7 @@ import { ReportDialog } from "@/components/report-dialog";
 import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/u/$handle")({
-  head: ({ params }) => ({ meta: [{ title: `@${params.handle} — 결` }] }),
+  head: ({ params }) => ({ meta: [{ title: `@${params.handle} — 숨결` }] }),
   component: UserProfilePage,
 });
 
