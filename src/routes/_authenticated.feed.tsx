@@ -198,7 +198,7 @@ function FeedPage() {
                 <div className="flex items-center justify-between gap-3 px-2">
                   <div className="flex items-center gap-3">
                     {it.profiles?.avatar_url ? (
-                      <img
+                      <StorageImg
                         src={it.profiles.avatar_url}
                         alt=""
                         className="size-8 rounded-full object-cover border border-border"
