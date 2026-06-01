@@ -54,7 +54,7 @@ function QuestionPage() {
         <span className="text-[10px] uppercase tracking-widest text-accent">
           질문
         </span>
-        <h1 className="font-serif text-2xl mt-1 leading-snug text-balance">
+        <h1 className="font-serif text-2xl mt-1 leading-snug text-balance break-keep [word-break:keep-all]">
           {data?.question?.text ?? "..."}
         </h1>
         {data?.answers && (

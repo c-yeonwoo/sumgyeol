@@ -172,7 +172,7 @@ function AnswerDetailPage() {
           <span className="text-[11px] uppercase tracking-widest text-accent">
             {a.questions?.category}
           </span>
-          <h2 className="font-serif text-2xl mt-1 leading-snug text-balance">
+          <h2 className="font-serif text-2xl mt-1 leading-snug text-balance break-keep [word-break:keep-all]">
             {a.questions?.text}
           </h2>
           <p className="text-[12px] text-muted-foreground mt-2">
