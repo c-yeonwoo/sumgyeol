@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { stripExifAndCompress } from "@/lib/image-utils";
 import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
+import { StorageImg } from "@/components/storage-img";
+import { extractAnswersPath } from "@/lib/storage-url";
 
 export const Route = createFileRoute("/_authenticated/answer-edit/$answerId")({
   head: () => ({ meta: [{ title: "결 수정 — 결" }] }),
