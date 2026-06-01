@@ -98,7 +98,7 @@ function QuestionPage() {
                   params={{ answerId: String(a.id) }}
                   className="relative"
                 >
-                  <img
+                  <StorageImg
                     src={a.photos?.[0]}
                     alt=""
                     className="w-full aspect-square object-cover rounded-sm border border-border"
