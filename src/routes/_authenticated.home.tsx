@@ -83,7 +83,7 @@ function HomePage() {
               <span className="text-[11px] font-semibold text-accent uppercase tracking-widest">
                 질문
               </span>
-              <h2 className="font-serif text-3xl mt-2 leading-snug text-balance">
+              <h2 className="font-serif text-3xl mt-2 leading-snug text-balance break-keep [word-break:keep-all]">
                 {data.question.text}
               </h2>
             </div>
