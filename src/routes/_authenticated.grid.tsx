@@ -147,7 +147,7 @@ function GridPage() {
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="aspect-square bg-background">
                     {q.covers[i] ? (
-                      <img
+                      <StorageImg
                         src={q.covers[i]}
                         alt=""
                         className="w-full h-full object-cover"
