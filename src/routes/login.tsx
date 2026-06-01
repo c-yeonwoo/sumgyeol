@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
-    meta: [{ title: "로그인 — 결" }],
+    meta: [{ title: "로그인 — Ditto" }],
   }),
   beforeLoad: async () => {
     if (typeof window === "undefined") return;

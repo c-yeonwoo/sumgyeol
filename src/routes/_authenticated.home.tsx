@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/home")({
-  head: () => ({ meta: [{ title: "오늘 — 결" }] }),
+  head: () => ({ meta: [{ title: "오늘 — Ditto" }] }),
   component: HomePage,
 });
 
