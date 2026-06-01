@@ -219,9 +219,9 @@ function FeedPage() {
                       </span>
                     )}
                   </div>
-                  {it.reason !== "recent" && (
+                  {it.reason === "follow" && (
                     <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {it.reason === "follow" ? "팔로잉" : "결이 닿아요"}
+                      팔로잉
                     </span>
                   )}
                 </div>
