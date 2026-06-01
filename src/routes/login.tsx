@@ -135,7 +135,7 @@ function LoginPage() {
     <main className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <Link to="/" className="block text-center mb-12">
-          <h1 className="font-serif text-5xl tracking-tighter text-foreground">결</h1>
+          <h1 className="font-serif text-5xl tracking-tight text-foreground">Ditto</h1>
           <p className="mt-3 text-sm text-muted-foreground">사진 한 장으로 답하는 공간</p>
         </Link>
 
