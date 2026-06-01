@@ -93,7 +93,7 @@ function AnswerPage() {
             <span className="text-[11px] uppercase tracking-widest text-accent">
               {question.category}
             </span>
-            <h2 className="font-serif text-3xl mt-2 leading-snug text-balance">{question.text}</h2>
+            <h2 className="font-serif text-3xl mt-2 leading-snug text-balance break-keep [word-break:keep-all]">{question.text}</h2>
           </div>
         )}
 
