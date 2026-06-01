@@ -89,7 +89,7 @@ function UserList({
               className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl"
             >
               {u.avatar_url ? (
-                <img
+                <StorageImg
                   src={u.avatar_url}
                   alt=""
                   className="size-11 rounded-full object-cover border border-border"
