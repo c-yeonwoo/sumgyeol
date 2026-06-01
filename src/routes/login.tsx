@@ -44,7 +44,7 @@ function LoginPage() {
           setConfirmSent(true);
           return;
         }
-        toast.success("가입이 완료되었어요. 결을 만들러 가볼까요?");
+        toast.success("가입이 완료되었어요. 숨결을 시작해 볼까요?");
         navigate({ to: "/home" });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
