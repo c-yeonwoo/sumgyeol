@@ -18,11 +18,11 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated.notifications'
-import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated.me'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
 import { Route as AuthenticatedGridRouteImport } from './routes/_authenticated.grid'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
 import { Route as AuthenticatedBacklogRouteImport } from './routes/_authenticated.backlog'
+import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated.me.index'
 import { Route as AuthenticatedUHandleRouteImport } from './routes/_authenticated.u.$handle'
 import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_authenticated.question.$questionId'
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
@@ -78,11 +78,6 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedMeRoute = AuthenticatedMeRouteImport.update({
-  id: '/me',
-  path: '/me',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -103,6 +98,11 @@ const AuthenticatedBacklogRoute = AuthenticatedBacklogRouteImport.update({
   path: '/backlog',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMeIndexRoute = AuthenticatedMeIndexRouteImport.update({
+  id: '/me/',
+  path: '/me/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedUHandleRoute = AuthenticatedUHandleRouteImport.update({
   id: '/u/$handle',
   path: '/u/$handle',
@@ -115,14 +115,14 @@ const AuthenticatedQuestionQuestionIdRoute =
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedMeEditRoute = AuthenticatedMeEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => AuthenticatedMeRoute,
+  id: '/me/edit',
+  path: '/me/edit',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedMeBlockedRoute = AuthenticatedMeBlockedRouteImport.update({
-  id: '/blocked',
-  path: '/blocked',
-  getParentRoute: () => AuthenticatedMeRoute,
+  id: '/me/blocked',
+  path: '/me/blocked',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAnswerQuestionIdRoute =
   AuthenticatedAnswerQuestionIdRouteImport.update({
@@ -166,7 +166,6 @@ export interface FileRoutesByFullPath {
   '/feed': typeof AuthenticatedFeedRoute
   '/grid': typeof AuthenticatedGridRoute
   '/home': typeof AuthenticatedHomeRoute
-  '/me': typeof AuthenticatedMeRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
@@ -176,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/me/edit': typeof AuthenticatedMeEditRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/me/': typeof AuthenticatedMeIndexRoute
   '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
   '/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
@@ -190,7 +190,6 @@ export interface FileRoutesByTo {
   '/feed': typeof AuthenticatedFeedRoute
   '/grid': typeof AuthenticatedGridRoute
   '/home': typeof AuthenticatedHomeRoute
-  '/me': typeof AuthenticatedMeRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
@@ -200,6 +199,7 @@ export interface FileRoutesByTo {
   '/me/edit': typeof AuthenticatedMeEditRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/me': typeof AuthenticatedMeIndexRoute
   '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
   '/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
@@ -216,7 +216,6 @@ export interface FileRoutesById {
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/grid': typeof AuthenticatedGridRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
-  '/_authenticated/me': typeof AuthenticatedMeRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
@@ -226,6 +225,7 @@ export interface FileRoutesById {
   '/_authenticated/me/edit': typeof AuthenticatedMeEditRoute
   '/_authenticated/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/_authenticated/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
+  '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
   '/_authenticated/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
   '/_authenticated/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
@@ -242,7 +242,6 @@ export interface FileRouteTypes {
     | '/feed'
     | '/grid'
     | '/home'
-    | '/me'
     | '/notifications'
     | '/onboarding'
     | '/answer-detail/$answerId'
@@ -252,6 +251,7 @@ export interface FileRouteTypes {
     | '/me/edit'
     | '/question/$questionId'
     | '/u/$handle'
+    | '/me/'
     | '/u/$handle/followers'
     | '/u/$handle/following'
   fileRoutesByTo: FileRoutesByTo
@@ -266,7 +266,6 @@ export interface FileRouteTypes {
     | '/feed'
     | '/grid'
     | '/home'
-    | '/me'
     | '/notifications'
     | '/onboarding'
     | '/answer-detail/$answerId'
@@ -276,6 +275,7 @@ export interface FileRouteTypes {
     | '/me/edit'
     | '/question/$questionId'
     | '/u/$handle'
+    | '/me'
     | '/u/$handle/followers'
     | '/u/$handle/following'
   id:
@@ -291,7 +291,6 @@ export interface FileRouteTypes {
     | '/_authenticated/feed'
     | '/_authenticated/grid'
     | '/_authenticated/home'
-    | '/_authenticated/me'
     | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/answer-detail/$answerId'
@@ -301,6 +300,7 @@ export interface FileRouteTypes {
     | '/_authenticated/me/edit'
     | '/_authenticated/question/$questionId'
     | '/_authenticated/u/$handle'
+    | '/_authenticated/me/'
     | '/_authenticated/u/$handle/followers'
     | '/_authenticated/u/$handle/following'
   fileRoutesById: FileRoutesById
@@ -380,13 +380,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/me': {
-      id: '/_authenticated/me'
-      path: '/me'
-      fullPath: '/me'
-      preLoaderRoute: typeof AuthenticatedMeRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -415,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBacklogRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/me/': {
+      id: '/_authenticated/me/'
+      path: '/me'
+      fullPath: '/me/'
+      preLoaderRoute: typeof AuthenticatedMeIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/u/$handle': {
       id: '/_authenticated/u/$handle'
       path: '/u/$handle'
@@ -431,17 +431,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/me/edit': {
       id: '/_authenticated/me/edit'
-      path: '/edit'
+      path: '/me/edit'
       fullPath: '/me/edit'
       preLoaderRoute: typeof AuthenticatedMeEditRouteImport
-      parentRoute: typeof AuthenticatedMeRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/me/blocked': {
       id: '/_authenticated/me/blocked'
-      path: '/blocked'
+      path: '/me/blocked'
       fullPath: '/me/blocked'
       preLoaderRoute: typeof AuthenticatedMeBlockedRouteImport
-      parentRoute: typeof AuthenticatedMeRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/answer/$questionId': {
       id: '/_authenticated/answer/$questionId'
@@ -481,20 +481,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedMeRouteChildren {
-  AuthenticatedMeBlockedRoute: typeof AuthenticatedMeBlockedRoute
-  AuthenticatedMeEditRoute: typeof AuthenticatedMeEditRoute
-}
-
-const AuthenticatedMeRouteChildren: AuthenticatedMeRouteChildren = {
-  AuthenticatedMeBlockedRoute: AuthenticatedMeBlockedRoute,
-  AuthenticatedMeEditRoute: AuthenticatedMeEditRoute,
-}
-
-const AuthenticatedMeRouteWithChildren = AuthenticatedMeRoute._addFileChildren(
-  AuthenticatedMeRouteChildren,
-)
-
 interface AuthenticatedUHandleRouteChildren {
   AuthenticatedUHandleFollowersRoute: typeof AuthenticatedUHandleFollowersRoute
   AuthenticatedUHandleFollowingRoute: typeof AuthenticatedUHandleFollowingRoute
@@ -513,14 +499,16 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedGridRoute: typeof AuthenticatedGridRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedMeRoute: typeof AuthenticatedMeRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedAnswerDetailAnswerIdRoute: typeof AuthenticatedAnswerDetailAnswerIdRoute
   AuthenticatedAnswerEditAnswerIdRoute: typeof AuthenticatedAnswerEditAnswerIdRoute
   AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
+  AuthenticatedMeBlockedRoute: typeof AuthenticatedMeBlockedRoute
+  AuthenticatedMeEditRoute: typeof AuthenticatedMeEditRoute
   AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
   AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRouteWithChildren
+  AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -528,15 +516,17 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedGridRoute: AuthenticatedGridRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
-  AuthenticatedMeRoute: AuthenticatedMeRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedAnswerDetailAnswerIdRoute:
     AuthenticatedAnswerDetailAnswerIdRoute,
   AuthenticatedAnswerEditAnswerIdRoute: AuthenticatedAnswerEditAnswerIdRoute,
   AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
+  AuthenticatedMeBlockedRoute: AuthenticatedMeBlockedRoute,
+  AuthenticatedMeEditRoute: AuthenticatedMeEditRoute,
   AuthenticatedQuestionQuestionIdRoute: AuthenticatedQuestionQuestionIdRoute,
   AuthenticatedUHandleRoute: AuthenticatedUHandleRouteWithChildren,
+  AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -555,3 +545,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
