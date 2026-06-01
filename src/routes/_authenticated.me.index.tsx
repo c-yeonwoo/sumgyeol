@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { generatePersonaRead } from "@/lib/persona.functions";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/me")({
+export const Route = createFileRoute("/_authenticated/me/")({
   head: () => ({ meta: [{ title: "내 결 — 결" }] }),
   component: MePage,
 });
