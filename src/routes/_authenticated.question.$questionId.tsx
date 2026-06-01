@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/question/$questionId")({
-  head: () => ({ meta: [{ title: "질문 — 결" }] }),
+  head: () => ({ meta: [{ title: "질문 — 숨결" }] }),
   component: QuestionPage,
   errorComponent: ({ error }) => (
     <div className="p-8 text-sm text-muted-foreground">

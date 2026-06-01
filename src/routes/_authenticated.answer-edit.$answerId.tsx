@@ -9,7 +9,7 @@ import { StorageImg } from "@/components/storage-img";
 import { extractAnswersPath } from "@/lib/storage-url";
 
 export const Route = createFileRoute("/_authenticated/answer-edit/$answerId")({
-  head: () => ({ meta: [{ title: "결 수정 — 결" }] }),
+  head: () => ({ meta: [{ title: "결 수정 — 숨결" }] }),
   component: AnswerEditPage,
 });
 

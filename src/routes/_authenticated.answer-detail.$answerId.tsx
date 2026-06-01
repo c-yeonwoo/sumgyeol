@@ -10,7 +10,7 @@ import { StorageImg } from "@/components/storage-img";
 
 
 export const Route = createFileRoute("/_authenticated/answer-detail/$answerId")({
-  head: () => ({ meta: [{ title: "결 — 결" }] }),
+  head: () => ({ meta: [{ title: "결 — 숨결" }] }),
   component: AnswerDetailPage,
 });
 
