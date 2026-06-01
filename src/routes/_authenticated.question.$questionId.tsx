@@ -60,7 +60,7 @@ function QuestionPage() {
         </h1>
         {data?.answers && (
           <p className="text-[11px] text-muted-foreground mt-3">
-            {data.answers.length}개의 결
+            {data.answers.length}개의 숨
           </p>
         )}
       </header>
@@ -85,7 +85,7 @@ function QuestionPage() {
               params={{ questionId }}
               className="inline-block text-xs underline underline-offset-4"
             >
-              첫 결을 남겨보세요 →
+              첫 숨을 남겨보세요 →
             </Link>
           </div>
         ) : (

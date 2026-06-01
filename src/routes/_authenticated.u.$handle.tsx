@@ -253,7 +253,7 @@ function UserProfilePage() {
         {data.isBlocked ? (
           <div className="text-center py-10">
             <p className="text-sm text-muted-foreground">
-              차단한 사용자예요. 결을 보지 않으려면 차단을 유지하세요.
+              차단한 사용자예요. 숨을 보지 않으려면 차단을 유지하세요.
             </p>
             <button
               onClick={() => toggleBlock.mutate()}

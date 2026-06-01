@@ -52,7 +52,7 @@ function OnboardingPage() {
         .eq("id", uid);
       if (error) throw error;
 
-      toast.success("결을 시작해 볼까요?");
+      toast.success("숨결을 시작해 볼까요?");
       navigate({ to: "/home" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "다시 시도해 주세요.");
@@ -67,7 +67,7 @@ function OnboardingPage() {
         <div className="text-center mb-10">
           <h1 className="font-serif text-3xl">반가워요</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            결에서 사용할 이름을 정해 주세요.
+            숨결에서 사용할 이름을 정해 주세요.
           </p>
         </div>
 

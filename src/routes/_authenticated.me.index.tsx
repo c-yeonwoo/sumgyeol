@@ -175,7 +175,7 @@ function MePage() {
           ) : canGenerate ? (
             <div>
               <p className="text-sm text-muted-foreground mb-4">
-                지금까지 모은 {answerCount}개의 결로 당신을 읽어드릴게요.
+                지금까지 모은 {answerCount}번의 숨으로 당신의 결을 읽어드릴게요.
               </p>
               <button
                 onClick={() => generate.mutate()}
@@ -187,7 +187,7 @@ function MePage() {
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              {3 - answerCount}개 더 답하시면 당신의 결을 읽어드릴게요.
+              {3 - answerCount}번 더 숨을 남기시면 당신의 결을 읽어드릴게요.
             </p>
           )}
         </div>
@@ -205,7 +205,7 @@ function MePage() {
             <Link to="/home" className="underline underline-offset-4">
               새 질문
             </Link>
-            에 첫 결을 남겨보세요.
+            에 첫 숨을 남겨보세요.
           </p>
         ) : (
           <div className="grid grid-cols-3 gap-1.5">
