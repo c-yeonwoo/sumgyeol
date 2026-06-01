@@ -80,7 +80,7 @@ function BlockedListPage() {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {b.profile?.avatar_url ? (
-                    <img
+                    <StorageImg
                       src={b.profile.avatar_url}
                       alt=""
                       className="size-9 rounded-full object-cover border border-border"
