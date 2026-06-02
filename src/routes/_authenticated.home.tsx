@@ -57,7 +57,7 @@ function HomePage() {
   return (
     <main>
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border">
-        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">오늘</span>
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">숨:결</span>
         <h1 className="font-serif text-2xl tracking-tight mt-1">오늘의 숨</h1>
       </header>
 
