@@ -5,11 +5,26 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && npm run build:mobile:assets",
+    "start": "vite",
     "build:dev": "vite build --mode development",
+    "build:mobile:assets": "node scripts/generate-mobile-web-index.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "release:preflight": "node scripts/release-preflight.mjs",
+    "cap:sync": "npx cap sync",
+    "cap:sync:ios": "npx cap sync ios",
+    "cap:sync:android": "npx cap sync android",
+    "cap:add:ios": "npx cap add ios",
+    "cap:add:android": "npx cap add android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:open:android": "npx cap open android",
+    "cap:build:ios": "npm run build && npx cap sync ios",
+    "cap:build:android": "npm run build && npx cap sync android",
+    "cap:build": "npm run build && npx cap sync",
+    "release:ios": "npm run release:preflight && npm run cap:build:ios",
+    "release:android": "npm run release:preflight && npm run cap:build:android"
   },
   "dependencies": {
     "@capacitor/camera": "^8.2.0",
