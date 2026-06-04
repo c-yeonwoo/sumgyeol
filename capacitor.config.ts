@@ -4,7 +4,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * Capacitor config for packaging 결 as an iOS app.
  *
  * Two modes:
- * 1) Production-like build (default): set `webDir` and run `bun run build`,
+ * 1) Production-like build (default): set `webDir` and run `npm run build`,
  *    then `npx cap sync ios`. The built static assets are bundled into the app.
  * 2) Live-reload during development: uncomment `server.url` below and point
  *    it at your dev server / Lovable preview URL.
@@ -19,7 +19,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const config: CapacitorConfig = {
   appId: "app.gyeol.client",
   appName: "결",
-  webDir: "dist",
+  webDir: "dist/client",
   bundledWebRuntime: false,
   ios: {
     infoPlist: {
