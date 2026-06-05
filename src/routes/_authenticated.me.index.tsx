@@ -94,11 +94,8 @@ function MePage() {
           <div className="size-20 rounded-full bg-surface border border-border mb-4" />
         )}
         <h2 className="font-serif text-2xl">
-          {data?.profile?.display_name ?? "..."}의 결
+          {data?.profile?.display_name ?? "..."}
         </h2>
-        {data?.profile?.handle && (
-          <p className="text-[12px] text-muted-foreground mt-1">@{data.profile.handle}</p>
-        )}
         {data?.profile?.bio && (
           <p className="text-[14px] text-foreground/80 mt-3 max-w-sm text-pretty">
             {data.profile.bio}
