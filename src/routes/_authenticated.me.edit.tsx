@@ -226,7 +226,7 @@ function EditProfilePage() {
             maxLength={160}
             rows={3}
             className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground resize-none"
-            placeholder="당신의 결을 한 문장으로 소개해 주세요."
+            placeholder="당신을 한 문장으로 소개해 주세요."
           />
         </Field>
       </section>

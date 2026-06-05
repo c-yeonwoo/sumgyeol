@@ -23,24 +23,28 @@ function FollowingPage() {
 
       const { data: rows } = await supabase
         .from("follows")
-        .select("following_id, profiles!follows_following_id_fkey(handle, display_name, avatar_url, bio)")
+        .select("following_id, created_at")
         .eq("follower_id", profile.id)
         .order("created_at", { ascending: false });
 
-      return {
-        users: (rows ?? []).map((r: any) => r.profiles).filter(Boolean),
-      };
+      const ids = (rows ?? []).map((r: any) => r.following_id);
+      if (ids.length === 0) return { users: [] };
+
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, handle, display_name, avatar_url, bio")
+        .in("id", ids);
+
+      const byId = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const users = ids.map((id) => byId.get(id)).filter(Boolean);
+      return { users };
     },
   });
 
   return (
     <main className="pb-20">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border flex items-center justify-between">
-        <Link
-          to="/u/$handle"
-          params={{ handle }}
-          className="text-sm text-muted-foreground"
-        >
+        <Link to="/u/$handle" params={{ handle }} className="text-sm text-muted-foreground">
           ←
         </Link>
         <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -80,12 +84,11 @@ function FollowingPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="text-[14px] font-medium truncate">
-                      {u.display_name ?? u.handle}
+                      {u.display_name ?? "사용자"}
                     </div>
-                    <div className="text-[12px] text-muted-foreground truncate">
-                      @{u.handle}
-                      {u.bio ? ` · ${u.bio}` : ""}
-                    </div>
+                    {u.bio && (
+                      <div className="text-[12px] text-muted-foreground truncate">{u.bio}</div>
+                    )}
                   </div>
                 </Link>
               </li>
