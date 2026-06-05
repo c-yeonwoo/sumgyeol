@@ -205,7 +205,7 @@ function UserProfilePage() {
         ) : (
           <div className="size-20 rounded-full bg-surface border border-border mb-4" />
         )}
-        <h2 className="font-serif text-2xl">{p.display_name ?? p.handle}의 결</h2>
+        <h2 className="font-serif text-2xl">{p.display_name ?? p.handle}</h2>
         {p.bio && (
           <p className="text-[14px] text-foreground/80 mt-3 max-w-sm text-pretty">
             {p.bio}
