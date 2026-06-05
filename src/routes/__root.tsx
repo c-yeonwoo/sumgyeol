@@ -64,7 +64,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" },
-      { title: "숨결" },
+      { title: "숨결 — 하루 한 장의 숨" },
       { name: "description", content: "숨 쉬듯 가볍게, 하루 한 장. 당신의 숨이 모여 결이 됩니다." },
       { name: "theme-color", content: "#F9F8F6" },
       { property: "og:title", content: "숨결" },
