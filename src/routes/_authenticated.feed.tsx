@@ -221,11 +221,6 @@ function FeedPage() {
                       </span>
                     )}
                   </div>
-                  {it.reason === "follow" && (
-                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                      팔로잉
-                    </span>
-                  )}
                 </div>
 
                 {it.questions && (
