@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
+import logoSymbol from "@/assets/logo-symbol-frame.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
