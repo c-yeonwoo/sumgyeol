@@ -33,7 +33,13 @@
   --color-ring-offset-background: var(--background);
   --font-serif: 'Nanum Myeongjo', ui-serif, Georgia, serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Subtle depth — keep restrained, gallery aesthetic */
+  --shadow-xs: 0 1px 2px oklch(0.22 0.01 50 / 0.04);
+  --shadow-sm: 0 1px 2px oklch(0.22 0.01 50 / 0.04), 0 2px 6px oklch(0.22 0.01 50 / 0.04);
+  --shadow-md: 0 2px 4px oklch(0.22 0.01 50 / 0.05), 0 8px 20px oklch(0.22 0.01 50 / 0.05);
+  --shadow-nav: 0 -1px 2px oklch(0.22 0.01 50 / 0.03), 0 -8px 24px oklch(0.22 0.01 50 / 0.04);
 }
+
 
 :root {
   --radius: 0.75rem;
@@ -98,4 +104,19 @@
   .font-serif {
     font-family: var(--font-serif);
   }
+
+  /* Subtle elevation across surfaces — applied globally so cards/icons/nav
+     all gain a small, consistent depth without touching every component. */
+  .bg-surface {
+    box-shadow: var(--shadow-xs);
+  }
+  .bg-card {
+    box-shadow: var(--shadow-sm);
+  }
+  /* Soft lift on rounded avatar-like icon containers */
+  .rounded-full.bg-surface,
+  .rounded-full.bg-muted {
+    box-shadow: var(--shadow-xs);
+  }
 }
+
