@@ -29,12 +29,11 @@ function EditProfilePage() {
     queryFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user!.id;
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", uid)
-        .maybeSingle();
-      return { uid, profile: data };
+      const [{ data }, { data: settings }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
+        supabase.from("user_settings").select("gender").eq("user_id", uid).maybeSingle(),
+      ]);
+      return { uid, profile: data, gender: settings?.gender ?? "" };
     },
   });
 
