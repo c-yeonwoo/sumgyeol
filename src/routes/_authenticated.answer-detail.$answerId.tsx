@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Heart, Flag, Pencil } from "lucide-react";
+import { Heart, Flag, Pencil, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReportDialog } from "@/components/report-dialog";
@@ -218,7 +218,7 @@ function AnswerDetailPage() {
           )}
         </div>
 
-        <div className="mt-5 flex items-center gap-2">
+        <div className="mt-5 flex items-center gap-4">
           <button
             onClick={() => toggleLike.mutate()}
             disabled={toggleLike.isPending}
@@ -226,18 +226,24 @@ function AnswerDetailPage() {
             aria-label={data.liked ? "좋아요 취소" : "좋아요"}
           >
             <Heart
-              size={20}
+              size={22}
               className={data.liked ? "fill-accent text-accent" : ""}
             />
             <span className="tabular-nums">{data.likeCount}</span>
           </button>
+          <a
+            href="#comments"
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="댓글"
+          >
+            <MessageCircle size={22} />
+            <span className="tabular-nums">{visibleComments.length}</span>
+          </a>
         </div>
       </section>
 
-      <section className="px-6 pb-10">
-        <h3 className="text-[11px] uppercase tracking-widest text-muted-foreground mb-4">
-          댓글 {visibleComments.length}
-        </h3>
+      <section id="comments" className="px-6 pb-10">
+
 
 
         <ul className="space-y-3 mb-5">
