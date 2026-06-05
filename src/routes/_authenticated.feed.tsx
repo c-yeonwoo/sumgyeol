@@ -135,7 +135,7 @@ function FeedPage() {
 
   return (
     <main>
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border flex items-end justify-between gap-3">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 pt-3 pb-4 border-b border-border flex items-start justify-between gap-3">
         <div>
           <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
             피드
@@ -145,7 +145,7 @@ function FeedPage() {
         <Link
           to="/notifications"
           aria-label="알림"
-          className="p-2 -m-2 text-muted-foreground hover:text-foreground"
+          className="p-2 -mt-1 -mr-2 text-muted-foreground hover:text-foreground"
         >
           <Bell className="size-5" strokeWidth={1.5} />
         </Link>

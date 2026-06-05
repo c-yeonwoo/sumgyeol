@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedIds } from "@/lib/blocks";
@@ -71,22 +71,13 @@ function GridPage() {
   return (
     <main>
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border space-y-4">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
-              탐색
-            </span>
-            <h2 className="font-serif text-xl mt-1 leading-snug">
-              키워드로 질문 찾기
-            </h2>
-          </div>
-          <Link
-            to="/notifications"
-            aria-label="알림"
-            className="p-2 -m-2 text-muted-foreground hover:text-foreground"
-          >
-            <Bell className="size-5" strokeWidth={1.5} />
-          </Link>
+        <div>
+          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            탐색
+          </span>
+          <h2 className="font-serif text-xl mt-1 leading-snug">
+            키워드로 질문 찾기
+          </h2>
         </div>
         <div className="relative">
           <Search
