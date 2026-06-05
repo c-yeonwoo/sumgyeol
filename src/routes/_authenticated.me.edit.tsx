@@ -50,7 +50,7 @@ function EditProfilePage() {
       setDisplayName(profile.profile.display_name ?? "");
       setHandle(profile.profile.handle ?? "");
       setBio(profile.profile.bio ?? "");
-      setGender((profile.profile as any).gender ?? "");
+      setGender(profile.gender ?? "");
       setAvatarUrl(profile.profile.avatar_url ?? null);
     }
   }, [profile]);
