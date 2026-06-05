@@ -50,7 +50,7 @@ function TabBar({ pathname }: { pathname: string }) {
   ];
   return (
     <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background/85 backdrop-blur-xl border-t border-border flex justify-around items-center px-10 z-40"
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background border-t border-border flex justify-around items-center px-10 z-40 shadow-nav"
       style={{
         height: "calc(3rem + env(safe-area-inset-bottom))",
         paddingBottom: "env(safe-area-inset-bottom)",
