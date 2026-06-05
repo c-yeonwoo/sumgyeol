@@ -16,32 +16,35 @@ function FollowersPage() {
     queryFn: async () => {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id, display_name")
+        .select("id")
         .eq("handle", handle)
         .maybeSingle();
-      if (!profile) return { profile: null, users: [] };
+      if (!profile) return { users: [] };
 
       const { data: rows } = await supabase
         .from("follows")
-        .select("follower_id, profiles!follows_follower_id_fkey(handle, display_name, avatar_url, bio)")
+        .select("follower_id, created_at")
         .eq("following_id", profile.id)
         .order("created_at", { ascending: false });
 
-      return {
-        profile,
-        users: (rows ?? []).map((r: any) => r.profiles).filter(Boolean),
-      };
+      const ids = (rows ?? []).map((r: any) => r.follower_id);
+      if (ids.length === 0) return { users: [] };
+
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, handle, display_name, avatar_url, bio")
+        .in("id", ids);
+
+      const byId = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const users = ids.map((id) => byId.get(id)).filter(Boolean);
+      return { users };
     },
   });
 
   return (
     <main className="pb-20">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border flex items-center justify-between">
-        <Link
-          to="/u/$handle"
-          params={{ handle }}
-          className="text-sm text-muted-foreground"
-        >
+        <Link to="/u/$handle" params={{ handle }} className="text-sm text-muted-foreground">
           ←
         </Link>
         <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -50,7 +53,7 @@ function FollowersPage() {
         <span className="w-6" />
       </header>
 
-      <UserList isLoading={isLoading} users={data?.users ?? []} emptyText="아직 팔로워가 없어요." />
+      <UserList isLoading={isLoading} users={(data?.users ?? []) as any} emptyText="아직 팔로워가 없어요." />
     </main>
   );
 }
@@ -74,9 +77,7 @@ function UserList({
     );
   }
   if (users.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground text-center py-16">{emptyText}</p>
-    );
+    return <p className="text-sm text-muted-foreground text-center py-16">{emptyText}</p>;
   }
   return (
     <ul className="px-2 py-4">
@@ -99,12 +100,11 @@ function UserList({
               )}
               <div className="flex-1 min-w-0">
                 <div className="text-[14px] font-medium truncate">
-                  {u.display_name ?? u.handle}
+                  {u.display_name ?? "사용자"}
                 </div>
-                <div className="text-[12px] text-muted-foreground truncate">
-                  @{u.handle}
-                  {u.bio ? ` · ${u.bio}` : ""}
-                </div>
+                {u.bio && (
+                  <div className="text-[12px] text-muted-foreground truncate">{u.bio}</div>
+                )}
               </div>
             </Link>
           </li>
