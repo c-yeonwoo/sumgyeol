@@ -30,7 +30,10 @@ function AuthenticatedLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-md mx-auto min-h-screen relative pb-16">
+      <div
+        className="max-w-md mx-auto min-h-screen relative"
+        style={{ paddingBottom: "calc(4rem + env(safe-area-inset-bottom))" }}
+      >
         <Outlet />
         {!hideTabs && <TabBar pathname={location.pathname} />}
       </div>
@@ -46,7 +49,13 @@ function TabBar({ pathname }: { pathname: string }) {
     { to: "/me", label: "나" },
   ];
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-12 bg-background/85 backdrop-blur-xl border-t border-border flex justify-around items-center px-10 z-40">
+    <nav
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background/85 backdrop-blur-xl border-t border-border flex justify-around items-center px-10 z-40"
+      style={{
+        height: "calc(3rem + env(safe-area-inset-bottom))",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+    >
       {items.map((it) => {
         const active = pathname === it.to;
         return (
