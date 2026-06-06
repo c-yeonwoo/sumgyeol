@@ -81,11 +81,11 @@ function InvitePage() {
         <footer className="space-y-3">
           <Link
             to="/login"
-            search={{ invite: questionId } as any}
             className="block w-full text-center bg-foreground text-background rounded-md py-3.5 text-sm font-medium"
           >
             가입하고 답해보기
           </Link>
+
           <Link
             to="/login"
             className="block w-full text-center text-xs text-muted-foreground py-2"
