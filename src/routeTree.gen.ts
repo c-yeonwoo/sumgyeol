@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InviteQuestionIdRouteImport } from './routes/invite.$questionId'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated.notifications'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
@@ -65,6 +66,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteQuestionIdRoute = InviteQuestionIdRouteImport.update({
+  id: '/invite/$questionId',
+  path: '/invite/$questionId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/invite/$questionId': typeof InviteQuestionIdRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
   '/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/invite/$questionId': typeof InviteQuestionIdRoute
   '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
   '/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/invite/$questionId': typeof InviteQuestionIdRoute
   '/_authenticated/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
   '/_authenticated/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
   '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/notifications'
     | '/onboarding'
+    | '/invite/$questionId'
     | '/answer-detail/$answerId'
     | '/answer-edit/$answerId'
     | '/answer/$questionId'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/notifications'
     | '/onboarding'
+    | '/invite/$questionId'
     | '/answer-detail/$answerId'
     | '/answer-edit/$answerId'
     | '/answer/$questionId'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
+    | '/invite/$questionId'
     | '/_authenticated/answer-detail/$answerId'
     | '/_authenticated/answer-edit/$answerId'
     | '/_authenticated/answer/$questionId'
@@ -313,6 +325,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
+  InviteQuestionIdRoute: typeof InviteQuestionIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$questionId': {
+      id: '/invite/$questionId'
+      path: '/invite/$questionId'
+      fullPath: '/invite/$questionId'
+      preLoaderRoute: typeof InviteQuestionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/onboarding': {
@@ -541,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
+  InviteQuestionIdRoute: InviteQuestionIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
