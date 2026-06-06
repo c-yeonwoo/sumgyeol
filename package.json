@@ -28,6 +28,7 @@
     "release:android": "npm run release:preflight && npm run cap:build:android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.0",
     "@capacitor/camera": "^8.2.0",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
