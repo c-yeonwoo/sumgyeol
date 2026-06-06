@@ -28,21 +28,44 @@ function findMainIndex() {
 
   if (files.length === 0) return null;
 
-  const indexFromVite = (() => {
-    if (!fs.existsSync(distDir)) return null;
-    const rootIndexPath = path.join(distDir, "index.html");
-    if (!fs.existsSync(rootIndexPath)) return null;
-    const html = fs.readFileSync(rootIndexPath, "utf8");
-    const match = html.match(/<script[^>]+src=["']\.\/assets\/([^"']*index-[^"']+\.js)["']/);
-    if (!match) return null;
-    const candidate = match[1];
-    const candidatePath = path.join(assetsDir, candidate);
-    if (fs.existsSync(candidatePath)) return candidate;
-    return null;
-  })();
+  const appCandidate = files
+    .map((file) => {
+      const mapPath = `${file.path}.map`;
+      if (!fs.existsSync(mapPath)) {
+        return { name: file.name, size: file.size, score: 0, sourceCount: 0 };
+      }
 
-  if (indexFromVite) {
-    return indexFromVite;
+      try {
+        const map = JSON.parse(fs.readFileSync(mapPath, "utf8"));
+        const sources = Array.isArray(map.sources) ? map.sources : [];
+        const sourceCount = sources.length;
+        const hasSrc =
+          sources.some((source) =>
+            source.includes("/src/") || source.includes("../../../src/"),
+          ) ?? false;
+
+        let score = 0;
+        if (hasSrc) score += 5;
+        if (sources.some((source) => source.includes("src/router.tsx"))) score += 4;
+        if (sources.some((source) => source.includes("src/start.ts"))) score += 3;
+        if (sources.some((source) => source.includes("src/routes"))) score += 2;
+        if (sourceCount > 150) score += 1;
+
+        return { name: file.name, size: file.size, score, sourceCount };
+      } catch (_error) {
+        return { name: file.name, size: file.size, score: 0, sourceCount: 0 };
+      }
+    })
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.sourceCount !== a.sourceCount) return b.sourceCount - a.sourceCount;
+      if (b.size !== a.size) return b.size - a.size;
+      return 0;
+    });
+
+  if (appCandidate.length > 0) {
+    return appCandidate[0].name;
   }
 
   files.sort((a, b) => b.mtimeMs - a.mtimeMs || b.size - a.size);
@@ -75,40 +98,6 @@ function createIndexHtml(mainScriptName) {
       const nextUrl = new URL(window.location.href);
       nextUrl.pathname = "/";
       window.history.replaceState({}, "", nextUrl.pathname + nextUrl.search + nextUrl.hash);
-
-      const existingState = window.$_TSR;
-      if (!existingState) {
-        window.$_TSR = {
-          h() {
-            this.hydrated = true;
-            this.c();
-          },
-          e() {
-            this.streamEnded = true;
-            this.c();
-          },
-          c() {
-            if (this.hydrated && this.streamEnded) {
-              delete window.$_TSR;
-              window.$R && delete window.$R.tsr;
-            }
-          },
-          p(script) {
-            if (!this.initialized) {
-              this.buffer.push(script);
-            } else {
-              script();
-            }
-          },
-          buffer: [],
-          router: {
-            matches: [{ i: "/" }],
-            lastMatchId: "/",
-            manifest: { routes: {} },
-            dehydratedData: {},
-          },
-        };
-      }
     })();
   </script>`;
 

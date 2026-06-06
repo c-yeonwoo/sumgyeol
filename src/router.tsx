@@ -21,76 +21,6 @@ function normalizeInitialPath() {
 
 normalizeInitialPath();
 
-function ensureTsrFallback(router: any) {
-  if (typeof window === "undefined") return;
-
-  const existingState = (window as any).$_TSR;
-  if (existingState?.router) return;
-
-  try {
-    const fallbackTsr: any = {
-      h() {
-        this.hydrated = true;
-        this.c();
-      },
-      e() {
-        this.streamEnded = true;
-        this.c();
-      },
-      c() {
-        if (this.hydrated && this.streamEnded) {
-          if (typeof window !== "undefined") {
-            delete (window as any).$_TSR;
-            const seroval = (window as any).$R;
-            if (seroval && typeof seroval === "object") {
-              delete seroval.tsr;
-            }
-          }
-        }
-      },
-      p(script: () => void) {
-        if (!this.initialized) {
-          this.buffer.push(script);
-        } else {
-          script();
-        }
-      },
-      buffer: [] as Array<() => void>,
-    };
-
-
-    const resolvedMatches =
-      router.matchRoutes(router.stores.location.get()) ??
-      router.matchRoutes("/") ??
-      [];
-
-    const matches = resolvedMatches.length
-      ? resolvedMatches
-      : (() => {
-          const hasRoot = Object.prototype.hasOwnProperty.call(
-            router.looseRoutesById,
-            "/",
-          );
-          return hasRoot ? [{ routeId: "/" }] : [];
-        })();
-    if (!matches.length) return;
-
-    const serializedMatches = matches.map((match: any) => ({ i: match.routeId }));
-
-    (window as any).$_TSR = {
-      ...fallbackTsr,
-      router: {
-        matches: serializedMatches,
-        lastMatchId: serializedMatches[serializedMatches.length - 1].i,
-        manifest: { routes: {} },
-        dehydratedData: {},
-      },
-    };
-  } catch (error) {
-    console.error("[router] failed to prepare SSR fallback payload", error);
-  }
-}
-
 export const getRouter = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -112,8 +42,6 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreloadStaleTime: 30_000,
   });
-
-  ensureTsrFallback(router);
 
   return router;
 };
