@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { CategoryBadge, CategoryFilterChip } from "@/components/category-badge";
-import { NudgeDialog } from "@/components/nudge-dialog";
 
 type Search = { category?: string };
 
