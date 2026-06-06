@@ -41,8 +41,8 @@ function NotificationsBell() {
   const { data: unread } = useQuery({
     queryKey: ["nudges-unread-count"],
     queryFn: async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      const me = userData.user?.id;
+      const { data: sessionData } = await supabase.auth.getSession();
+      const me = sessionData.session?.user?.id;
       if (!me) return 0;
       const { count } = await supabase
         .from("nudges")
@@ -51,6 +51,7 @@ function NotificationsBell() {
         .eq("status", "pending");
       return count ?? 0;
     },
+    staleTime: 30_000,
     refetchOnWindowFocus: true,
   });
 
