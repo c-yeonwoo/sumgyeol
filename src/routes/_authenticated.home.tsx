@@ -140,13 +140,6 @@ function HomePage() {
               </Link>
               <button
                 type="button"
-                onClick={() => setNudgeOpen(true)}
-                className="text-[13px] text-foreground underline underline-offset-4"
-              >
-                친구의 결이 궁금해요 →
-              </button>
-              <button
-                type="button"
                 onClick={handleSkip}
                 disabled={skipping}
                 className="text-[13px] text-muted-foreground underline underline-offset-4 disabled:opacity-50"
@@ -154,12 +147,6 @@ function HomePage() {
                 {skipping ? "다른 질문을 찾는 중…" : "이 질문은 다음에 답할게요"}
               </button>
             </div>
-            <NudgeDialog
-              open={nudgeOpen}
-              onClose={() => setNudgeOpen(false)}
-              questionId={data.question.id}
-              questionText={data.question.text}
-            />
           </>
         )}
       </section>
