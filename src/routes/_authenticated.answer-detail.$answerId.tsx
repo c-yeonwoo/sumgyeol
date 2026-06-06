@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CategoryBadge } from "@/components/category-badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Heart, Flag, Pencil, MessageCircle } from "lucide-react";
+import { Heart, Flag, Pencil, MessageCircle, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReportDialog } from "@/components/report-dialog";
