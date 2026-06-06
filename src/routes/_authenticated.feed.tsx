@@ -267,34 +267,3 @@ function FeedPage() {
     </main>
   );
 }
-
-function NotificationsBell() {
-  const { data: unread } = useQuery({
-    queryKey: ["nudges-unread-count"],
-    queryFn: async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      const me = userData.user?.id;
-      if (!me) return 0;
-      const { count } = await supabase
-        .from("nudges")
-        .select("id", { count: "exact", head: true })
-        .eq("receiver_id", me)
-        .eq("status", "pending");
-      return count ?? 0;
-    },
-    refetchOnWindowFocus: true,
-  });
-
-  return (
-    <Link
-      to="/notifications"
-      aria-label="알림"
-      className="relative p-2 -mr-2 text-muted-foreground hover:text-foreground"
-    >
-      <Bell className="size-5" strokeWidth={1.5} />
-      {!!unread && unread > 0 && (
-        <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-accent" />
-      )}
-    </Link>
-  );
-}
