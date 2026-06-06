@@ -90,6 +90,8 @@ function FeedPage() {
           .neq("user_id", uid)
           .order("created_at", { ascending: false })
           .limit(80),
+
+
         supabase
           .from("questions")
           .select("id, text, category")
@@ -107,7 +109,8 @@ function FeedPage() {
       const blocked = blockedIds ?? new Set<string>();
       const now = Date.now();
       const scored = (answersRes.data ?? [])
-        .filter((a: any) => !blocked.has(a.user_id))
+        .filter((a: any) => !blocked.has(a.user_id) && Array.isArray(a.photos) && a.photos.length > 0)
+
         .filter((a: any) => Array.isArray(a.photos) && a.photos.length > 0)
         .map((a: any) => {
         const isFollow = followedSet.has(a.user_id);
