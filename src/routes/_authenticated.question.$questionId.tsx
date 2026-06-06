@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/question/$questionId")({
 function QuestionPage() {
   const { questionId } = Route.useParams();
   const router = useRouter();
-  const [nudgeOpen, setNudgeOpen] = useState(false);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["question-grid", questionId],
