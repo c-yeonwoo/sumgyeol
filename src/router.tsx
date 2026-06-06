@@ -21,7 +21,7 @@ function normalizeInitialPath() {
 
 normalizeInitialPath();
 
-function ensureTsrFallback(router: ReturnType<typeof createRouter>) {
+function ensureTsrFallback(router: any) {
   if (typeof window === "undefined") return;
 
   const existingState = (window as any).$_TSR;
