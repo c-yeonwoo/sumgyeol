@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { CategoryBadge } from "@/components/category-badge";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -88,11 +89,10 @@ function AnswerPage() {
       <section className="px-6 py-8">
         {question && (
           <div className="mb-8">
-            <span className="text-[11px] uppercase tracking-widest text-accent">
-              {question.category}
-            </span>
-            <h2 className="font-serif text-3xl mt-2 leading-snug text-balance break-keep [word-break:keep-all]">{question.text}</h2>
+            <CategoryBadge category={question.category} />
+            <h2 className="font-serif text-3xl mt-2.5 leading-snug text-balance break-keep [word-break:keep-all]">{question.text}</h2>
           </div>
+
         )}
 
         {!preview ? (

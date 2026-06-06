@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { CategoryBadge } from "@/components/category-badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -58,11 +59,10 @@ function BacklogPage() {
                   }
                   className="w-full text-left p-5 bg-surface border border-border rounded-xl hover:bg-secondary transition-colors"
                 >
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {q.category}
-                  </span>
-                  <p className="font-serif text-lg mt-1">{q.text}</p>
+                  <CategoryBadge category={q.category} />
+                  <p className="font-serif text-lg mt-2">{q.text}</p>
                 </button>
+
               </li>
             ))}
           </ul>
