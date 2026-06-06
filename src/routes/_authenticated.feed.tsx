@@ -5,6 +5,8 @@ import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedIds } from "@/lib/blocks";
 import { StorageImg } from "@/components/storage-img";
+import { CategoryBadge } from "@/components/category-badge";
+
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({ meta: [{ title: "홈 — 숨결" }] }),
@@ -16,7 +18,7 @@ type AnswerItem = {
   id: number;
   photos: string[];
   created_at: string;
-  questions: { id: number; text: string } | null;
+  questions: { id: number; text: string; category: string | null } | null;
   profiles: {
     handle: string | null;
     display_name: string | null;
@@ -29,7 +31,9 @@ type PromptItem = {
   kind: "prompt";
   id: number;
   text: string;
+  category: string | null;
 };
+
 
 type FeedItem = AnswerItem | PromptItem;
 
@@ -57,8 +61,9 @@ function FeedPage() {
       const { data: answers } = await supabase
         .from("answers")
         .select(
-          "id, user_id, photos, created_at, questions(id, text), profiles(handle, display_name, avatar_url)",
+          "id, user_id, photos, created_at, questions(id, text, category), profiles(handle, display_name, avatar_url)",
         )
+
         .eq("visibility", "public")
         .neq("user_id", uid)
         .order("created_at", { ascending: false })
@@ -90,7 +95,7 @@ function FeedPage() {
 
       const { data: qs } = await supabase
         .from("questions")
-        .select("id, text")
+        .select("id, text, category")
         .eq("is_active", true)
         .limit(60);
       const unanswered = (qs ?? [])
@@ -103,16 +108,17 @@ function FeedPage() {
         items.push(s.item);
         if ((i + 1) % 6 === 0 && promptIdx < unanswered.length) {
           const q: any = unanswered[promptIdx++];
-          items.push({ kind: "prompt", id: q.id, text: q.text });
+          items.push({ kind: "prompt", id: q.id, text: q.text, category: q.category });
         }
       });
 
       // If no scored answers, still surface prompts so the page isn't empty.
       if (items.length === 0 && unanswered.length > 0) {
         for (const q of unanswered as any[]) {
-          items.push({ kind: "prompt", id: q.id, text: q.text });
+          items.push({ kind: "prompt", id: q.id, text: q.text, category: q.category });
         }
       }
+
 
       return items;
     },
@@ -180,16 +186,20 @@ function FeedPage() {
                 params={{ questionId: String(it.id) }}
                 className="block border border-dashed border-border rounded-2xl p-6 text-center hover:border-foreground/40 transition-colors"
               >
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                  아직 답하지 않은 질문
-                </span>
-                <p className="font-serif text-lg mt-2 leading-snug">
+                <div className="flex items-center justify-center gap-2">
+                  <CategoryBadge category={it.category} />
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    아직 답하지 않은 질문
+                  </span>
+                </div>
+                <p className="font-serif text-lg mt-3 leading-snug">
                   {it.text}
                 </p>
                 <span className="inline-block mt-4 text-[11px] uppercase tracking-widest">
                   숨 남기러 가기 →
                 </span>
               </Link>
+
             ) : (
               <article key={`a-${it.id}`} className="space-y-3">
                 <div className="flex items-center justify-between gap-3 px-2">
@@ -225,11 +235,15 @@ function FeedPage() {
                     params={{ questionId: String(it.questions.id) }}
                     className="block px-2"
                   >
+                    <div className="mb-1">
+                      <CategoryBadge category={it.questions.category} />
+                    </div>
                     <p className="font-serif text-[15px] leading-snug text-muted-foreground hover:text-foreground transition-colors">
                       {it.questions.text}
                     </p>
                   </Link>
                 )}
+
 
                 {it.photos[0] && (
                   <Link
