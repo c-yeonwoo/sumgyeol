@@ -132,26 +132,11 @@ function QuestionPage() {
               >
                 이 질문에 답하기 →
               </Link>
-              <button
-                type="button"
-                onClick={() => setNudgeOpen(true)}
-                className="text-xs underline underline-offset-4 text-muted-foreground"
-              >
-                친구에게 물어보기 →
-              </button>
             </div>
           </>
         )}
       </section>
 
-      {data?.question && (
-        <NudgeDialog
-          open={nudgeOpen}
-          onClose={() => setNudgeOpen(false)}
-          questionId={data.question.id}
-          questionText={data.question.text}
-        />
-      )}
     </main>
   );
 }
