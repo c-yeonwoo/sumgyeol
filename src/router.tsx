@@ -75,7 +75,7 @@ function ensureTsrFallback(router: any) {
         })();
     if (!matches.length) return;
 
-    const serializedMatches = matches.map((match) => ({ i: match.routeId }));
+    const serializedMatches = matches.map((match: any) => ({ i: match.routeId }));
 
     (window as any).$_TSR = {
       ...fallbackTsr,
