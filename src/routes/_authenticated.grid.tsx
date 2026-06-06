@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { CategoryBadge, CategoryFilterChip } from "@/components/category-badge";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -6,8 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBlockedIds } from "@/lib/blocks";
 import { StorageImg } from "@/components/storage-img";
 
+type SearchParams = { category?: string };
+
 export const Route = createFileRoute("/_authenticated/grid")({
   head: () => ({ meta: [{ title: "탐색 — 숨결" }] }),
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    const c = typeof search.category === "string" ? search.category.trim() : "";
+    return c ? { category: c } : {};
+  },
   component: GridPage,
 });
 
@@ -20,8 +27,11 @@ type QCard = {
 };
 
 function GridPage() {
+  const { category } = Route.useSearch();
+  const navigate = useNavigate({ from: "/grid" });
   const { data: blockedIds } = useBlockedIds();
   const [query, setQuery] = useState("");
+
   const { data, isLoading } = useQuery({
     queryKey: ["explore-questions", Array.from(blockedIds ?? []).sort().join(",")],
     queryFn: async (): Promise<QCard[]> => {
@@ -30,7 +40,7 @@ function GridPage() {
         .select("question_id, user_id, photos, created_at, questions(id, text, category)")
         .eq("visibility", "public")
         .order("created_at", { ascending: false })
-        .limit(500);
+        .limit(200);
 
       const blocked = blockedIds ?? new Set<string>();
       const map = new Map<number, QCard>();
@@ -60,25 +70,25 @@ function GridPage() {
   const filtered = useMemo(() => {
     if (!data) return [];
     const q = query.trim().toLowerCase();
-    if (!q) return data;
-    return data.filter(
-      (item) =>
+    return data.filter((item) => {
+      if (category && item.category !== category) return false;
+      if (!q) return true;
+      return (
         item.text.toLowerCase().includes(q) ||
-        (item.category ?? "").toLowerCase().includes(q),
-    );
-  }, [data, query]);
+        (item.category ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [data, query, category]);
+
+  const onBadgeClick = (c: string) => {
+    navigate({ search: category === c ? {} : { category: c } });
+  };
 
   return (
     <main>
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border space-y-4">
-        <div>
-          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
-            탐색
-          </span>
-          <h2 className="font-serif text-xl mt-1 leading-snug">
-            키워드로 질문 찾기
-          </h2>
-        </div>
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-4 border-b border-border space-y-3">
+        <h1 className="font-serif text-2xl tracking-tight">탐색</h1>
+
         <div className="relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
@@ -102,6 +112,15 @@ function GridPage() {
             </button>
           )}
         </div>
+
+        {category && (
+          <div className="pt-1">
+            <CategoryFilterChip
+              category={category}
+              onClear={() => navigate({ search: {} })}
+            />
+          </div>
+        )}
       </header>
 
       <section className="px-4 py-6 space-y-4">
@@ -111,7 +130,11 @@ function GridPage() {
           ))
         ) : filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-16">
-            {query ? `"${query}"에 맞는 질문이 없어요.` : "아직 모인 숨이 없어요."}
+            {query
+              ? `"${query}"에 맞는 질문이 없어요.`
+              : category
+                ? `‘${category}’에 모인 숨이 없어요.`
+                : "아직 모인 숨이 없어요."}
           </p>
         ) : (
           filtered.map((q) => (
@@ -122,18 +145,19 @@ function GridPage() {
               className="block border border-border rounded-2xl overflow-hidden hover:border-foreground/30 transition-colors"
             >
               <div className="px-5 pt-5 pb-3">
-                {q.category && (
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {q.category}
-                  </span>
-                )}
-                <p className="font-serif text-[16px] mt-1 leading-snug">
+                <CategoryBadge
+                  category={q.category}
+                  onClick={onBadgeClick}
+                  active={category === q.category}
+                />
+                <p className="font-serif text-[16px] mt-2 leading-snug">
                   {q.text}
                 </p>
                 <span className="text-[11px] text-muted-foreground">
                   숨 {q.count}개
                 </span>
               </div>
+
               <div className="grid grid-cols-4 gap-px bg-border">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="aspect-square bg-background">

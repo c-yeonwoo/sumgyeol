@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { CategoryBadge } from "@/components/category-badge";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,23 +24,26 @@ function QuestionPage() {
   const { questionId } = Route.useParams();
   const router = useRouter();
 
+
   const { data, isLoading } = useQuery({
     queryKey: ["question-grid", questionId],
     queryFn: async () => {
       const qid = Number(questionId);
-      const { data: q } = await supabase
-        .from("questions")
-        .select("id, text, category")
-        .eq("id", qid)
-        .maybeSingle();
-      const { data: answers } = await supabase
-        .from("answers")
-        .select("id, photos, profiles(handle)")
-        .eq("question_id", qid)
-        .eq("visibility", "public")
-        .order("created_at", { ascending: false })
-        .limit(120);
-      return { question: q, answers: (answers ?? []) as any[] };
+      const [qRes, answersRes] = await Promise.all([
+        supabase
+          .from("questions")
+          .select("id, text, category")
+          .eq("id", qid)
+          .maybeSingle(),
+        supabase
+          .from("answers")
+          .select("id, photos, profiles(handle)")
+          .eq("question_id", qid)
+          .eq("visibility", "public")
+          .order("created_at", { ascending: false })
+          .limit(120),
+      ]);
+      return { question: qRes.data, answers: (answersRes.data ?? []) as any[] };
     },
   });
 
@@ -60,10 +64,8 @@ function QuestionPage() {
           </span>
         </div>
         <div className="px-2">
-          <span className="text-[10px] uppercase tracking-widest text-accent">
-            질문
-          </span>
-          <h1 className="font-serif text-2xl mt-1 leading-snug text-balance break-keep [word-break:keep-all]">
+          <CategoryBadge category={data?.question?.category} />
+          <h1 className="font-serif text-2xl mt-2 leading-snug text-balance break-keep [word-break:keep-all]">
             {data?.question?.text ?? "..."}
           </h1>
           {data?.answers && (
@@ -72,6 +74,7 @@ function QuestionPage() {
             </p>
           )}
         </div>
+
       </header>
 
       <section className="px-4 py-6">
@@ -121,7 +124,7 @@ function QuestionPage() {
                 </Link>
               ))}
             </div>
-            <div className="mt-8 text-center">
+            <div className="mt-8 flex flex-col items-center gap-3">
               <Link
                 to="/answer/$questionId"
                 params={{ questionId }}
@@ -133,6 +136,7 @@ function QuestionPage() {
           </>
         )}
       </section>
+
     </main>
   );
 }

@@ -5,6 +5,8 @@ import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedIds } from "@/lib/blocks";
 import { StorageImg } from "@/components/storage-img";
+import { CategoryBadge } from "@/components/category-badge";
+
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({ meta: [{ title: "홈 — 숨결" }] }),
@@ -16,7 +18,7 @@ type AnswerItem = {
   id: number;
   photos: string[];
   created_at: string;
-  questions: { id: number; text: string } | null;
+  questions: { id: number; text: string; category: string | null } | null;
   profiles: {
     handle: string | null;
     display_name: string | null;
@@ -29,22 +31,70 @@ type PromptItem = {
   kind: "prompt";
   id: number;
   text: string;
+  category: string | null;
 };
 
+
 type FeedItem = AnswerItem | PromptItem;
+
+function NotificationsBell() {
+  const { data: unread } = useQuery({
+    queryKey: ["nudges-unread-count"],
+    queryFn: async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const me = sessionData.session?.user?.id;
+      if (!me) return 0;
+      const { count } = await supabase
+        .from("nudges")
+        .select("id", { count: "exact", head: true })
+        .eq("receiver_id", me)
+        .eq("status", "pending");
+      return count ?? 0;
+    },
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+  });
+
+  return (
+    <Link
+      to="/notifications"
+      aria-label="알림"
+      className="relative p-2 -mr-2 text-muted-foreground hover:text-foreground"
+    >
+      <Bell className="size-5" strokeWidth={1.5} />
+      {!!unread && unread > 0 && (
+        <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-accent" />
+      )}
+    </Link>
+  );
+}
 
 function FeedPage() {
   const { data: blockedIds } = useBlockedIds();
   const { data, isLoading } = useQuery({
     queryKey: ["home-feed", Array.from(blockedIds ?? []).sort().join(",")],
     queryFn: async (): Promise<FeedItem[]> => {
-      const { data: userData } = await supabase.auth.getUser();
-      const uid = userData.user?.id;
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData.session?.user?.id;
       if (!uid) return [];
 
-      const [followsRes, mineRes] = await Promise.all([
+      const [followsRes, mineRes, answersRes, qsRes] = await Promise.all([
         supabase.from("follows").select("following_id").eq("follower_id", uid),
         supabase.from("answers").select("question_id").eq("user_id", uid),
+        supabase
+          .from("answers")
+          .select(
+            "id, user_id, photos, created_at, questions(id, text, category), profiles(handle, display_name, avatar_url)",
+          )
+          .eq("visibility", "public")
+          .neq("user_id", uid)
+          .order("created_at", { ascending: false })
+          .limit(80),
+        supabase
+          .from("questions")
+          .select("id, text, category")
+          .eq("is_active", true)
+          .limit(60),
       ]);
 
       const followedSet = new Set(
@@ -54,19 +104,9 @@ function FeedPage() {
         (mineRes.data ?? []).map((a: any) => a.question_id as number),
       );
 
-      const { data: answers } = await supabase
-        .from("answers")
-        .select(
-          "id, user_id, photos, created_at, questions(id, text), profiles(handle, display_name, avatar_url)",
-        )
-        .eq("visibility", "public")
-        .neq("user_id", uid)
-        .order("created_at", { ascending: false })
-        .limit(200);
-
       const blocked = blockedIds ?? new Set<string>();
       const now = Date.now();
-      const scored = (answers ?? [])
+      const scored = (answersRes.data ?? [])
         .filter((a: any) => !blocked.has(a.user_id))
         .filter((a: any) => Array.isArray(a.photos) && a.photos.length > 0)
         .map((a: any) => {
@@ -88,14 +128,10 @@ function FeedPage() {
 
       scored.sort((a, b) => b.score - a.score);
 
-      const { data: qs } = await supabase
-        .from("questions")
-        .select("id, text")
-        .eq("is_active", true)
-        .limit(60);
-      const unanswered = (qs ?? [])
+      const unanswered = (qsRes.data ?? [])
         .filter((q: any) => !answeredQs.has(q.id))
         .slice(0, 12);
+
 
       const items: FeedItem[] = [];
       let promptIdx = 0;
@@ -103,16 +139,17 @@ function FeedPage() {
         items.push(s.item);
         if ((i + 1) % 6 === 0 && promptIdx < unanswered.length) {
           const q: any = unanswered[promptIdx++];
-          items.push({ kind: "prompt", id: q.id, text: q.text });
+          items.push({ kind: "prompt", id: q.id, text: q.text, category: q.category });
         }
       });
 
       // If no scored answers, still surface prompts so the page isn't empty.
       if (items.length === 0 && unanswered.length > 0) {
         for (const q of unanswered as any[]) {
-          items.push({ kind: "prompt", id: q.id, text: q.text });
+          items.push({ kind: "prompt", id: q.id, text: q.text, category: q.category });
         }
       }
+
 
       return items;
     },
@@ -136,21 +173,11 @@ function FeedPage() {
 
   return (
     <main>
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 pt-3 pb-4 border-b border-border flex items-start justify-between gap-3">
-        <div>
-          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
-            피드
-          </span>
-          <h2 className="font-serif text-xl mt-1 leading-snug">새로운 숨</h2>
-        </div>
-        <Link
-          to="/notifications"
-          aria-label="알림"
-          className="p-2 -mt-1 -mr-2 text-muted-foreground hover:text-foreground"
-        >
-          <Bell className="size-5" strokeWidth={1.5} />
-        </Link>
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-4 border-b border-border flex items-center justify-between gap-3">
+        <h1 className="font-serif text-2xl tracking-tight">피드</h1>
+        <NotificationsBell />
       </header>
+
 
       <section className="px-4 py-6 space-y-10">
         {isLoading ? (
@@ -184,16 +211,20 @@ function FeedPage() {
                 params={{ questionId: String(it.id) }}
                 className="block border border-dashed border-border rounded-2xl p-6 text-center hover:border-foreground/40 transition-colors"
               >
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                  아직 답하지 않은 질문
-                </span>
-                <p className="font-serif text-lg mt-2 leading-snug">
+                <div className="flex items-center justify-center gap-2">
+                  <CategoryBadge category={it.category} />
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    아직 답하지 않은 질문
+                  </span>
+                </div>
+                <p className="font-serif text-lg mt-3 leading-snug">
                   {it.text}
                 </p>
                 <span className="inline-block mt-4 text-[11px] uppercase tracking-widest">
                   숨 남기러 가기 →
                 </span>
               </Link>
+
             ) : (
               <article key={`a-${it.id}`} className="space-y-3">
                 <div className="flex items-center justify-between gap-3 px-2">
@@ -229,11 +260,15 @@ function FeedPage() {
                     params={{ questionId: String(it.questions.id) }}
                     className="block px-2"
                   >
+                    <div className="mb-1">
+                      <CategoryBadge category={it.questions.category} />
+                    </div>
                     <p className="font-serif text-[15px] leading-snug text-muted-foreground hover:text-foreground transition-colors">
                       {it.questions.text}
                     </p>
                   </Link>
                 )}
+
 
                 {it.photos[0] && (
                   <Link

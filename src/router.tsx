@@ -91,13 +91,25 @@ function ensureTsrFallback(router: ReturnType<typeof createRouter>) {
 }
 
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Keep data fresh across tab switches/navigation for 1 minute.
+        // Individual queries can opt out with their own staleTime.
+        staleTime: 60_000,
+        gcTime: 5 * 60_000,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        retry: 1,
+      },
+    },
+  });
 
   const router = createRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    defaultPreloadStaleTime: 0,
+    defaultPreloadStaleTime: 30_000,
   });
 
   ensureTsrFallback(router);
