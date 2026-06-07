@@ -141,29 +141,31 @@ function HomePage() {
                 </div>
               </div>
             </Link>
-            <div className="mt-5 flex flex-col items-center gap-3">
-              <Link
-                to="/question/$questionId"
-                params={{ questionId: String(data.question.id) }}
-                className="text-sm text-foreground underline underline-offset-4"
+            <div className="mt-5 flex flex-col items-center">
+              <button
+                type="button"
+                onClick={handleSkip}
+                disabled={skipping || !data?.question}
+                className="text-sm text-muted-foreground underline underline-offset-4 disabled:opacity-50"
               >
-                다른 사람들의 숨 먼저 보기 →
-              </Link>
+                {skipping ? "찾는 중…" : "이 질문 skip"}
+              </button>
             </div>
           </>
         )}
       </section>
 
-      <section className="px-6 pb-8">
-        <button
-          type="button"
-          onClick={handleSkip}
-          disabled={skipping || !data?.question}
-          className="block w-full text-center text-sm text-muted-foreground underline underline-offset-4 disabled:opacity-50"
-        >
-          {skipping ? "찾는 중…" : "이 질문 skip"}
-        </button>
-      </section>
+      {data?.question && (
+        <section className="px-6 pb-8 -mt-4">
+          <Link
+            to="/question/$questionId"
+            params={{ questionId: String(data.question.id) }}
+            className="block text-center text-sm text-foreground underline underline-offset-4"
+          >
+            다른 사람들의 숨 먼저 보기 →
+          </Link>
+        </section>
+      )}
     </main>
   );
 }
