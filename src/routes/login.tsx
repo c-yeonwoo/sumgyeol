@@ -101,7 +101,8 @@ function LoginPage() {
 
   if (confirmSent) {
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center px-6">
+      <main className="h-[100dvh] overflow-hidden bg-background flex items-center justify-center px-6">
+
         <div className="w-full max-w-sm text-center">
           <h1 className="font-serif text-3xl mb-4">메일을 보냈어요</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
