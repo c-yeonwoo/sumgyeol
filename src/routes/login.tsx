@@ -102,7 +102,7 @@ function LoginPage() {
 
   if (confirmSent) {
     return (
-      <main className="fixed inset-0 h-[100dvh] overflow-hidden overscroll-none bg-background flex items-center justify-center px-6 touch-none">
+      <main className="fixed inset-0 h-[100dvh] overflow-hidden overscroll-none bg-background flex items-center justify-center px-6">
 
         <div className="w-full max-w-sm text-center">
           <h1 className="font-serif text-3xl mb-4">메일을 보냈어요</h1>
@@ -135,7 +135,7 @@ function LoginPage() {
   }
 
   return (
-    <main className="fixed inset-0 h-[100dvh] overflow-hidden overscroll-none bg-background flex items-center justify-center px-6 touch-none">
+    <main className="fixed inset-0 h-[100dvh] overflow-hidden overscroll-none bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm max-h-[100dvh] py-6">
         <Link to="/" className="block text-center mb-8 sm:mb-10">
             <img
