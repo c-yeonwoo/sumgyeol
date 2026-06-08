@@ -93,6 +93,8 @@ function HomePage() {
         </div>
       )}
 
+      <OnboardingNudge />
+
       <section className="px-6 py-8">
         {isLoading ? (
           <div className="aspect-square bg-muted rounded-2xl animate-pulse" />
