@@ -68,6 +68,8 @@ function NotificationsPage() {
         <span className="w-10" />
       </header>
 
+      <SimilarityMatches />
+
       {isLoading ? (
         <section className="px-6 py-8 space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
