@@ -26,6 +26,7 @@ import { Route as AuthenticatedBacklogRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated.me.index'
 import { Route as AuthenticatedUHandleRouteImport } from './routes/_authenticated.u.$handle'
 import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_authenticated.question.$questionId'
+import { Route as AuthenticatedMeReportRouteImport } from './routes/_authenticated.me.report'
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
 import { Route as AuthenticatedMeBlockedRouteImport } from './routes/_authenticated.me.blocked'
 import { Route as AuthenticatedAnswerQuestionIdRouteImport } from './routes/_authenticated.answer.$questionId'
@@ -120,6 +121,11 @@ const AuthenticatedQuestionQuestionIdRoute =
     path: '/question/$questionId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedMeReportRoute = AuthenticatedMeReportRouteImport.update({
+  id: '/me/report',
+  path: '/me/report',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedMeEditRoute = AuthenticatedMeEditRouteImport.update({
   id: '/me/edit',
   path: '/me/edit',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
+  '/me/report': typeof AuthenticatedMeReportRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
   '/me/': typeof AuthenticatedMeIndexRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
+  '/me/report': typeof AuthenticatedMeReportRoute
   '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
   '/me': typeof AuthenticatedMeIndexRoute
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/_authenticated/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/_authenticated/me/edit': typeof AuthenticatedMeEditRoute
+  '/_authenticated/me/report': typeof AuthenticatedMeReportRoute
   '/_authenticated/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/_authenticated/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
   '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/answer/$questionId'
     | '/me/blocked'
     | '/me/edit'
+    | '/me/report'
     | '/question/$questionId'
     | '/u/$handle'
     | '/me/'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/answer/$questionId'
     | '/me/blocked'
     | '/me/edit'
+    | '/me/report'
     | '/question/$questionId'
     | '/u/$handle'
     | '/me'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/_authenticated/answer/$questionId'
     | '/_authenticated/me/blocked'
     | '/_authenticated/me/edit'
+    | '/_authenticated/me/report'
     | '/_authenticated/question/$questionId'
     | '/_authenticated/u/$handle'
     | '/_authenticated/me/'
@@ -449,6 +461,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedQuestionQuestionIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/me/report': {
+      id: '/_authenticated/me/report'
+      path: '/me/report'
+      fullPath: '/me/report'
+      preLoaderRoute: typeof AuthenticatedMeReportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/me/edit': {
       id: '/_authenticated/me/edit'
       path: '/me/edit'
@@ -526,6 +545,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
   AuthenticatedMeBlockedRoute: typeof AuthenticatedMeBlockedRoute
   AuthenticatedMeEditRoute: typeof AuthenticatedMeEditRoute
+  AuthenticatedMeReportRoute: typeof AuthenticatedMeReportRoute
   AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
   AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRouteWithChildren
   AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
@@ -544,6 +564,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
   AuthenticatedMeBlockedRoute: AuthenticatedMeBlockedRoute,
   AuthenticatedMeEditRoute: AuthenticatedMeEditRoute,
+  AuthenticatedMeReportRoute: AuthenticatedMeReportRoute,
   AuthenticatedQuestionQuestionIdRoute: AuthenticatedQuestionQuestionIdRoute,
   AuthenticatedUHandleRoute: AuthenticatedUHandleRouteWithChildren,
   AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
