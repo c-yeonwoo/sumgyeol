@@ -82,7 +82,7 @@ function TabBar({ pathname, height }: { pathname: string; height: string }) {
             >
               <span
                 className={
-                  "text-[13px] tracking-wide font-medium transition-colors " +
+                  "text-[15px] tracking-wide font-medium transition-colors " +
                   (active ? "text-foreground" : "text-muted-foreground")
                 }
               >
