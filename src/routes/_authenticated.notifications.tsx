@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StorageImg } from "@/components/storage-img";
 import { CategoryBadge } from "@/components/category-badge";
+import { SimilarityMatches } from "@/components/similarity-matches";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
