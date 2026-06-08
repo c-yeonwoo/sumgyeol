@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { stripExifAndCompress } from "@/lib/image-utils";
 import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
+import { Afterglow } from "@/components/afterglow";
+import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/_authenticated/answer/$questionId")({
   head: () => ({ meta: [{ title: "답변 — 숨결" }] }),
@@ -19,6 +21,7 @@ function AnswerPage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [submitting, setSubmitting] = useState(false);
+  const [afterglow, setAfterglow] = useState(false);
 
   const { data: question } = useQuery({
     queryKey: ["question", questionId],
