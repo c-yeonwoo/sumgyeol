@@ -43,35 +43,9 @@ export function OnboardingNudge() {
       // 시드 친구는 첫 1숨을 남긴 뒤에만 노출
       let seeds: SeedProfile[] = [];
       if (followingCount === 0 && answeredCount >= 1) {
-        // 최근 공개 답을 남긴 활발한 사용자들 중 자신과 차단 관계가 아닌 사람
-        const { data: recentAnswers } = await supabase
-          .from("answers")
-          .select("user_id, created_at")
-          .eq("visibility", "public")
-          .neq("user_id", uid)
-          .order("created_at", { ascending: false })
-          .limit(60);
-
-        const seenIds = new Set<string>();
-        const orderedIds: string[] = [];
-        for (const row of recentAnswers ?? []) {
-          if (seenIds.has(row.user_id)) continue;
-          seenIds.add(row.user_id);
-          orderedIds.push(row.user_id);
-          if (orderedIds.length >= 5) break;
-        }
-
-        if (orderedIds.length > 0) {
-          const { data: profs } = await supabase
-            .from("profiles")
-            .select("id, handle, display_name, avatar_url")
-            .in("id", orderedIds);
-          const byId = new Map((profs ?? []).map((p) => [p.id, p]));
-          seeds = orderedIds
-            .map((id) => byId.get(id))
-            .filter(Boolean) as SeedProfile[];
-        }
+        seeds = await pickSeedsByPreference(uid);
       }
+
 
       return { answeredCount, followingCount, seeds, uid };
     },
