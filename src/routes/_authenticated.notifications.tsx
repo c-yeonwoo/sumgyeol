@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StorageImg } from "@/components/storage-img";
 import { CategoryBadge } from "@/components/category-badge";
+import { SimilarityMatches } from "@/components/similarity-matches";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
@@ -66,6 +67,8 @@ function NotificationsPage() {
         <h1 className="font-serif text-lg tracking-tight">알림</h1>
         <span className="w-10" />
       </header>
+
+      <SimilarityMatches />
 
       {isLoading ? (
         <section className="px-6 py-8 space-y-3">

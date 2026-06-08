@@ -2,12 +2,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CategoryBadge } from "@/components/category-badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Heart, Flag, Pencil, MessageCircle, Share2 } from "lucide-react";
+import { Heart, Flag, Pencil, MessageCircle, Share2, Wind } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReportDialog } from "@/components/report-dialog";
 import { useBlockedIds } from "@/lib/blocks";
 import { StorageImg } from "@/components/storage-img";
+import { haptic } from "@/lib/haptics";
 
 
 export const Route = createFileRoute("/_authenticated/answer-detail/$answerId")({
@@ -31,7 +32,7 @@ function AnswerDetailPage() {
       const { data: sessionData } = await supabase.auth.getSession();
       const me = sessionData.session?.user?.id;
 
-      const [answerRes, commentsRes, likeCountRes, myLikeRes] = await Promise.all([
+      const [answerRes, commentsRes, likeCountRes, myLikeRes, stayCountRes, myStayRes] = await Promise.all([
         supabase
           .from("answers")
           .select(
@@ -57,6 +58,18 @@ function AnswerDetailPage() {
               .eq("user_id", me)
               .maybeSingle()
           : Promise.resolve({ data: null }),
+        supabase
+          .from("stays")
+          .select("*", { count: "exact", head: true })
+          .eq("answer_id", id),
+        me
+          ? supabase
+              .from("stays")
+              .select("id")
+              .eq("answer_id", id)
+              .eq("user_id", me)
+              .maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
 
       if (!answerRes.data) return null;
@@ -66,6 +79,8 @@ function AnswerDetailPage() {
         me,
         likeCount: likeCountRes.count ?? 0,
         liked: !!myLikeRes.data,
+        stayCount: stayCountRes.count ?? 0,
+        stayed: !!myStayRes.data,
       };
     },
   });
@@ -119,6 +134,30 @@ function AnswerDetailPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
     onError: (e: any) => toast.error(e?.message ?? "잠시 후 다시 시도해 주세요."),
   });
+
+  const toggleStay = useMutation({
+    mutationFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user!.id;
+      if (data?.stayed) {
+        const { error } = await supabase
+          .from("stays")
+          .delete()
+          .eq("answer_id", Number(answerId))
+          .eq("user_id", uid);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("stays")
+          .insert({ answer_id: Number(answerId), user_id: uid });
+        if (error) throw error;
+        haptic("light");
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["answer-detail", answerId] }),
+    onError: (e: any) => toast.error(e?.message ?? "잠시 후 다시 시도해 주세요."),
+  });
+
 
   if (isLoading) {
     return <div className="p-10 text-center text-sm text-muted-foreground">불러오는 중...</div>;
@@ -268,6 +307,20 @@ function AnswerDetailPage() {
               className={data.liked ? "fill-accent text-accent" : ""}
             />
             <span className="tabular-nums">{data.likeCount}</span>
+          </button>
+          <button
+            onClick={() => toggleStay.mutate()}
+            disabled={toggleStay.isPending}
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            aria-label={data.stayed ? "머무름 취소" : "이 숨에 머물렀어요"}
+            title="이 숨에 머물렀어요"
+          >
+            <Wind
+              size={20}
+              strokeWidth={1.75}
+              className={data.stayed ? "text-foreground" : ""}
+            />
+            <span className="tabular-nums">{data.stayCount}</span>
           </button>
           <a
             href="#comments"

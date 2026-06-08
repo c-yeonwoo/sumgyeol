@@ -118,12 +118,20 @@ function MePage() {
             <StatBlock label="팔로잉" value={data?.following ?? 0} />
           )}
         </div>
-        <Link
-          to="/me/edit"
-          className="mt-3 text-[11px] uppercase tracking-widest text-accent border border-accent/40 rounded-full px-4 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
-        >
-          프로필 수정
-        </Link>
+        <div className="mt-3 flex items-center gap-2">
+          <Link
+            to="/me/edit"
+            className="text-[11px] uppercase tracking-widest text-accent border border-accent/40 rounded-full px-4 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            프로필 수정
+          </Link>
+          <Link
+            to="/me/report"
+            className="text-[11px] uppercase tracking-widest text-muted-foreground border border-border rounded-full px-4 py-1.5 hover:text-foreground hover:border-foreground transition-colors"
+          >
+            결 리포트
+          </Link>
+        </div>
       </section>
 
       <section className="shrink-0 px-6 mb-4">
