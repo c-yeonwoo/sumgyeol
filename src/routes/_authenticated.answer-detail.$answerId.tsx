@@ -32,7 +32,7 @@ function AnswerDetailPage() {
       const { data: sessionData } = await supabase.auth.getSession();
       const me = sessionData.session?.user?.id;
 
-      const [answerRes, commentsRes, likeCountRes, myLikeRes] = await Promise.all([
+      const [answerRes, commentsRes, likeCountRes, myLikeRes, stayCountRes, myStayRes] = await Promise.all([
         supabase
           .from("answers")
           .select(
@@ -58,6 +58,18 @@ function AnswerDetailPage() {
               .eq("user_id", me)
               .maybeSingle()
           : Promise.resolve({ data: null }),
+        supabase
+          .from("stays")
+          .select("*", { count: "exact", head: true })
+          .eq("answer_id", id),
+        me
+          ? supabase
+              .from("stays")
+              .select("id")
+              .eq("answer_id", id)
+              .eq("user_id", me)
+              .maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
 
       if (!answerRes.data) return null;
@@ -67,6 +79,8 @@ function AnswerDetailPage() {
         me,
         likeCount: likeCountRes.count ?? 0,
         liked: !!myLikeRes.data,
+        stayCount: stayCountRes.count ?? 0,
+        stayed: !!myStayRes.data,
       };
     },
   });
