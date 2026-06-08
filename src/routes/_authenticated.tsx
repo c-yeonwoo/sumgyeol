@@ -28,7 +28,7 @@ function AuthenticatedLayout() {
     location.pathname.startsWith("/answer-edit/") ||
     location.pathname === "/onboarding";
   const lockPageScroll = location.pathname === "/me";
-  const tabBarHeight = hideTabs ? "0px" : "3.25rem";
+  const tabBarHeight = hideTabs ? "0px" : "3.75rem";
 
   return (
     <div
@@ -82,7 +82,7 @@ function TabBar({ pathname, height }: { pathname: string; height: string }) {
             >
               <span
                 className={
-                  "text-[13px] tracking-wide font-medium transition-colors " +
+                  "text-[15px] tracking-wide font-medium transition-colors " +
                   (active ? "text-foreground" : "text-muted-foreground")
                 }
               >
