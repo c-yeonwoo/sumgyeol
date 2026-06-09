@@ -44,7 +44,7 @@ function AuthenticatedLayout() {
             "flex-1 min-h-0 " +
             (lockPageScroll ? "overflow-hidden" : "overflow-y-auto overscroll-contain")
           }
-          style={{ paddingBottom: hideTabs ? 0 : tabBarHeight }}
+          style={{ paddingBottom: hideTabs ? 0 : tabBarHeight, paddingTop: "var(--safe-top)" }}
         >
           <Outlet />
         </div>
