@@ -161,6 +161,17 @@ function ViewportSync() {
   return null;
 }
 
+function BootSplashHide() {
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const t = setTimeout(() => {
+      document.body.classList.add("app-ready");
+    }, 150);
+    return () => clearTimeout(t);
+  }, []);
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -168,6 +179,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ViewportSync />
       <AuthSync />
+      <BootSplashHide />
       <Outlet />
       <Toaster position="top-center" toastOptions={{ style: { fontFamily: "var(--font-sans)" } }} />
     </QueryClientProvider>
