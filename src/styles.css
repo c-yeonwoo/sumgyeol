@@ -98,6 +98,7 @@
     /* JS가 visualViewport.height 기반으로 갱신. 미지원 환경은 100dvh 폴백 */
     --app-vh: 100dvh;
     --safe-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+    --safe-top: max(env(safe-area-inset-top, 0px), 0px);
     --tabbar-content-height: 4rem;
     --tabbar-height: calc(var(--tabbar-content-height) + var(--safe-bottom));
   }
@@ -146,4 +147,37 @@
     box-shadow: var(--shadow-xs);
   }
 }
+
+#boot-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  transition: opacity 400ms ease 100ms, visibility 0s linear 500ms;
+}
+#boot-splash img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  animation: boot-splash-pulse 1.6s ease-in-out infinite;
+}
+body.app-ready #boot-splash {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+@keyframes boot-splash-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.96); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
 

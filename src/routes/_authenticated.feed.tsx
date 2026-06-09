@@ -180,7 +180,7 @@ function FeedPage() {
       </header>
 
 
-      <section className="px-4 py-6 space-y-10">
+      <section className="px-6 py-6 space-y-10">
         {isLoading ? (
           Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="space-y-3">
