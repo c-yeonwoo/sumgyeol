@@ -98,6 +98,7 @@
     /* JS가 visualViewport.height 기반으로 갱신. 미지원 환경은 100dvh 폴백 */
     --app-vh: 100dvh;
     --safe-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+    --safe-top: max(env(safe-area-inset-top, 0px), 0px);
     --tabbar-content-height: 4rem;
     --tabbar-height: calc(var(--tabbar-content-height) + var(--safe-bottom));
   }
