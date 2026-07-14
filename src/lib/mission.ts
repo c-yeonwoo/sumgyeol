@@ -210,6 +210,20 @@ export async function setVerdict(
   if (error) throw error;
 }
 
+export type MissionThread = {
+  id: number;
+  delivery_id: number;
+  expires_at: string;
+  message_cap: number;
+  closed_at: string | null;
+  sender_contact: string | null;
+  receiver_contact: string | null;
+  sender_id?: string;
+  receiver_id?: string;
+};
+
+export const MESSAGE_CAP_DEFAULT = 20;
+
 export async function fetchUnlockedPeer(peerId: string) {
   const { data, error } = await db
     .from("profiles")
@@ -217,17 +231,53 @@ export async function fetchUnlockedPeer(peerId: string) {
     .eq("id", peerId)
     .maybeSingle();
   if (error) throw error;
-  return data;
+  return data as {
+    id: string;
+    display_name: string | null;
+    handle: string | null;
+    bio: string | null;
+    avatar_url: string | null;
+    birth_year: number | null;
+    region: string | null;
+    gender: string | null;
+    height_cm: number | null;
+  } | null;
 }
 
 export async function fetchThreadByDelivery(deliveryId: number) {
   const { data, error } = await db
     .from("mission_threads")
-    .select("id, delivery_id, expires_at")
+    .select(
+      "id, delivery_id, expires_at, message_cap, closed_at, sender_contact, receiver_contact",
+    )
     .eq("delivery_id", deliveryId)
     .maybeSingle();
   if (error) throw error;
-  return data as { id: number; delivery_id: number; expires_at: string } | null;
+  return data as MissionThread | null;
+}
+
+export async function fetchThread(threadId: number) {
+  const { data: thread, error } = await db
+    .from("mission_threads")
+    .select(
+      "id, delivery_id, expires_at, message_cap, closed_at, sender_contact, receiver_contact",
+    )
+    .eq("id", threadId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!thread) return null;
+
+  const { data: delivery } = await db
+    .from("mission_deliveries")
+    .select("sender_id, receiver_id")
+    .eq("id", thread.delivery_id)
+    .maybeSingle();
+
+  return {
+    ...(thread as MissionThread),
+    sender_id: delivery?.sender_id,
+    receiver_id: delivery?.receiver_id,
+  } as MissionThread;
 }
 
 export async function fetchMessages(threadId: number) {
@@ -241,13 +291,17 @@ export async function fetchMessages(threadId: number) {
 }
 
 export async function sendMessage(threadId: number, body: string) {
-  const { data: userData } = await supabase.auth.getUser();
-  const uid = userData.user?.id;
-  if (!uid) throw new Error("로그인이 필요해요.");
-  const { error } = await db.from("mission_messages").insert({
-    thread_id: threadId,
-    sender_id: uid,
-    body: body.trim(),
+  const { error } = await db.rpc("send_mission_message", {
+    p_thread_id: threadId,
+    p_body: body.trim(),
+  });
+  if (error) throw error;
+}
+
+export async function offerThreadContact(threadId: number, contact: string) {
+  const { error } = await db.rpc("offer_thread_contact", {
+    p_thread_id: threadId,
+    p_contact: contact.trim(),
   });
   if (error) throw error;
 }

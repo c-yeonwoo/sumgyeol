@@ -6,10 +6,8 @@ import { toast } from "sonner";
 import { stripExifAndCompress } from "@/lib/image-utils";
 import { StorageImg } from "@/components/storage-img";
 
-
-
 export const Route = createFileRoute("/_authenticated/me/edit")({
-  head: () => ({ meta: [{ title: "프로필 수정" }] }),
+  head: () => ({ meta: [{ title: "프로필 수정 — 쪽지" }] }),
   component: EditProfilePage,
 });
 
@@ -17,7 +15,6 @@ const GENDERS = [
   { value: "female", label: "여성" },
   { value: "male", label: "남성" },
   { value: "other", label: "기타" },
-  { value: "prefer_not", label: "비공개" },
 ] as const;
 
 function EditProfilePage() {
@@ -29,29 +26,38 @@ function EditProfilePage() {
     queryFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user!.id;
-      const [{ data }, { data: settings }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
-        supabase.from("user_settings").select("gender").eq("user_id", uid).maybeSingle(),
-      ]);
-      return { uid, profile: data, gender: settings?.gender ?? "" };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any)
+        .from("profiles")
+        .select(
+          "display_name, handle, bio, avatar_url, gender, birth_year, region, height_cm",
+        )
+        .eq("id", uid)
+        .maybeSingle();
+      return { uid, profile: data };
     },
   });
 
   const [displayName, setDisplayName] = useState("");
-  const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
   const [gender, setGender] = useState<string>("");
+  const [birthYear, setBirthYear] = useState("");
+  const [region, setRegion] = useState("");
+  const [heightCm, setHeightCm] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (profile?.profile) {
-      setDisplayName(profile.profile.display_name ?? "");
-      setHandle(profile.profile.handle ?? "");
-      setBio(profile.profile.bio ?? "");
-      setGender(profile.gender ?? "");
-      setAvatarUrl(profile.profile.avatar_url ?? null);
+      const p = profile.profile;
+      setDisplayName(p.display_name ?? "");
+      setBio(p.bio ?? "");
+      setGender(p.gender ?? "");
+      setBirthYear(p.birth_year ? String(p.birth_year) : "");
+      setRegion(p.region ?? "");
+      setHeightCm(p.height_cm ? String(p.height_cm) : "");
+      setAvatarUrl(p.avatar_url ?? null);
     }
   }, [profile]);
 
@@ -75,31 +81,21 @@ function EditProfilePage() {
     if (!displayName.trim()) return toast.error("닉네임을 입력해 주세요.");
     if (displayName.length > 40) return toast.error("닉네임은 40자 이하로 입력해 주세요.");
     if (bio.length > 160) return toast.error("한줄소개는 160자 이하로 입력해 주세요.");
-    if (!profile?.uid) return;
-
-    const h = handle.trim().toLowerCase();
-    if (h) {
-      if (h.length < 3 || h.length > 20) return toast.error("핸들은 3~20자예요.");
-      if (!/^[a-z0-9_]+$/.test(h))
-        return toast.error("핸들은 영문 소문자/숫자/_만 가능해요.");
+    if (!gender || !["female", "male", "other"].includes(gender)) {
+      return toast.error("성별을 선택해 주세요.");
     }
+    const year = Number(birthYear);
+    if (!year || year < 1920 || year > 2008) {
+      return toast.error("출생 연도를 확인해 주세요.");
+    }
+    const height = heightCm.trim() ? Number(heightCm) : null;
+    if (height != null && (height < 120 || height > 230)) {
+      return toast.error("키는 120~230cm로 입력해 주세요.");
+    }
+    if (!profile?.uid) return;
 
     setSaving(true);
     try {
-      if (h && h !== (profile.profile?.handle ?? "")) {
-        const { data: dup } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("handle", h)
-          .neq("id", profile.uid)
-          .maybeSingle();
-        if (dup) {
-          toast.error("이미 사용 중인 핸들이에요.");
-          setSaving(false);
-          return;
-        }
-      }
-
       let nextAvatarUrl = profile.profile?.avatar_url ?? null;
       if (avatarFile) {
         const cleaned = await stripExifAndCompress(avatarFile);
@@ -111,30 +107,25 @@ function EditProfilePage() {
         nextAvatarUrl = path;
       }
 
-
-      const { error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
         .from("profiles")
         .update({
           display_name: displayName.trim(),
-          // Keep existing handle if user left it blank (preserves /u/handle URL)
-          ...(h ? { handle: h } : {}),
           bio: bio.trim() || null,
           avatar_url: nextAvatarUrl,
-        } as any)
+          gender,
+          birth_year: year,
+          region: region.trim() || null,
+          height_cm: height,
+        })
         .eq("id", profile.uid);
       if (error) throw error;
 
-      const { error: settingsErr } = await supabase
-        .from("user_settings")
-        .upsert(
-          { user_id: profile.uid, gender: gender || null },
-          { onConflict: "user_id" },
-        );
-      if (settingsErr) throw settingsErr;
-
       toast.success("프로필을 저장했어요.");
-      qc.invalidateQueries({ queryKey: ["my-gyeol"] });
+      qc.invalidateQueries({ queryKey: ["my-profile"] });
       qc.invalidateQueries({ queryKey: ["my-profile-edit"] });
+      qc.invalidateQueries({ queryKey: ["my-mission-profile"] });
       navigate({ to: "/me" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "저장에 실패했어요.");
@@ -146,12 +137,17 @@ function EditProfilePage() {
   return (
     <main className="min-h-screen pb-20">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-6 py-5 border-b border-border flex items-center justify-between">
-        <Link to="/me" className="text-sm text-muted-foreground">← 취소</Link>
-        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">프로필 수정</span>
+        <Link to="/me" className="text-sm text-muted-foreground">
+          ← 취소
+        </Link>
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+          프로필 수정
+        </span>
         <button
+          type="button"
           onClick={onSave}
           disabled={saving || isLoading}
-          className="text-sm font-medium text-accent disabled:opacity-40"
+          className="text-sm font-medium disabled:opacity-40"
         >
           {saving ? "저장 중..." : "저장"}
         </button>
@@ -172,8 +168,8 @@ function EditProfilePage() {
               <span className="text-2xl text-muted-foreground">＋</span>
             )}
           </div>
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-3 text-center group-hover:text-foreground">
-            사진 변경
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mt-3 text-center">
+            사진 변경 · unlock 후 공유
           </p>
         </label>
       </section>
@@ -185,17 +181,6 @@ function EditProfilePage() {
             onChange={(e) => setDisplayName(e.target.value)}
             maxLength={40}
             className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground"
-            placeholder="이름"
-          />
-        </Field>
-
-        <Field label="핸들" hint="@아이디 (선택)">
-          <input
-            value={handle}
-            onChange={(e) => setHandle(e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))}
-            maxLength={24}
-            className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground"
-            placeholder="user_handle"
           />
         </Field>
 
@@ -205,7 +190,7 @@ function EditProfilePage() {
               <button
                 key={g.value}
                 type="button"
-                onClick={() => setGender(gender === g.value ? "" : g.value)}
+                onClick={() => setGender(g.value)}
                 className={
                   "px-4 py-2 rounded-full text-xs border transition-colors " +
                   (gender === g.value
@@ -217,6 +202,38 @@ function EditProfilePage() {
               </button>
             ))}
           </div>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            여성=보내기 · 남성=수행(답장)
+          </p>
+        </Field>
+
+        <Field label="출생 연도">
+          <input
+            type="number"
+            value={birthYear}
+            onChange={(e) => setBirthYear(e.target.value)}
+            placeholder="1998"
+            className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground"
+          />
+        </Field>
+
+        <Field label="지역 (시)">
+          <input
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            placeholder="서울"
+            className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground"
+          />
+        </Field>
+
+        <Field label="키 cm (선택)">
+          <input
+            type="number"
+            value={heightCm}
+            onChange={(e) => setHeightCm(e.target.value)}
+            placeholder="175"
+            className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground"
+          />
         </Field>
 
         <Field label="한줄소개" hint={`${bio.length}/160`}>
@@ -226,7 +243,7 @@ function EditProfilePage() {
             maxLength={160}
             rows={3}
             className="w-full bg-transparent border-b border-border py-2 text-base focus:outline-none focus:border-foreground resize-none"
-            placeholder="당신을 한 문장으로 소개해 주세요."
+            placeholder="unlock 후 상대에게 보여요."
           />
         </Field>
       </section>

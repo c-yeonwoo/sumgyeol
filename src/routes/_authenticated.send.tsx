@@ -154,6 +154,7 @@ function SendPage() {
         <h1 className="font-serif text-3xl mt-1">보내기</h1>
         <p className="text-[15px] text-muted-foreground mt-2">
           하루 1회 무료 · 추가 발송은 티켓 · 이상형 조건 1개까지 무료
+          <span className="block text-xs mt-1 opacity-80">조건 2개 이상은 티켓 상품 연동 후 개방</span>
         </p>
         <div className="mt-3 flex gap-3 text-xs text-muted-foreground">
           <span>오늘 무료 {freeLeft}/1</span>

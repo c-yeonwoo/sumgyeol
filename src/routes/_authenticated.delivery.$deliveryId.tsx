@@ -12,6 +12,7 @@ import {
   replyToDelivery,
   setVerdict,
 } from "@/lib/mission";
+import { StorageImg } from "@/components/storage-img";
 
 export const Route = createFileRoute("/_authenticated/delivery/$deliveryId")({
   head: () => ({ meta: [{ title: "쪽지 — 쪽지" }] }),
@@ -224,11 +225,37 @@ function DeliveryPage() {
 
       {delivery.unlocked_at && peer && (
         <section className="mt-8 rounded-2xl border border-foreground/20 bg-foreground/5 px-4 py-5">
-          <p className="text-xs tracking-widest text-muted-foreground mb-2">UNLOCK</p>
-          <h2 className="font-serif text-2xl">{peer.display_name ?? "상대"}</h2>
-          {peer.bio && <p className="mt-2 text-sm text-muted-foreground">{peer.bio}</p>}
-          <p className="mt-3 text-xs text-muted-foreground">
-            {[ageBand(peer.birth_year), peer.region].filter(Boolean).join(" · ")}
+          <p className="text-xs tracking-widest text-muted-foreground mb-3">UNLOCK</p>
+          <div className="flex items-center gap-4">
+            {peer.avatar_url ? (
+              <StorageImg
+                src={peer.avatar_url}
+                alt=""
+                className="size-14 rounded-full object-cover border border-border bg-surface"
+              />
+            ) : (
+              <div className="size-14 rounded-full bg-surface border border-border grid place-items-center text-lg font-serif">
+                {(peer.display_name ?? "?").slice(0, 1)}
+              </div>
+            )}
+            <div className="min-w-0">
+              <h2 className="font-serif text-2xl truncate">{peer.display_name ?? "상대"}</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {[
+                  ageBand(peer.birth_year),
+                  peer.region,
+                  peer.height_cm ? `${peer.height_cm}cm` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            </div>
+          </div>
+          {peer.bio && (
+            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{peer.bio}</p>
+          )}
+          <p className="mt-4 text-[12px] text-muted-foreground">
+            대화는 최대 20통 또는 7일 · 외부 연락은 서로 제안할 때만
           </p>
           {thread && (
             <Link

@@ -19,6 +19,7 @@ function OnboardingPage() {
   const [birthYear, setBirthYear] = useState("");
   const [preferGender, setPreferGender] = useState<"female" | "male" | "any">("any");
   const [region, setRegion] = useState("");
+  const [heightCm, setHeightCm] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -80,7 +81,9 @@ function OnboardingPage() {
           birth_year: Number(birthYear),
           prefer_gender: preferGender,
           region: region.trim() || null,
+          height_cm: heightCm.trim() ? Number(heightCm) : null,
           onboarded: true,
+          last_active_at: new Date().toISOString(),
         })
         .eq("id", uid);
       if (error) throw error;
@@ -206,6 +209,16 @@ function OnboardingPage() {
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
                 placeholder="예: 서울"
+                className="w-full rounded-xl border border-border px-3 py-2.5 text-[15px]"
+              />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">키 cm (선택)</p>
+              <input
+                type="number"
+                value={heightCm}
+                onChange={(e) => setHeightCm(e.target.value)}
+                placeholder="예: 175"
                 className="w-full rounded-xl border border-border px-3 py-2.5 text-[15px]"
               />
             </div>
