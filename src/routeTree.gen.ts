@@ -16,28 +16,15 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as InviteQuestionIdRouteImport } from './routes/invite.$questionId'
 import { Route as AuthenticatedSendRouteImport } from './routes/_authenticated.send'
 import { Route as AuthenticatedOutboxRouteImport } from './routes/_authenticated.outbox'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
-import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated.notifications'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
-import { Route as AuthenticatedGridRouteImport } from './routes/_authenticated.grid'
-import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
-import { Route as AuthenticatedBacklogRouteImport } from './routes/_authenticated.backlog'
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated.me.index'
-import { Route as AuthenticatedUHandleRouteImport } from './routes/_authenticated.u.$handle'
 import { Route as AuthenticatedThreadThreadIdRouteImport } from './routes/_authenticated.thread.$threadId'
-import { Route as AuthenticatedQuestionQuestionIdRouteImport } from './routes/_authenticated.question.$questionId'
-import { Route as AuthenticatedMeReportRouteImport } from './routes/_authenticated.me.report'
 import { Route as AuthenticatedMeEditRouteImport } from './routes/_authenticated.me.edit'
 import { Route as AuthenticatedMeBlockedRouteImport } from './routes/_authenticated.me.blocked'
 import { Route as AuthenticatedDeliveryDeliveryIdRouteImport } from './routes/_authenticated.delivery.$deliveryId'
-import { Route as AuthenticatedAnswerQuestionIdRouteImport } from './routes/_authenticated.answer.$questionId'
-import { Route as AuthenticatedAnswerEditAnswerIdRouteImport } from './routes/_authenticated.answer-edit.$answerId'
-import { Route as AuthenticatedAnswerDetailAnswerIdRouteImport } from './routes/_authenticated.answer-detail.$answerId'
-import { Route as AuthenticatedUHandleFollowingRouteImport } from './routes/_authenticated.u.$handle.following'
-import { Route as AuthenticatedUHandleFollowersRouteImport } from './routes/_authenticated.u.$handle.followers'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -73,11 +60,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InviteQuestionIdRoute = InviteQuestionIdRouteImport.update({
-  id: '/invite/$questionId',
-  path: '/invite/$questionId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedSendRoute = AuthenticatedSendRouteImport.update({
   id: '/send',
   path: '/send',
@@ -93,40 +75,14 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedNotificationsRoute =
-  AuthenticatedNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedGridRoute = AuthenticatedGridRouteImport.update({
-  id: '/grid',
-  path: '/grid',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
-  id: '/feed',
-  path: '/feed',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedBacklogRoute = AuthenticatedBacklogRouteImport.update({
-  id: '/backlog',
-  path: '/backlog',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedMeIndexRoute = AuthenticatedMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedUHandleRoute = AuthenticatedUHandleRouteImport.update({
-  id: '/u/$handle',
-  path: '/u/$handle',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedThreadThreadIdRoute =
@@ -135,17 +91,6 @@ const AuthenticatedThreadThreadIdRoute =
     path: '/thread/$threadId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedQuestionQuestionIdRoute =
-  AuthenticatedQuestionQuestionIdRouteImport.update({
-    id: '/question/$questionId',
-    path: '/question/$questionId',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedMeReportRoute = AuthenticatedMeReportRouteImport.update({
-  id: '/me/report',
-  path: '/me/report',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedMeEditRoute = AuthenticatedMeEditRouteImport.update({
   id: '/me/edit',
   path: '/me/edit',
@@ -162,36 +107,6 @@ const AuthenticatedDeliveryDeliveryIdRoute =
     path: '/delivery/$deliveryId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedAnswerQuestionIdRoute =
-  AuthenticatedAnswerQuestionIdRouteImport.update({
-    id: '/answer/$questionId',
-    path: '/answer/$questionId',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAnswerEditAnswerIdRoute =
-  AuthenticatedAnswerEditAnswerIdRouteImport.update({
-    id: '/answer-edit/$answerId',
-    path: '/answer-edit/$answerId',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAnswerDetailAnswerIdRoute =
-  AuthenticatedAnswerDetailAnswerIdRouteImport.update({
-    id: '/answer-detail/$answerId',
-    path: '/answer-detail/$answerId',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedUHandleFollowingRoute =
-  AuthenticatedUHandleFollowingRouteImport.update({
-    id: '/following',
-    path: '/following',
-    getParentRoute: () => AuthenticatedUHandleRoute,
-  } as any)
-const AuthenticatedUHandleFollowersRoute =
-  AuthenticatedUHandleFollowersRouteImport.update({
-    id: '/followers',
-    path: '/followers',
-    getParentRoute: () => AuthenticatedUHandleRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,28 +115,15 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
-  '/backlog': typeof AuthenticatedBacklogRoute
-  '/feed': typeof AuthenticatedFeedRoute
-  '/grid': typeof AuthenticatedGridRoute
   '/home': typeof AuthenticatedHomeRoute
-  '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/outbox': typeof AuthenticatedOutboxRoute
   '/send': typeof AuthenticatedSendRoute
-  '/invite/$questionId': typeof InviteQuestionIdRoute
-  '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
-  '/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
-  '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/delivery/$deliveryId': typeof AuthenticatedDeliveryDeliveryIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
-  '/me/report': typeof AuthenticatedMeReportRoute
-  '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/thread/$threadId': typeof AuthenticatedThreadThreadIdRoute
-  '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
   '/me/': typeof AuthenticatedMeIndexRoute
-  '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
-  '/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -230,28 +132,15 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
-  '/backlog': typeof AuthenticatedBacklogRoute
-  '/feed': typeof AuthenticatedFeedRoute
-  '/grid': typeof AuthenticatedGridRoute
   '/home': typeof AuthenticatedHomeRoute
-  '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/outbox': typeof AuthenticatedOutboxRoute
   '/send': typeof AuthenticatedSendRoute
-  '/invite/$questionId': typeof InviteQuestionIdRoute
-  '/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
-  '/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
-  '/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/delivery/$deliveryId': typeof AuthenticatedDeliveryDeliveryIdRoute
   '/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/me/edit': typeof AuthenticatedMeEditRoute
-  '/me/report': typeof AuthenticatedMeReportRoute
-  '/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/thread/$threadId': typeof AuthenticatedThreadThreadIdRoute
-  '/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
   '/me': typeof AuthenticatedMeIndexRoute
-  '/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
-  '/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -262,28 +151,15 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
-  '/_authenticated/backlog': typeof AuthenticatedBacklogRoute
-  '/_authenticated/feed': typeof AuthenticatedFeedRoute
-  '/_authenticated/grid': typeof AuthenticatedGridRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
-  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/outbox': typeof AuthenticatedOutboxRoute
   '/_authenticated/send': typeof AuthenticatedSendRoute
-  '/invite/$questionId': typeof InviteQuestionIdRoute
-  '/_authenticated/answer-detail/$answerId': typeof AuthenticatedAnswerDetailAnswerIdRoute
-  '/_authenticated/answer-edit/$answerId': typeof AuthenticatedAnswerEditAnswerIdRoute
-  '/_authenticated/answer/$questionId': typeof AuthenticatedAnswerQuestionIdRoute
   '/_authenticated/delivery/$deliveryId': typeof AuthenticatedDeliveryDeliveryIdRoute
   '/_authenticated/me/blocked': typeof AuthenticatedMeBlockedRoute
   '/_authenticated/me/edit': typeof AuthenticatedMeEditRoute
-  '/_authenticated/me/report': typeof AuthenticatedMeReportRoute
-  '/_authenticated/question/$questionId': typeof AuthenticatedQuestionQuestionIdRoute
   '/_authenticated/thread/$threadId': typeof AuthenticatedThreadThreadIdRoute
-  '/_authenticated/u/$handle': typeof AuthenticatedUHandleRouteWithChildren
   '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
-  '/_authenticated/u/$handle/followers': typeof AuthenticatedUHandleFollowersRoute
-  '/_authenticated/u/$handle/following': typeof AuthenticatedUHandleFollowingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -294,28 +170,15 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/terms'
-    | '/backlog'
-    | '/feed'
-    | '/grid'
     | '/home'
-    | '/notifications'
     | '/onboarding'
     | '/outbox'
     | '/send'
-    | '/invite/$questionId'
-    | '/answer-detail/$answerId'
-    | '/answer-edit/$answerId'
-    | '/answer/$questionId'
     | '/delivery/$deliveryId'
     | '/me/blocked'
     | '/me/edit'
-    | '/me/report'
-    | '/question/$questionId'
     | '/thread/$threadId'
-    | '/u/$handle'
     | '/me/'
-    | '/u/$handle/followers'
-    | '/u/$handle/following'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -324,28 +187,15 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/terms'
-    | '/backlog'
-    | '/feed'
-    | '/grid'
     | '/home'
-    | '/notifications'
     | '/onboarding'
     | '/outbox'
     | '/send'
-    | '/invite/$questionId'
-    | '/answer-detail/$answerId'
-    | '/answer-edit/$answerId'
-    | '/answer/$questionId'
     | '/delivery/$deliveryId'
     | '/me/blocked'
     | '/me/edit'
-    | '/me/report'
-    | '/question/$questionId'
     | '/thread/$threadId'
-    | '/u/$handle'
     | '/me'
-    | '/u/$handle/followers'
-    | '/u/$handle/following'
   id:
     | '__root__'
     | '/'
@@ -355,28 +205,15 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/terms'
-    | '/_authenticated/backlog'
-    | '/_authenticated/feed'
-    | '/_authenticated/grid'
     | '/_authenticated/home'
-    | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/outbox'
     | '/_authenticated/send'
-    | '/invite/$questionId'
-    | '/_authenticated/answer-detail/$answerId'
-    | '/_authenticated/answer-edit/$answerId'
-    | '/_authenticated/answer/$questionId'
     | '/_authenticated/delivery/$deliveryId'
     | '/_authenticated/me/blocked'
     | '/_authenticated/me/edit'
-    | '/_authenticated/me/report'
-    | '/_authenticated/question/$questionId'
     | '/_authenticated/thread/$threadId'
-    | '/_authenticated/u/$handle'
     | '/_authenticated/me/'
-    | '/_authenticated/u/$handle/followers'
-    | '/_authenticated/u/$handle/following'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -387,7 +224,6 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
-  InviteQuestionIdRoute: typeof InviteQuestionIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -441,13 +277,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invite/$questionId': {
-      id: '/invite/$questionId'
-      path: '/invite/$questionId'
-      fullPath: '/invite/$questionId'
-      preLoaderRoute: typeof InviteQuestionIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/send': {
       id: '/_authenticated/send'
       path: '/send'
@@ -469,39 +298,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/notifications': {
-      id: '/_authenticated/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/grid': {
-      id: '/_authenticated/grid'
-      path: '/grid'
-      fullPath: '/grid'
-      preLoaderRoute: typeof AuthenticatedGridRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/feed': {
-      id: '/_authenticated/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof AuthenticatedFeedRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/backlog': {
-      id: '/_authenticated/backlog'
-      path: '/backlog'
-      fullPath: '/backlog'
-      preLoaderRoute: typeof AuthenticatedBacklogRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/me/': {
@@ -511,32 +312,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMeIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/u/$handle': {
-      id: '/_authenticated/u/$handle'
-      path: '/u/$handle'
-      fullPath: '/u/$handle'
-      preLoaderRoute: typeof AuthenticatedUHandleRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/thread/$threadId': {
       id: '/_authenticated/thread/$threadId'
       path: '/thread/$threadId'
       fullPath: '/thread/$threadId'
       preLoaderRoute: typeof AuthenticatedThreadThreadIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/question/$questionId': {
-      id: '/_authenticated/question/$questionId'
-      path: '/question/$questionId'
-      fullPath: '/question/$questionId'
-      preLoaderRoute: typeof AuthenticatedQuestionQuestionIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/me/report': {
-      id: '/_authenticated/me/report'
-      path: '/me/report'
-      fullPath: '/me/report'
-      preLoaderRoute: typeof AuthenticatedMeReportRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/me/edit': {
@@ -560,99 +340,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDeliveryDeliveryIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/answer/$questionId': {
-      id: '/_authenticated/answer/$questionId'
-      path: '/answer/$questionId'
-      fullPath: '/answer/$questionId'
-      preLoaderRoute: typeof AuthenticatedAnswerQuestionIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/answer-edit/$answerId': {
-      id: '/_authenticated/answer-edit/$answerId'
-      path: '/answer-edit/$answerId'
-      fullPath: '/answer-edit/$answerId'
-      preLoaderRoute: typeof AuthenticatedAnswerEditAnswerIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/answer-detail/$answerId': {
-      id: '/_authenticated/answer-detail/$answerId'
-      path: '/answer-detail/$answerId'
-      fullPath: '/answer-detail/$answerId'
-      preLoaderRoute: typeof AuthenticatedAnswerDetailAnswerIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/u/$handle/following': {
-      id: '/_authenticated/u/$handle/following'
-      path: '/following'
-      fullPath: '/u/$handle/following'
-      preLoaderRoute: typeof AuthenticatedUHandleFollowingRouteImport
-      parentRoute: typeof AuthenticatedUHandleRoute
-    }
-    '/_authenticated/u/$handle/followers': {
-      id: '/_authenticated/u/$handle/followers'
-      path: '/followers'
-      fullPath: '/u/$handle/followers'
-      preLoaderRoute: typeof AuthenticatedUHandleFollowersRouteImport
-      parentRoute: typeof AuthenticatedUHandleRoute
-    }
   }
 }
 
-interface AuthenticatedUHandleRouteChildren {
-  AuthenticatedUHandleFollowersRoute: typeof AuthenticatedUHandleFollowersRoute
-  AuthenticatedUHandleFollowingRoute: typeof AuthenticatedUHandleFollowingRoute
-}
-
-const AuthenticatedUHandleRouteChildren: AuthenticatedUHandleRouteChildren = {
-  AuthenticatedUHandleFollowersRoute: AuthenticatedUHandleFollowersRoute,
-  AuthenticatedUHandleFollowingRoute: AuthenticatedUHandleFollowingRoute,
-}
-
-const AuthenticatedUHandleRouteWithChildren =
-  AuthenticatedUHandleRoute._addFileChildren(AuthenticatedUHandleRouteChildren)
-
 interface AuthenticatedRouteChildren {
-  AuthenticatedBacklogRoute: typeof AuthenticatedBacklogRoute
-  AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
-  AuthenticatedGridRoute: typeof AuthenticatedGridRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedOutboxRoute: typeof AuthenticatedOutboxRoute
   AuthenticatedSendRoute: typeof AuthenticatedSendRoute
-  AuthenticatedAnswerDetailAnswerIdRoute: typeof AuthenticatedAnswerDetailAnswerIdRoute
-  AuthenticatedAnswerEditAnswerIdRoute: typeof AuthenticatedAnswerEditAnswerIdRoute
-  AuthenticatedAnswerQuestionIdRoute: typeof AuthenticatedAnswerQuestionIdRoute
   AuthenticatedDeliveryDeliveryIdRoute: typeof AuthenticatedDeliveryDeliveryIdRoute
   AuthenticatedMeBlockedRoute: typeof AuthenticatedMeBlockedRoute
   AuthenticatedMeEditRoute: typeof AuthenticatedMeEditRoute
-  AuthenticatedMeReportRoute: typeof AuthenticatedMeReportRoute
-  AuthenticatedQuestionQuestionIdRoute: typeof AuthenticatedQuestionQuestionIdRoute
   AuthenticatedThreadThreadIdRoute: typeof AuthenticatedThreadThreadIdRoute
-  AuthenticatedUHandleRoute: typeof AuthenticatedUHandleRouteWithChildren
   AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedBacklogRoute: AuthenticatedBacklogRoute,
-  AuthenticatedFeedRoute: AuthenticatedFeedRoute,
-  AuthenticatedGridRoute: AuthenticatedGridRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
-  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedOutboxRoute: AuthenticatedOutboxRoute,
   AuthenticatedSendRoute: AuthenticatedSendRoute,
-  AuthenticatedAnswerDetailAnswerIdRoute:
-    AuthenticatedAnswerDetailAnswerIdRoute,
-  AuthenticatedAnswerEditAnswerIdRoute: AuthenticatedAnswerEditAnswerIdRoute,
-  AuthenticatedAnswerQuestionIdRoute: AuthenticatedAnswerQuestionIdRoute,
   AuthenticatedDeliveryDeliveryIdRoute: AuthenticatedDeliveryDeliveryIdRoute,
   AuthenticatedMeBlockedRoute: AuthenticatedMeBlockedRoute,
   AuthenticatedMeEditRoute: AuthenticatedMeEditRoute,
-  AuthenticatedMeReportRoute: AuthenticatedMeReportRoute,
-  AuthenticatedQuestionQuestionIdRoute: AuthenticatedQuestionQuestionIdRoute,
   AuthenticatedThreadThreadIdRoute: AuthenticatedThreadThreadIdRoute,
-  AuthenticatedUHandleRoute: AuthenticatedUHandleRouteWithChildren,
   AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
 }
 
@@ -668,7 +379,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
-  InviteQuestionIdRoute: InviteQuestionIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

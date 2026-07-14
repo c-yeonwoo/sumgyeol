@@ -29,7 +29,7 @@ function AuthenticatedLayout() {
     location.pathname.startsWith("/answer-detail/") ||
     location.pathname.startsWith("/answer-edit/") ||
     location.pathname === "/onboarding";
-  const lockPageScroll = location.pathname === "/me";
+  const lockPageScroll = false;
   const tabBarHeight = hideTabs ? "0px" : "var(--tabbar-height)";
 
   return (
