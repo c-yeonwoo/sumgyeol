@@ -8,6 +8,7 @@ import {
   fetchDelivery,
   fetchThreadByDelivery,
   fetchUnlockedPeer,
+  formatCountdown,
   replyToDelivery,
   setVerdict,
 } from "@/lib/mission";
@@ -129,6 +130,11 @@ function DeliveryPage() {
         {role === "receiver" ? "받은 익명 미션" : "내가 보낸 미션"}
       </p>
       <h1 className="font-serif text-2xl leading-snug">{mission?.body}</h1>
+      {!delivery.reply_body && delivery.status !== "expired" && (
+        <p className="mt-2 text-xs tabular-nums text-muted-foreground">
+          남은 시간 ⏱ {formatCountdown(delivery.expires_at)}
+        </p>
+      )}
 
       {!delivery.unlocked_at && (
         <p className="mt-3 text-sm text-muted-foreground">

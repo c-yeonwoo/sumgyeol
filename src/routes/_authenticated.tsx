@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { touchLastActive } from "@/lib/mission";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
@@ -7,7 +9,6 @@ export const Route = createFileRoute("/_authenticated")({
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw redirect({ to: "/login" });
 
-    // Onboarding gate: force profile setup before letting users into the app
     if (location.pathname !== "/onboarding") {
       const { data: prof } = await supabase
         .from("profiles")
@@ -25,12 +26,18 @@ function AuthenticatedLayout() {
   const hideTabs =
     location.pathname.startsWith("/delivery/") ||
     location.pathname.startsWith("/thread/") ||
-    location.pathname.startsWith("/answer/") ||
-    location.pathname.startsWith("/answer-detail/") ||
-    location.pathname.startsWith("/answer-edit/") ||
-    location.pathname === "/onboarding";
-  const lockPageScroll = false;
+    location.pathname === "/onboarding" ||
+    location.pathname.startsWith("/me/edit") ||
+    location.pathname.startsWith("/me/blocked");
   const tabBarHeight = hideTabs ? "0px" : "var(--tabbar-height)";
+
+  useEffect(() => {
+    touchLastActive().catch(() => {});
+    const id = setInterval(() => {
+      touchLastActive().catch(() => {});
+    }, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <div
@@ -42,10 +49,7 @@ function AuthenticatedLayout() {
         style={{ height: "var(--app-vh)" }}
       >
         <div
-          className={
-            "flex-1 min-h-0 " +
-            (lockPageScroll ? "overflow-hidden" : "overflow-y-auto overscroll-contain")
-          }
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
           style={{ paddingBottom: hideTabs ? 0 : tabBarHeight, paddingTop: "var(--safe-top)" }}
         >
           <Outlet />
@@ -55,8 +59,6 @@ function AuthenticatedLayout() {
     </div>
   );
 }
-
-
 
 function TabBar({ pathname, height }: { pathname: string; height: string }) {
   const items: Array<{ to: "/home" | "/send" | "/outbox" | "/me"; label: string }> = [
@@ -73,7 +75,6 @@ function TabBar({ pathname, height }: { pathname: string; height: string }) {
         paddingBottom: "var(--safe-bottom)",
       }}
     >
-
       {items.map((it, idx) => {
         const active = pathname === it.to || pathname.startsWith(it.to + "/");
         return (

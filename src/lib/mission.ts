@@ -24,8 +24,56 @@ export type MissionDelivery = {
   mission?: { body: string; kind: string; chips: string[] };
 };
 
+export type MyMissionProfile = {
+  id: string;
+  gender: "female" | "male" | "other" | null;
+  birth_year: number | null;
+  region: string | null;
+  height_cm: number | null;
+  ticket_balance: number;
+  display_name: string | null;
+};
+
+export type IdealFilter =
+  | { kind: "age_band"; value: string }
+  | { kind: "region"; value: string }
+  | { kind: "height"; value: string };
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as any;
+
+export async function touchLastActive() {
+  await db.rpc("touch_last_active");
+}
+
+export async function expireStaleDeliveries() {
+  await db.rpc("expire_stale_deliveries");
+}
+
+export async function fetchMyMissionProfile(): Promise<MyMissionProfile | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  const uid = userData.user?.id;
+  if (!uid) return null;
+  const { data, error } = await db
+    .from("profiles")
+    .select("id, gender, birth_year, region, height_cm, ticket_balance, display_name")
+    .eq("id", uid)
+    .maybeSingle();
+  if (error) throw error;
+  return data as MyMissionProfile | null;
+}
+
+export async function countSendsToday(userId: string): Promise<number> {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const { count, error } = await db
+    .from("missions")
+    .select("id", { count: "exact", head: true })
+    .eq("sender_id", userId)
+    .gte("created_at", start.toISOString());
+  if (error) throw error;
+  return count ?? 0;
+}
 
 export async function fetchPresets(): Promise<MissionPreset[]> {
   const { data, error } = await db
@@ -42,10 +90,17 @@ export async function createAndDeliverMission(input: {
   kind: "question" | "action_text";
   body: string;
   chips?: string[];
+  useTicket?: boolean;
+  filter?: IdealFilter | null;
 }): Promise<{ missionId: number; deliveryId: number }> {
   const { data: userData } = await supabase.auth.getUser();
   const uid = userData.user?.id;
   if (!uid) throw new Error("로그인이 필요해요.");
+
+  const profile = await fetchMyMissionProfile();
+  if (profile?.gender !== "female") {
+    throw new Error("only female can send");
+  }
 
   const { data: mission, error: mErr } = await db
     .from("missions")
@@ -62,9 +117,11 @@ export async function createAndDeliverMission(input: {
 
   const { data: deliveryId, error: dErr } = await db.rpc("deliver_mission", {
     p_mission_id: mission.id,
+    p_use_ticket: !!input.useTicket,
+    p_filter_kind: input.filter?.kind ?? null,
+    p_filter_value: input.filter?.value ?? null,
   });
   if (dErr) {
-    // best-effort cleanup of undelivered mission
     await db.from("missions").delete().eq("id", mission.id);
     throw dErr;
   }
@@ -72,42 +129,57 @@ export async function createAndDeliverMission(input: {
   return { missionId: mission.id, deliveryId };
 }
 
+async function withExpiry<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    await expireStaleDeliveries();
+  } catch {
+    // ignore if migration not applied yet
+  }
+  return fn();
+}
+
 export async function fetchInbox(userId: string): Promise<MissionDelivery[]> {
-  const { data, error } = await db
-    .from("mission_deliveries")
-    .select(
-      "id, mission_id, sender_id, receiver_id, status, reply_body, replied_at, sender_verdict, receiver_verdict, unlocked_at, expires_at, created_at, mission:missions(body, kind, chips)",
-    )
-    .eq("receiver_id", userId)
-    .in("status", ["delivered", "replied"])
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as MissionDelivery[];
+  return withExpiry(async () => {
+    const { data, error } = await db
+      .from("mission_deliveries")
+      .select(
+        "id, mission_id, sender_id, receiver_id, status, reply_body, replied_at, sender_verdict, receiver_verdict, unlocked_at, expires_at, created_at, mission:missions(body, kind, chips)",
+      )
+      .eq("receiver_id", userId)
+      .in("status", ["delivered", "replied"])
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as MissionDelivery[];
+  });
 }
 
 export async function fetchOutbox(userId: string): Promise<MissionDelivery[]> {
-  const { data, error } = await db
-    .from("mission_deliveries")
-    .select(
-      "id, mission_id, sender_id, receiver_id, status, reply_body, replied_at, sender_verdict, receiver_verdict, unlocked_at, expires_at, created_at, mission:missions(body, kind, chips)",
-    )
-    .eq("sender_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(40);
-  if (error) throw error;
-  return (data ?? []) as MissionDelivery[];
+  return withExpiry(async () => {
+    const { data, error } = await db
+      .from("mission_deliveries")
+      .select(
+        "id, mission_id, sender_id, receiver_id, status, reply_body, replied_at, sender_verdict, receiver_verdict, unlocked_at, expires_at, created_at, mission:missions(body, kind, chips)",
+      )
+      .eq("sender_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(40);
+    if (error) throw error;
+    return (data ?? []) as MissionDelivery[];
+  });
 }
 
 export async function fetchDelivery(id: number): Promise<MissionDelivery | null> {
-  const { data, error } = await db
-    .from("mission_deliveries")
-    .select(
-      "id, mission_id, sender_id, receiver_id, status, reply_body, replied_at, sender_verdict, receiver_verdict, unlocked_at, expires_at, created_at, mission:missions(body, kind, chips)",
-    )
-    .eq("id", id)
-    .maybeSingle();
-  if (error) throw error;
-  return data as MissionDelivery | null;
+  return withExpiry(async () => {
+    const { data, error } = await db
+      .from("mission_deliveries")
+      .select(
+        "id, mission_id, sender_id, receiver_id, status, reply_body, replied_at, sender_verdict, receiver_verdict, unlocked_at, expires_at, created_at, mission:missions(body, kind, chips)",
+      )
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw error;
+    return data as MissionDelivery | null;
+  });
 }
 
 export async function replyToDelivery(id: number, replyBody: string) {
@@ -119,7 +191,8 @@ export async function replyToDelivery(id: number, replyBody: string) {
       status: "replied",
     })
     .eq("id", id)
-    .is("reply_body", null);
+    .is("reply_body", null)
+    .eq("status", "delivered");
   if (error) throw error;
 }
 
@@ -140,7 +213,7 @@ export async function setVerdict(
 export async function fetchUnlockedPeer(peerId: string) {
   const { data, error } = await db
     .from("profiles")
-    .select("id, display_name, handle, bio, avatar_url, birth_year, region, gender")
+    .select("id, display_name, handle, bio, avatar_url, birth_year, region, gender, height_cm")
     .eq("id", peerId)
     .maybeSingle();
   if (error) throw error;
@@ -189,3 +262,35 @@ export function ageBand(birthYear: number | null | undefined): string | null {
   if (age < 40) return "30대 후반";
   return "40대+";
 }
+
+/** Remaining ms until expires_at; negative if past. */
+export function msUntil(iso: string): number {
+  return new Date(iso).getTime() - Date.now();
+}
+
+export function formatCountdown(iso: string): string {
+  const ms = msUntil(iso);
+  if (ms <= 0) return "만료";
+  const totalMin = Math.floor(ms / 60000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h >= 24) {
+    const d = Math.floor(h / 24);
+    return `${d}일 ${h % 24}시간`;
+  }
+  if (h > 0) return `${h}시간 ${m}분`;
+  return `${m}분`;
+}
+
+export const AGE_BAND_OPTIONS = [
+  { label: "20–24", value: "20-24" },
+  { label: "25–29", value: "25-29" },
+  { label: "30–34", value: "30-34" },
+  { label: "35–39", value: "35-39" },
+] as const;
+
+export const HEIGHT_OPTIONS = [
+  { label: "165–174", value: "165-174" },
+  { label: "175–184", value: "175-184" },
+  { label: "185+", value: "185-230" },
+] as const;
