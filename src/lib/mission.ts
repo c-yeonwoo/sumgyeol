@@ -214,12 +214,14 @@ export async function setVerdict(
   role: "sender" | "receiver",
   verdict: "ok" | "pass",
 ) {
-  const col = role === "sender" ? "sender_verdict" : "receiver_verdict";
-  const { error } = await db
-    .from("mission_deliveries")
-    .update({ [col]: verdict })
-    .eq("id", id)
-    .eq(col, "pending");
+  // Verdicts go through a SECURITY DEFINER RPC that writes only the caller's
+  // own column — direct table UPDATE is revoked to prevent verdict forgery.
+  // `role` is kept for call-site clarity; the RPC resolves the column from auth.uid().
+  void role;
+  const { error } = await db.rpc("set_delivery_verdict", {
+    p_delivery_id: id,
+    p_verdict: verdict,
+  });
   if (error) throw error;
 }
 
