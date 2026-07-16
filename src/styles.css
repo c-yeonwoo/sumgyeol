@@ -74,9 +74,10 @@
   --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.55 0.16 32);     /* alert (distinct from peach) */
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.32 0.02 200 / 0.10);
-  --input: oklch(0.32 0.02 200 / 0.14);
+  --border: oklch(0.32 0.02 200 / 0.05);   /* barely-there — structure comes from shadow, not lines */
+  --input: oklch(0.32 0.02 200 / 0.10);
   --ring: oklch(0.72 0.075 190 / 0.5);
+  --backdrop: oklch(0.90 0.035 195);        /* deeper sea behind the app column */
 
   /* Aqua fill for actions needing white-text contrast */
   --tide-mid: oklch(0.64 0.09 188);
@@ -108,9 +109,10 @@
   --accent-foreground: oklch(0.20 0.02 200);
   --destructive: oklch(0.66 0.13 35);
   --destructive-foreground: oklch(0.20 0.02 200);
-  --border: oklch(1 0 0 / 0.1);
-  --input: oklch(1 0 0 / 0.12);
+  --border: oklch(1 0 0 / 0.05);
+  --input: oklch(1 0 0 / 0.10);
   --ring: oklch(0.76 0.08 190 / 0.5);
+  --backdrop: oklch(0.13 0.02 205);
 
   --tide-mid: oklch(0.70 0.09 190);
   --warm: oklch(0.84 0.07 45);
