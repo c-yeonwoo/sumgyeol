@@ -57,7 +57,7 @@ function MePage() {
   return (
     <main className="px-5 py-8">
       <header className="flex justify-between items-center mb-8">
-        <h1 className="font-serif text-[26px]">나</h1>
+        <h1 className="font-serif text-3xl">나</h1>
         <button
           type="button"
           onClick={onLogout}
@@ -95,13 +95,13 @@ function MePage() {
       <nav className="space-y-2">
         <Link
           to="/me/edit"
-          className="block rounded-xl border border-border px-4 py-3.5 text-[15px]"
+          className="block rounded-2xl bg-secondary px-4 py-3.5 text-[15px]"
         >
           프로필 수정
         </Link>
         <Link
           to="/verify"
-          className="block rounded-xl border border-border px-4 py-3.5 text-[15px]"
+          className="block rounded-2xl bg-secondary px-4 py-3.5 text-[15px]"
         >
           본인인증
           <span className="ml-2 text-xs text-muted-foreground">
@@ -110,27 +110,27 @@ function MePage() {
         </Link>
         <Link
           to="/me/blocked"
-          className="block rounded-xl border border-border px-4 py-3.5 text-[15px]"
+          className="block rounded-2xl bg-secondary px-4 py-3.5 text-[15px]"
         >
           차단 목록
         </Link>
         {safety?.is_admin && (
           <Link
             to="/admin/reports"
-            className="block rounded-xl border border-border px-4 py-3.5 text-[15px]"
+            className="block rounded-2xl bg-secondary px-4 py-3.5 text-[15px]"
           >
             관리자 · 신고 검토
           </Link>
         )}
         <Link
           to="/terms"
-          className="block rounded-xl border border-border px-4 py-3.5 text-[15px] text-muted-foreground"
+          className="block rounded-2xl bg-secondary px-4 py-3.5 text-[15px] text-muted-foreground"
         >
           이용약관
         </Link>
         <Link
           to="/privacy"
-          className="block rounded-xl border border-border px-4 py-3.5 text-[15px] text-muted-foreground"
+          className="block rounded-2xl bg-secondary px-4 py-3.5 text-[15px] text-muted-foreground"
         >
           개인정보 처리방침
         </Link>

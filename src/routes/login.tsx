@@ -154,7 +154,7 @@ function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full bg-transparent border-b border-border py-2 outline-none focus:border-foreground transition-colors"
+              className="mt-1.5 w-full rounded-xl bg-secondary px-4 py-3 outline-none focus:ring-2 focus:ring-ring transition"
             />
           </div>
           <div>
@@ -165,7 +165,7 @@ function LoginPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full bg-transparent border-b border-border py-2 outline-none focus:border-foreground transition-colors"
+              className="mt-1.5 w-full rounded-xl bg-secondary px-4 py-3 outline-none focus:ring-2 focus:ring-ring transition"
             />
           </div>
 
@@ -206,7 +206,7 @@ function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-foreground text-background py-3 rounded-md text-sm font-medium mt-6 disabled:opacity-50"
+            className="w-full bg-foreground text-background py-3.5 rounded-full text-[15px] font-bold mt-6 disabled:opacity-50"
           >
             {loading ? "잠시만요..." : mode === "signin" ? "들어가기" : "가입하기"}
           </button>
@@ -222,7 +222,7 @@ function LoginPage() {
           type="button"
           onClick={onGoogle}
           disabled={loading}
-          className="w-full border border-border py-3 rounded-md text-sm font-medium hover:bg-secondary transition-colors disabled:opacity-50"
+          className="w-full bg-secondary py-3.5 rounded-full text-[15px] font-medium hover:brightness-95 transition disabled:opacity-50"
         >
           Google로 계속하기
         </button>

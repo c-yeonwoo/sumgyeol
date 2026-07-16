@@ -47,12 +47,11 @@ function InboxPage() {
 
   return (
     <main className="px-5 py-8">
-      <header className="mb-8">
-        <div className="flex items-start justify-between">
-          <p className="text-xs tracking-widest text-muted-foreground uppercase">플로티</p>
+      <header className="mb-7">
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="font-serif text-3xl">받은 미션</h1>
           <NotifBell />
         </div>
-        <h1 className="font-serif text-3xl mt-1">받은 미션</h1>
         <p className="text-[15px] text-muted-foreground mt-2 leading-relaxed">
           {isMale
             ? "도착한 미션을 수락하고 12시간 안에 답해 보세요. 서로 좋으면 그때 열려요."
@@ -61,7 +60,7 @@ function InboxPage() {
       </header>
 
       {!isMale && profile && (
-        <div className="mb-6 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+        <div className="mb-6 rounded-2xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
           수행(답장)은 남성 역할이에요.{" "}
           <Link to="/send" className="font-semibold text-tide-deep">
             보내기

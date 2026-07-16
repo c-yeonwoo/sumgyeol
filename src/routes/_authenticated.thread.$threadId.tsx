@@ -109,7 +109,7 @@ function ThreadPage() {
 
   return (
     <main className="flex flex-col h-[calc(var(--app-vh)-var(--safe-top))]">
-      <header className="px-5 py-4 border-b border-border flex items-center gap-3">
+      <header className="px-5 py-4 flex items-center gap-3">
         <button type="button" onClick={() => navigate({ to: "/outbox" })} className="text-sm">
           ←
         </button>
@@ -152,8 +152,8 @@ function ThreadPage() {
               className={
                 "max-w-[80%] rounded-2xl px-3.5 py-2.5 text-[15px] " +
                 (mine
-                  ? "ml-auto bg-foreground text-background"
-                  : "mr-auto bg-surface border border-border")
+                  ? "ml-auto bg-tide-mid text-white"
+                  : "mr-auto bg-secondary text-foreground")
               }
             >
               {m.body}
@@ -163,9 +163,9 @@ function ThreadPage() {
         <div ref={bottomRef} />
       </div>
 
-      <section className="border-t border-border px-4 py-3 space-y-2">
+      <section className="px-4 py-3 space-y-2">
         {bothOffered ? (
-          <div className="rounded-xl bg-foreground/5 px-3 py-2 text-sm">
+          <div className="rounded-xl bg-secondary px-3 py-2 text-sm">
             <p className="text-xs text-muted-foreground mb-1">서로 연락처를 열었어요</p>
             <p>상대: {peerContact}</p>
             <p className="text-muted-foreground">나: {myContact}</p>
@@ -183,13 +183,13 @@ function ThreadPage() {
                   onChange={(e) => setContactDraft(e.target.value)}
                   maxLength={80}
                   placeholder="카카오/인스타/번호"
-                  className="flex-1 rounded-full border border-border px-4 py-2 text-sm"
+                  className="flex-1 rounded-full bg-secondary px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
                 <button
                   type="button"
                   disabled={offer.isPending || contactDraft.trim().length < 2}
                   onClick={() => offer.mutate()}
-                  className="rounded-full border border-border px-3 py-2 text-sm disabled:opacity-40"
+                  className="rounded-full bg-tide-mid text-white px-4 py-2 text-sm font-medium disabled:opacity-40"
                 >
                   제안
                 </button>
@@ -200,7 +200,7 @@ function ThreadPage() {
       </section>
 
       <form
-        className="border-t border-border px-4 py-3 flex gap-2"
+        className="px-4 py-3 flex gap-2"
         style={{ paddingBottom: "calc(var(--safe-bottom) + 12px)" }}
         onSubmit={(e) => {
           e.preventDefault();
@@ -213,7 +213,7 @@ function ThreadPage() {
           maxLength={500}
           placeholder={closed ? "대화가 종료됐어요" : "메시지"}
           disabled={closed}
-          className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm disabled:opacity-50"
+          className="flex-1 rounded-full bg-secondary px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
         />
         <button
           type="submit"

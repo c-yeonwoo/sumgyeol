@@ -30,11 +30,10 @@ function OutboxPage() {
 
   return (
     <main className="px-5 py-8">
-      <header className="mb-8">
-        <p className="text-xs tracking-widest text-muted-foreground uppercase">Floatie</p>
-        <h1 className="font-serif text-3xl mt-1">결과</h1>
+      <header className="mb-7">
+        <h1 className="font-serif text-3xl">결과</h1>
         <p className="text-[15px] text-muted-foreground mt-2">
-          보낸 Floatie의 답장과 unlock을 확인해요.
+          보낸 미션의 답장과 결과를 확인해요.
         </p>
       </header>
 
