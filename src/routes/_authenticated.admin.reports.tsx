@@ -45,7 +45,7 @@ function AdminReportsPage() {
     return (
       <main className="px-5 py-10">
         <p className="text-sm text-muted-foreground">관리자만 접근할 수 있어요.</p>
-        <Link to="/home" className="mt-4 inline-block text-sm underline">
+        <Link to="/home" className="mt-4 inline-block text-sm">
           홈으로
         </Link>
       </main>

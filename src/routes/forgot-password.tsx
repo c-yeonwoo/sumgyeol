@@ -40,7 +40,7 @@ function ForgotPasswordPage() {
           </p>
           <Link
             to="/login"
-            className="mt-8 inline-block text-[11px] uppercase tracking-widest text-accent underline underline-offset-4"
+            className="mt-8 inline-block text-[11px] uppercase tracking-widest text-tide-deep font-semibold"
           >
             로그인 화면으로
           </Link>
@@ -79,7 +79,7 @@ function ForgotPasswordPage() {
           </button>
         </form>
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          <Link to="/login" className="text-foreground underline underline-offset-4">
+          <Link to="/login" className="text-tide-deep font-semibold">
             로그인으로 돌아가기
           </Link>
         </p>

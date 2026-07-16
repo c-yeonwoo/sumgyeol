@@ -113,7 +113,7 @@ function DeliveryPage() {
     return (
       <main className="px-5 py-8">
         <p className="text-sm text-muted-foreground">미션을 찾을 수 없어요.</p>
-        <button type="button" className="mt-4 text-sm underline" onClick={() => navigate({ to: "/home" })}>
+        <button type="button" className="mt-4 text-sm" onClick={() => navigate({ to: "/home" })}>
           돌아가기
         </button>
       </main>
@@ -155,7 +155,7 @@ function DeliveryPage() {
           <button
             type="button"
             onClick={() => setReportOpen(true)}
-            className="text-xs text-muted-foreground underline"
+            className="text-xs text-muted-foreground"
           >
             신고
           </button>
@@ -311,17 +311,17 @@ function DeliveryPage() {
           {peer.bio && (
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{peer.bio}</p>
           )}
-          <p className="mt-4 text-[12px] text-muted-foreground">
-            대화는 최대 20통 또는 7일 · 외부 연락은 서로 제안할 때만
-          </p>
           {thread && (
-            <Link
-              to="/thread/$threadId"
-              params={{ threadId: String(thread.id) }}
-              className="mt-5 inline-flex rounded-full bg-warm text-warm-foreground px-6 py-3 text-sm font-bold"
-            >
-              대화 시작
-            </Link>
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <span className="text-[11px] text-muted-foreground">최대 20통 · 7일</span>
+              <Link
+                to="/thread/$threadId"
+                params={{ threadId: String(thread.id) }}
+                className="inline-flex rounded-full bg-warm text-warm-foreground px-6 py-3 text-sm font-bold"
+              >
+                대화 시작
+              </Link>
+            </div>
           )}
         </section>
       )}

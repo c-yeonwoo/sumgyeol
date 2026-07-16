@@ -23,7 +23,7 @@ function BannedPage() {
       </p>
       <button
         type="button"
-        className="mt-8 text-sm underline text-muted-foreground"
+        className="mt-8 text-sm text-muted-foreground"
         onClick={async () => {
           await supabase.auth.signOut();
           window.location.href = "/login";
@@ -34,7 +34,7 @@ function BannedPage() {
       <p className="mt-6 text-xs text-muted-foreground">
         문의가 필요하면 지원 채널로 연락해 주세요.
       </p>
-      <Link to="/terms" className="mt-4 inline-block text-xs underline text-muted-foreground">
+      <Link to="/terms" className="mt-4 inline-block text-xs text-muted-foreground">
         이용약관
       </Link>
     </main>

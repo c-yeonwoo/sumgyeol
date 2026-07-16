@@ -29,6 +29,8 @@ function SendPage() {
   const [filterKind, setFilterKind] = useState<FilterKind>("none");
   const [filterValue, setFilterValue] = useState("");
   const [regionInput, setRegionInput] = useState("");
+  const [showPresets, setShowPresets] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["my-mission-profile"],
@@ -151,155 +153,143 @@ function SendPage() {
     !(needsTicket && tickets < 1) &&
     (filterKind === "none" || !!filter);
 
+  const composeValue = selected ? selected.body : custom;
+  const filterLabel =
+    filterKind === "none"
+      ? "(선택)"
+      : filterKind === "age_band"
+        ? "나이"
+        : filterKind === "region"
+          ? "지역"
+          : "키";
+
   return (
-    <main className="px-5 py-8 pb-28">
-      <header className="mb-6">
-        <p className="text-xs tracking-widest text-muted-foreground uppercase">Floatie</p>
-        <h1 className="font-serif text-3xl mt-1">보내기</h1>
-        <p className="text-[15px] text-muted-foreground mt-2">
-          미션을 바다 위로. 하루 1회 무료 · 추가 발송은 티켓 · 이상형 조건 1개까지 무료
-          <span className="block text-xs mt-1 opacity-80">조건 2개 이상은 티켓 상품 연동 후 개방</span>
-        </p>
-        <div className="mt-3 flex gap-3 text-xs text-muted-foreground">
-          <span>오늘 무료 {freeLeft}/1</span>
-          <span>티켓 {tickets}</span>
+    <main className="px-5 py-7 pb-28">
+      <header className="mb-5">
+        <h1 className="font-serif text-3xl">보내기</h1>
+        <div className="mt-3 flex gap-2 text-xs font-medium text-muted-foreground">
+          <span className="rounded-full bg-secondary px-3 py-1">오늘 무료 {freeLeft}/1</span>
+          <span className="rounded-full bg-secondary px-3 py-1">티켓 {tickets}</span>
         </div>
       </header>
 
       {needsTicket && (
-        <div className="mb-6 rounded-xl border border-border bg-foreground/5 px-4 py-3 text-sm">
+        <p className="mb-4 text-[13px] text-muted-foreground leading-relaxed">
           {tickets > 0
-            ? "오늘 무료분을 썼어요. 보내면 티켓 1장이 차감돼요."
-            : "오늘 무료분을 썼어요. 티켓이 생기면 추가로 보낼 수 있어요."}
-        </div>
+            ? "오늘 무료분을 써서, 보내면 티켓 1장이 차감돼요."
+            : "오늘 무료분을 썼어요. 티켓이 생기면 더 보낼 수 있어요."}
+        </p>
       )}
 
-      <section className="mb-8">
-        <h2 className="text-sm font-medium mb-3">이상형 조건 (선택 · 1개)</h2>
-        <div className="flex flex-wrap gap-2 mb-3">
-          {(
-            [
-              ["none", "없음"],
-              ["age_band", "나이"],
-              ["region", "지역"],
-              ["height", "키"],
-            ] as const
-          ).map(([k, label]) => (
+      {/* compose — the primary action */}
+      <textarea
+        value={composeValue}
+        onChange={(e) => {
+          setCustom(e.target.value);
+          setSelected(null);
+        }}
+        rows={4}
+        maxLength={40}
+        placeholder="어떤 질문을 띄워 볼까요? 편하게 적어도 좋아요."
+        className="w-full rounded-2xl bg-secondary px-4 py-4 text-[16px] leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+      <div className="mt-2 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setShowPresets((v) => !v)}
+          className="text-[13px] font-semibold text-tide-deep"
+        >
+          예시 질문 {showPresets ? "접기" : "보기"}
+        </button>
+        <span className="text-xs text-muted-foreground tabular-nums">
+          {composeValue.trim().length}/40
+        </span>
+      </div>
+
+      {showPresets && (
+        <div className="mt-2 max-h-72 overflow-y-auto rounded-2xl bg-surface p-1.5 shadow-[var(--shadow-md)]">
+          {isLoading && <p className="px-3 py-2 text-sm text-muted-foreground">불러오는 중…</p>}
+          {presets.map((p) => (
             <button
-              key={k}
+              key={p.id}
               type="button"
               onClick={() => {
-                setFilterKind(k);
-                setFilterValue("");
+                setSelected(p);
+                setCustom("");
+                setShowPresets(false);
               }}
-              className={
-                "rounded-full border px-3 py-1.5 text-sm " +
-                (filterKind === k
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border")
-              }
+              className="block w-full rounded-xl px-3 py-2.5 text-left text-[15px] leading-snug hover:bg-secondary"
             >
-              {label}
+              {p.body}
             </button>
           ))}
         </div>
-        {filterKind === "age_band" && (
-          <div className="flex flex-wrap gap-2">
-            {AGE_BAND_OPTIONS.map((o) => (
-              <button
-                key={o.value}
-                type="button"
-                onClick={() => setFilterValue(o.value)}
-                className={
-                  "rounded-full border px-3 py-1.5 text-sm " +
-                  (filterValue === o.value
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border")
-                }
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
-        )}
-        {filterKind === "height" && (
-          <div className="flex flex-wrap gap-2">
-            {HEIGHT_OPTIONS.map((o) => (
-              <button
-                key={o.value}
-                type="button"
-                onClick={() => setFilterValue(o.value)}
-                className={
-                  "rounded-full border px-3 py-1.5 text-sm " +
-                  (filterValue === o.value
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border")
-                }
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
-        )}
-        {filterKind === "region" && (
-          <input
-            value={regionInput}
-            onChange={(e) => setRegionInput(e.target.value)}
-            placeholder="예: 서울"
-            className="w-full rounded-xl border border-border px-3 py-2.5 text-[15px]"
-          />
-        )}
-      </section>
+      )}
 
-      <section className="mb-8">
-        <h2 className="text-sm font-medium mb-3">직접 쓰기</h2>
-        <textarea
-          value={custom}
-          onChange={(e) => {
-            setCustom(e.target.value);
-            setSelected(null);
-          }}
-          rows={3}
-          maxLength={40}
-          placeholder="예: 오늘 기분 한 단어는?"
-          className="w-full rounded-xl border border-border bg-background px-3 py-3 text-[15px] resize-none focus:outline-none focus:ring-1 focus:ring-foreground/30"
-        />
-        <p className="text-xs text-muted-foreground mt-1 text-right">
-          {custom.trim().length}/40
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-sm font-medium mb-3">프리셋</h2>
-        {isLoading && <p className="text-sm text-muted-foreground">불러오는 중…</p>}
-        <ul className="space-y-2">
-          {presets.map((p) => {
-            const active = selected?.id === p.id;
-            return (
-              <li key={p.id}>
+      {/* ideal filter — optional, tucked away */}
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={() => setShowFilter((v) => !v)}
+          className="text-[13px] font-semibold text-tide-deep"
+        >
+          이상형 조건 {filterKind !== "none" ? `· ${filterLabel}` : "(선택)"} {showFilter ? "접기" : "펼치기"}
+        </button>
+        {showFilter && (
+          <div className="mt-3 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  ["none", "없음"],
+                  ["age_band", "나이"],
+                  ["region", "지역"],
+                  ["height", "키"],
+                ] as const
+              ).map(([k, label]) => (
                 <button
+                  key={k}
                   type="button"
                   onClick={() => {
-                    setSelected(p);
-                    setCustom("");
+                    setFilterKind(k);
+                    setFilterValue("");
                   }}
                   className={
-                    "w-full text-left rounded-xl border px-4 py-3 transition-colors " +
-                    (active
-                      ? "border-foreground bg-foreground/5"
-                      : "border-border hover:border-foreground/30")
+                    "rounded-full px-3.5 py-1.5 text-sm font-medium " +
+                    (filterKind === k ? "bg-tide-mid text-white" : "bg-secondary text-foreground")
                   }
                 >
-                  <span className="text-[11px] text-muted-foreground">
-                    {p.kind === "question" ? "질문" : "행동 인증"}
-                  </span>
-                  <p className="font-serif text-[17px] mt-0.5 leading-snug">{p.body}</p>
+                  {label}
                 </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+              ))}
+            </div>
+            {(filterKind === "age_band" ? AGE_BAND_OPTIONS : filterKind === "height" ? HEIGHT_OPTIONS : []).length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {(filterKind === "age_band" ? AGE_BAND_OPTIONS : HEIGHT_OPTIONS).map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => setFilterValue(o.value)}
+                    className={
+                      "rounded-full px-3.5 py-1.5 text-sm " +
+                      (filterValue === o.value ? "bg-tide-mid text-white" : "bg-secondary text-foreground")
+                    }
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {filterKind === "region" && (
+              <input
+                value={regionInput}
+                onChange={(e) => setRegionInput(e.target.value)}
+                placeholder="예: 서울"
+                className="w-full rounded-xl bg-secondary px-4 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 px-5 pb-[calc(var(--safe-bottom)+var(--tabbar-height)+12px)] pt-3 bg-gradient-to-t from-background via-background to-transparent">
         <button
@@ -308,11 +298,7 @@ function SendPage() {
           onClick={() => send.mutate()}
           className="w-full rounded-full bg-warm text-warm-foreground py-3.5 text-[15px] font-bold disabled:opacity-40"
         >
-          {send.isPending
-            ? "보내는 중…"
-            : needsTicket
-              ? "티켓으로 보내기"
-              : "바다 위로 보내기"}
+          {send.isPending ? "보내는 중…" : needsTicket ? "티켓으로 보내기" : "바다 위로 보내기"}
         </button>
       </div>
     </main>

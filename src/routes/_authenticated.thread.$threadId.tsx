@@ -125,7 +125,7 @@ function ThreadPage() {
           <button
             type="button"
             onClick={() => setReportOpen(true)}
-            className="text-xs text-muted-foreground underline"
+            className="text-xs text-muted-foreground"
           >
             신고
           </button>

@@ -107,7 +107,7 @@ function LoginPage() {
         <div className="w-full max-w-sm text-center">
           <h1 className="font-serif text-3xl mb-4">메일을 보냈어요</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <span className="text-foreground">{email}</span> 으로 인증 메일을
+            <span className="font-semibold text-tide-deep">{email}</span> 으로 인증 메일을
             보냈어요. 메일에 있는 링크를 눌러 가입을 마무리해 주세요.
           </p>
           <p className="text-[12px] text-muted-foreground mt-6">
@@ -116,7 +116,7 @@ function LoginPage() {
           <button
             onClick={onResend}
             disabled={loading}
-            className="mt-6 block mx-auto text-[12px] text-foreground underline underline-offset-4 disabled:opacity-50"
+            className="mt-6 block mx-auto text-[12px] text-foreground disabled:opacity-50"
           >
             {loading ? "보내는 중..." : "메일 다시 보내기"}
           </button>
@@ -125,7 +125,7 @@ function LoginPage() {
               setConfirmSent(false);
               setMode("signin");
             }}
-            className="mt-6 text-[11px] uppercase tracking-widest text-accent underline underline-offset-4"
+            className="mt-6 text-[11px] uppercase tracking-widest text-accent"
           >
             로그인 화면으로
           </button>
@@ -173,7 +173,7 @@ function LoginPage() {
             <div className="text-right">
               <Link
                 to="/forgot-password"
-                className="text-[11px] text-muted-foreground hover:text-foreground underline underline-offset-4"
+                className="text-[11px] text-muted-foreground hover:text-foreground"
               >
                 비밀번호를 잊으셨나요?
               </Link>
@@ -191,11 +191,11 @@ function LoginPage() {
                 className="mt-0.5 accent-foreground"
               />
               <span>
-                <Link to="/terms" className="text-foreground underline underline-offset-4">
+                <Link to="/terms" className="font-semibold text-tide-deep">
                   이용약관
                 </Link>
                 {" 및 "}
-                <Link to="/privacy" className="text-foreground underline underline-offset-4">
+                <Link to="/privacy" className="font-semibold text-tide-deep">
                   개인정보 처리방침
                 </Link>
                 에 동의합니다.
@@ -232,7 +232,7 @@ function LoginPage() {
           <button
             type="button"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="text-foreground underline underline-offset-4"
+            className="font-semibold text-tide-deep"
           >
             {mode === "signin" ? "가입하기" : "로그인하기"}
           </button>

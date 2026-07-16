@@ -159,7 +159,7 @@ function WaitingPage() {
           </button>
           <Link
             to="/send"
-            className="block text-center text-sm text-muted-foreground underline"
+            className="block text-center text-sm text-muted-foreground"
           >
             새 미션 작성하기
           </Link>
@@ -178,7 +178,7 @@ function WaitingPage() {
 
       <Link
         to="/outbox"
-        className="mt-auto pt-10 text-center text-xs text-muted-foreground underline"
+        className="mt-auto pt-10 text-center text-xs text-muted-foreground"
       >
         결과 목록 보기
       </Link>

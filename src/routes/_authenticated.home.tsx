@@ -63,7 +63,7 @@ function InboxPage() {
       {!isMale && profile && (
         <div className="mb-6 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
           수행(답장)은 남성 역할이에요.{" "}
-          <Link to="/send" className="underline text-foreground">
+          <Link to="/send" className="font-semibold text-tide-deep">
             보내기
           </Link>
           로 가 보세요.
@@ -81,7 +81,7 @@ function InboxPage() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="mt-3 text-sm underline"
+            className="mt-3 text-sm"
           >
             다시 시도
           </button>
