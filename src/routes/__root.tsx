@@ -66,7 +66,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" },
       { title: "플로티 — 익명 미션이 둥실 떠다니다" },
       { name: "description", content: "익명 미션에 답하고, 서로 OK면 그때 프로필이 열립니다." },
-      { name: "theme-color", content: "#F9F8F6" },
+      { name: "theme-color", content: "#F1F7F5" },
       { property: "og:title", content: "플로티" },
       { property: "og:description", content: "익명 미션에 답하고, 서로 OK면 그때 프로필이 열립니다." },
       { property: "og:type", content: "website" },
@@ -77,6 +77,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      // Pretendard — single brand typeface. TODO(capacitor): self-host woff2 for offline.
+      { rel: "preconnect", href: "https://cdn.jsdelivr.net", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" },
       { rel: "stylesheet", href: appCss },
     ],
   }),

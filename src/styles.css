@@ -31,8 +31,16 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
-  --font-serif: 'Nanum Myeongjo', ui-serif, Georgia, serif;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --color-tide-mid: var(--tide-mid);
+  --color-warm: var(--warm);
+  --color-warm-tint: var(--warm-tint);
+  --color-warm-wash: var(--warm-wash);
+  --color-warm-deep: var(--warm-deep);
+  --color-warm-ink: var(--warm-ink);
+  --color-warm-foreground: var(--warm-foreground);
+  /* Single typeface — Pretendard. No serif; hierarchy via weight/size. */
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --font-serif: var(--font-sans);
   /* Subtle depth — keep restrained, gallery aesthetic */
   --shadow-xs: 0 1px 2px oklch(0.22 0.01 50 / 0.04);
   --shadow-sm: 0 1px 2px oklch(0.22 0.01 50 / 0.04), 0 2px 6px oklch(0.22 0.01 50 / 0.04);
@@ -43,50 +51,69 @@
 
 :root {
   --radius: 0.75rem;
-  /* Serene gallery — warm paper beige, ink, sage accent */
-  --background: oklch(0.974 0.006 80);
+  /* Floatie — pastel sea (aqua) + sunset (peach). Light = daytime sea. */
+  --background: oklch(0.968 0.008 185);   /* sea-mist paper */
   --surface: oklch(1 0 0);
-  --foreground: oklch(0.22 0.01 50);
+  --foreground: oklch(0.32 0.02 200);     /* deep sea ink (softened, not black) */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.01 50);
+  --card-foreground: oklch(0.32 0.02 200);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.01 50);
-  --primary: oklch(0.22 0.01 50);
-  --primary-foreground: oklch(0.974 0.006 80);
-  --secondary: oklch(0.95 0.008 80);
-  --secondary-foreground: oklch(0.22 0.01 50);
-  --muted: oklch(0.95 0.008 80);
-  --muted-foreground: oklch(0.58 0.012 70);
-  --accent: oklch(0.62 0.025 115);
-  --accent-foreground: oklch(0.98 0.005 80);
-  --destructive: oklch(0.55 0.18 25);
-  --destructive-foreground: oklch(0.98 0.005 80);
-  --border: oklch(0.22 0.01 50 / 0.08);
-  --input: oklch(0.22 0.01 50 / 0.1);
-  --ring: oklch(0.62 0.025 115 / 0.5);
+  --popover-foreground: oklch(0.32 0.02 200);
+  --primary: oklch(0.32 0.02 200);
+  --primary-foreground: oklch(0.97 0.008 185);
+  --secondary: oklch(0.95 0.012 185);
+  --secondary-foreground: oklch(0.32 0.02 200);
+  --muted: oklch(0.95 0.012 185);
+  --muted-foreground: oklch(0.56 0.015 195);
+  --accent: oklch(0.72 0.075 190);        /* pastel aqua — brand */
+  --accent-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.55 0.16 32);     /* alert (distinct from peach) */
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.32 0.02 200 / 0.10);
+  --input: oklch(0.32 0.02 200 / 0.14);
+  --ring: oklch(0.72 0.075 190 / 0.5);
+
+  /* Aqua fill for actions needing white-text contrast */
+  --tide-mid: oklch(0.64 0.09 188);
+  /* Sunset peach — reward / 설렘 (used on emotional CTAs, unlock, arrival) */
+  --warm: oklch(0.80 0.09 45);
+  --warm-tint: oklch(0.88 0.06 50);
+  --warm-wash: oklch(0.94 0.03 50);
+  --warm-deep: oklch(0.62 0.11 42);
+  --warm-ink: oklch(0.34 0.06 40);
+  --warm-foreground: oklch(0.34 0.06 40);
 }
 
 .dark {
-  --background: oklch(0.18 0.01 60);
-  --surface: oklch(0.22 0.01 60);
-  --foreground: oklch(0.95 0.005 80);
-  --card: oklch(0.22 0.01 60);
-  --card-foreground: oklch(0.95 0.005 80);
-  --popover: oklch(0.22 0.01 60);
-  --popover-foreground: oklch(0.95 0.005 80);
-  --primary: oklch(0.95 0.005 80);
-  --primary-foreground: oklch(0.22 0.01 50);
-  --secondary: oklch(0.27 0.01 60);
-  --secondary-foreground: oklch(0.95 0.005 80);
-  --muted: oklch(0.27 0.01 60);
-  --muted-foreground: oklch(0.7 0.012 70);
-  --accent: oklch(0.62 0.025 115);
-  --accent-foreground: oklch(0.95 0.005 80);
-  --destructive: oklch(0.6 0.18 25);
-  --destructive-foreground: oklch(0.95 0.005 80);
+  /* Deep sea at night */
+  --background: oklch(0.20 0.02 200);
+  --surface: oklch(0.26 0.022 200);
+  --foreground: oklch(0.95 0.008 185);
+  --card: oklch(0.26 0.022 200);
+  --card-foreground: oklch(0.95 0.008 185);
+  --popover: oklch(0.26 0.022 200);
+  --popover-foreground: oklch(0.95 0.008 185);
+  --primary: oklch(0.95 0.008 185);
+  --primary-foreground: oklch(0.24 0.02 200);
+  --secondary: oklch(0.30 0.022 200);
+  --secondary-foreground: oklch(0.95 0.008 185);
+  --muted: oklch(0.30 0.022 200);
+  --muted-foreground: oklch(0.70 0.015 195);
+  --accent: oklch(0.76 0.08 190);
+  --accent-foreground: oklch(0.20 0.02 200);
+  --destructive: oklch(0.66 0.13 35);
+  --destructive-foreground: oklch(0.20 0.02 200);
   --border: oklch(1 0 0 / 0.1);
   --input: oklch(1 0 0 / 0.12);
-  --ring: oklch(0.62 0.025 115 / 0.5);
+  --ring: oklch(0.76 0.08 190 / 0.5);
+
+  --tide-mid: oklch(0.70 0.09 190);
+  --warm: oklch(0.84 0.07 45);
+  --warm-tint: oklch(0.90 0.05 50);
+  --warm-wash: oklch(0.34 0.05 45);
+  --warm-deep: oklch(0.86 0.08 48);
+  --warm-ink: oklch(0.24 0.03 40);
+  --warm-foreground: oklch(0.22 0.03 40);
 }
 
 @layer base {
@@ -129,8 +156,12 @@
   }
 
 
+  /* No serif face anymore — 'font-serif' now means "display": bold Pretendard.
+     Keeps all existing call-sites working while unifying to one typeface. */
   .font-serif {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.012em;
   }
 
   /* Subtle elevation across surfaces — applied globally so cards/icons/nav
