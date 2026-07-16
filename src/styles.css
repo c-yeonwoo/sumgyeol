@@ -372,3 +372,13 @@ body.app-ready #boot-splash {
   50% { transform: scaleX(1.15); opacity: 0.25; }
 }
 
+/* Gentle bob for the bottle mascot in empty states */
+@keyframes floatie-bob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-8px) rotate(4deg); }
+}
+.animate-floatie-bob { animation: floatie-bob 5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-floatie-bob { animation: none; }
+}
+

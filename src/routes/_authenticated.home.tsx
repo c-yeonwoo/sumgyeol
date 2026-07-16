@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { EmptyState } from "@/components/empty-state";
 import {
   fetchInbox,
   fetchMyMissionProfile,
@@ -82,14 +83,24 @@ function InboxPage() {
         </div>
       )}
       {!isLoading && !error && (data?.length ?? 0) === 0 && (
-        <div className="rounded-2xl border border-dashed border-border px-5 py-10 text-center">
-          <p className="font-serif text-xl">아직 도착한 미션이 없어요</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            {isMale
-              ? "누군가 미션을 보내면 여기에 나타나요."
-              : "먼저 보내기에서 미션을 보내 보면 루프가 돌아가요."}
-          </p>
-        </div>
+        <EmptyState
+          title="아직 도착한 미션이 없어요"
+          description={
+            isMale
+              ? "누군가의 미션이 바다를 건너오면 여기에 조용히 닿아요."
+              : "먼저 미션을 바다에 띄우면 루프가 시작돼요."
+          }
+          action={
+            isMale ? undefined : (
+              <Link
+                to="/send"
+                className="inline-flex rounded-full bg-warm text-warm-foreground px-6 py-3 text-sm font-bold"
+              >
+                미션 보내기
+              </Link>
+            )
+          }
+        />
       )}
 
       <ul className="space-y-3">

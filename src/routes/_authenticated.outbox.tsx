@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { EmptyState } from "@/components/empty-state";
 import {
   fetchOutbox,
   formatCountdown,
@@ -38,7 +39,18 @@ function OutboxPage() {
 
       {isLoading && <p className="text-sm text-muted-foreground">불러오는 중…</p>}
       {!isLoading && (data?.length ?? 0) === 0 && (
-        <p className="text-sm text-muted-foreground">아직 보낸 미션이 없어요.</p>
+        <EmptyState
+          title="아직 보낸 미션이 없어요"
+          description="첫 미션을 바다에 띄워 보세요. 누군가 건져 올릴지 몰라요."
+          action={
+            <Link
+              to="/send"
+              className="inline-flex rounded-full bg-warm text-warm-foreground px-6 py-3 text-sm font-bold"
+            >
+              첫 미션 보내기
+            </Link>
+          }
+        />
       )}
 
       <ul className="space-y-3">
