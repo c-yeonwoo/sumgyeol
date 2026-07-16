@@ -15,12 +15,12 @@ export function SeaBanner({ className }: { className?: string }) {
         className="pointer-events-none absolute right-[16%] top-[20%] size-11 rounded-full"
         style={{ background: "radial-gradient(circle,#ffe3cf,#ffb69e 72%)", filter: "blur(2px)", opacity: 0.9 }}
       />
-      {/* drifting bottle */}
-      <div className="relative flex h-full items-center justify-center pb-6">
+      {/* drifting bottle — nudged down so it sits into the waves */}
+      <div className="relative flex h-full items-center justify-center translate-y-[10%]">
         <BottleGlyph className="w-14 animate-floatie-bob" />
       </div>
-      {/* continuously flowing waves (two parallax layers) */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 overflow-hidden">
+      {/* continuously flowing waves (two parallax layers), raised to meet the bottle */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[4.5rem] overflow-hidden">
         <svg
           className="absolute bottom-0 left-0 h-full w-[200%] animate-wave-flow"
           viewBox="0 0 800 60"
