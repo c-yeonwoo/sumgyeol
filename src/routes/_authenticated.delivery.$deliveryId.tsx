@@ -319,7 +319,7 @@ function DeliveryPage() {
             <Link
               to="/thread/$threadId"
               params={{ threadId: String(thread.id) }}
-              className="mt-5 inline-flex rounded-full bg-warm text-warm-foreground px-5 py-2.5 text-sm font-semibold shadow-md"
+              className="mt-5 inline-flex rounded-full bg-warm text-warm-foreground px-6 py-3 text-sm font-bold"
             >
               대화 시작
             </Link>

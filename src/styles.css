@@ -42,15 +42,20 @@
   --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
   --font-serif: var(--font-sans);
   /* Subtle depth — keep restrained, gallery aesthetic */
-  --shadow-xs: 0 1px 2px oklch(0.22 0.01 50 / 0.04);
-  --shadow-sm: 0 1px 2px oklch(0.22 0.01 50 / 0.04), 0 2px 6px oklch(0.22 0.01 50 / 0.04);
-  --shadow-md: 0 2px 4px oklch(0.22 0.01 50 / 0.05), 0 8px 20px oklch(0.22 0.01 50 / 0.05);
-  --shadow-nav: 0 -1px 2px oklch(0.22 0.01 50 / 0.03), 0 -8px 24px oklch(0.22 0.01 50 / 0.04);
+  /* Buoyant depth — sea-tinted, present (not the old hairline gallery look). */
+  --shadow-xs: 0 1px 2px oklch(0.30 0.03 210 / 0.06), 0 2px 6px oklch(0.30 0.03 210 / 0.06);
+  --shadow-sm: 0 2px 4px oklch(0.30 0.03 210 / 0.07), 0 6px 16px oklch(0.30 0.03 210 / 0.10);
+  --shadow-md: 0 4px 8px oklch(0.30 0.03 210 / 0.09), 0 14px 30px oklch(0.30 0.03 210 / 0.13);
+  --shadow-lg: 0 8px 16px oklch(0.30 0.03 210 / 0.11), 0 26px 52px oklch(0.30 0.03 210 / 0.17);
+  --shadow-btn: 0 3px 6px oklch(0.30 0.03 210 / 0.14), 0 8px 18px oklch(0.30 0.03 210 / 0.18);
+  --shadow-peach: 0 4px 10px oklch(0.62 0.12 42 / 0.30), 0 12px 26px oklch(0.62 0.12 42 / 0.28);
+  --shadow-tide: 0 4px 10px oklch(0.55 0.10 200 / 0.28), 0 12px 26px oklch(0.55 0.10 200 / 0.24);
+  --shadow-nav: 0 -2px 8px oklch(0.30 0.03 210 / 0.06), 0 -10px 30px oklch(0.30 0.03 210 / 0.09);
 }
 
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1.1rem;
   /* Floatie — pastel sea (aqua) + sunset (peach). Light = daytime sea. */
   --background: oklch(0.968 0.008 185);   /* sea-mist paper */
   --surface: oklch(1 0 0);
@@ -164,19 +169,48 @@
     letter-spacing: -0.012em;
   }
 
-  /* Subtle elevation across surfaces — applied globally so cards/icons/nav
-     all gain a small, consistent depth without touching every component. */
+  /* Buoyant elevation — surfaces float on soft sea-tinted shadow, not hairlines. */
   .bg-surface {
-    box-shadow: var(--shadow-xs);
+    box-shadow: var(--shadow-sm);
   }
   .bg-card {
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
   }
   /* Soft lift on rounded avatar-like icon containers */
   .rounded-full.bg-surface,
   .rounded-full.bg-muted {
-    box-shadow: var(--shadow-xs);
+    box-shadow: var(--shadow-sm);
   }
+}
+
+@layer components {
+  /* Dimensional, tactile buttons — raised, press to sink. Our style, no thin lines. */
+  .btn-raise {
+    box-shadow: var(--shadow-btn);
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .btn-raise:active { transform: translateY(1.5px); box-shadow: var(--shadow-sm); }
+  .btn-raise:hover { filter: brightness(1.03); }
+  .glow-peach { box-shadow: var(--shadow-peach); }
+  .glow-peach:active { box-shadow: var(--shadow-sm); }
+  .glow-tide { box-shadow: var(--shadow-tide); }
+  .glow-tide:active { box-shadow: var(--shadow-sm); }
+
+  /* Global CTA depth — every primary (ink) and warm (peach) button/link across
+     the app gets raised, tactile depth without per-file edits. */
+  :is(button, a).bg-foreground {
+    box-shadow: var(--shadow-btn);
+    transition: transform .13s ease, box-shadow .13s ease, filter .13s ease;
+  }
+  :is(button, a).bg-foreground:hover { filter: brightness(1.08); }
+  :is(button, a).bg-foreground:active { transform: translateY(1.5px); box-shadow: var(--shadow-sm); }
+
+  :is(button, a).bg-warm {
+    box-shadow: var(--shadow-peach);
+    transition: transform .13s ease, box-shadow .13s ease, filter .13s ease;
+  }
+  :is(button, a).bg-warm:hover { filter: brightness(1.04); }
+  :is(button, a).bg-warm:active { transform: translateY(1.5px); box-shadow: var(--shadow-sm); }
 }
 
 #boot-splash {
