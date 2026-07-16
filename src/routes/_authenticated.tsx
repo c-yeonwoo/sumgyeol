@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useLocation } from "@tanstack/
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { touchLastActive } from "@/lib/mission";
+import { registerPush } from "@/lib/push";
 import { NotificationToasts } from "@/components/notification-toasts";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -59,6 +60,7 @@ function AuthenticatedLayout() {
 
   useEffect(() => {
     touchLastActive().catch(() => {});
+    registerPush().catch(() => {}); // native only; no-op on web
     const id = setInterval(() => {
       touchLastActive().catch(() => {});
     }, 5 * 60 * 1000);

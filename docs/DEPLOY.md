@@ -83,6 +83,19 @@ npx cap open ios         # Xcode → Archive → App Store Connect
 
 ---
 
+## 3. 푸시 알림 (FCM/APNs)
+
+**구현됨(코드/DB):**
+- 클라 등록 `src/lib/push.ts` — 네이티브에서만 권한 요청·등록, 웹은 no-op
+- 토큰 저장: `device_tokens` 테이블 + `upsert_device_token()` RPC (원격 적용됨)
+- `_authenticated` 진입 시 자동 등록
+
+**남은 것(당신 계정/키):**
+- iOS: Apple Developer → **APNs Auth Key(.p8)** → Xcode에 Push Notifications capability 추가
+- Android: Firebase 프로젝트 → **google-services.json** → `android/app/`에 추가, FCM 서버키
+- **발송 Edge Function**: `in_app_notifications` insert 시(또는 mission arrival/reply/no-response) `device_tokens` 조회 → FCM/APNs로 전송. payload에 `data.url`(예: `/delivery/123`) 넣으면 탭 시 해당 화면으로 라우팅됨.
+- 플러그인 반영: `npm i` 후 `npx cap sync` (이미 `@capacitor/push-notifications` 설치됨)
+
 ## 권장 순서
 1. **Cloudflare 웹 배포** (§1) → `.pages.dev`에서 실기기 테스트
 2. 웹 안정화 후 **App Store 관문**(§2: 회원탈퇴·appId·아이콘·푸시·4.2 대응)
