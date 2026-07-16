@@ -306,7 +306,7 @@ function SendPage() {
           type="button"
           disabled={send.isPending || !canSubmit}
           onClick={() => send.mutate()}
-          className="w-full rounded-full bg-foreground text-background py-3.5 text-sm font-medium disabled:opacity-40"
+          className="w-full rounded-full bg-warm text-warm-foreground py-3.5 text-sm font-semibold shadow-md disabled:opacity-40"
         >
           {send.isPending
             ? "보내는 중…"

@@ -282,8 +282,8 @@ function DeliveryPage() {
       )}
 
       {delivery.unlocked_at && peer && (
-        <section className="mt-8 rounded-2xl border border-foreground/20 bg-foreground/5 px-4 py-5">
-          <p className="text-xs tracking-widest text-muted-foreground mb-3">UNLOCK</p>
+        <section className="mt-8 rounded-2xl border border-warm/50 bg-warm-wash px-4 py-5 shadow-sm">
+          <p className="text-xs tracking-widest text-warm-deep font-semibold mb-3">UNLOCK</p>
           <div className="flex items-center gap-4">
             {peer.avatar_url ? (
               <StorageImg
@@ -319,7 +319,7 @@ function DeliveryPage() {
             <Link
               to="/thread/$threadId"
               params={{ threadId: String(thread.id) }}
-              className="mt-5 inline-flex rounded-full bg-foreground text-background px-5 py-2.5 text-sm"
+              className="mt-5 inline-flex rounded-full bg-warm text-warm-foreground px-5 py-2.5 text-sm font-semibold shadow-md"
             >
               대화 시작
             </Link>
