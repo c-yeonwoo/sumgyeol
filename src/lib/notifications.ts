@@ -40,10 +40,49 @@ export async function fetchUnreadNotifications(): Promise<InAppNotification[]> {
   return (data ?? []) as InAppNotification[];
 }
 
+export async function fetchNotifications(limit = 50): Promise<InAppNotification[]> {
+  const { data: userData } = await supabase.auth.getUser();
+  const uid = userData.user?.id;
+  if (!uid) return [];
+  const { data, error } = await db
+    .from("in_app_notifications")
+    .select("id, kind, title, body, payload, read_at, created_at")
+    .eq("user_id", uid)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    if (/relation|does not exist/i.test(error.message)) return [];
+    throw error;
+  }
+  return (data ?? []) as InAppNotification[];
+}
+
 export async function markNotificationRead(id: number) {
   const { error } = await db
     .from("in_app_notifications")
     .update({ read_at: new Date().toISOString() })
     .eq("id", id);
   if (error) throw error;
+}
+
+export async function markAllNotificationsRead() {
+  const { data: userData } = await supabase.auth.getUser();
+  const uid = userData.user?.id;
+  if (!uid) return;
+  const { error } = await db
+    .from("in_app_notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("user_id", uid)
+    .is("read_at", null);
+  if (error) throw error;
+}
+
+/** Screen a notification should open when tapped. */
+export function notificationHref(
+  n: Pick<InAppNotification, "kind" | "payload">,
+): string | null {
+  const id = n.payload?.delivery_id;
+  if (!id) return null;
+  if (n.kind === "mission_no_response") return `/waiting/${id}`;
+  return `/delivery/${id}`; // arrived / accepted / replied
 }

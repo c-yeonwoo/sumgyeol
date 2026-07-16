@@ -50,6 +50,7 @@ function AuthenticatedLayout() {
     location.pathname.startsWith("/delivery/") ||
     location.pathname.startsWith("/thread/") ||
     location.pathname.startsWith("/waiting/") ||
+    location.pathname === "/notifications" ||
     location.pathname === "/onboarding" ||
     location.pathname === "/verify" ||
     location.pathname === "/banned" ||
@@ -84,7 +85,7 @@ function AuthenticatedLayout() {
         </div>
         {!hideTabs && <TabBar pathname={location.pathname} height={tabBarHeight} />}
       </div>
-      <NotificationToasts />
+      {location.pathname !== "/notifications" && <NotificationToasts />}
     </div>
   );
 }

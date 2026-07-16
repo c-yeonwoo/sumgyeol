@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyState } from "@/components/empty-state";
 import { Pill } from "@/components/status-pill";
+import { NotifBell } from "@/components/notif-bell";
 import {
   fetchInbox,
   fetchMyMissionProfile,
@@ -47,7 +48,10 @@ function InboxPage() {
   return (
     <main className="px-5 py-8">
       <header className="mb-8">
-        <p className="text-xs tracking-widest text-muted-foreground uppercase">플로티</p>
+        <div className="flex items-start justify-between">
+          <p className="text-xs tracking-widest text-muted-foreground uppercase">플로티</p>
+          <NotifBell />
+        </div>
         <h1 className="font-serif text-3xl mt-1">받은 미션</h1>
         <p className="text-[15px] text-muted-foreground mt-2 leading-relaxed">
           {isMale

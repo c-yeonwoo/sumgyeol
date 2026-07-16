@@ -20,6 +20,7 @@ import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedSendRouteImport } from './routes/_authenticated.send'
 import { Route as AuthenticatedOutboxRouteImport } from './routes/_authenticated.outbox'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated.notifications'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
 import { Route as AuthenticatedBannedRouteImport } from './routes/_authenticated.banned'
 import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated.me.index'
@@ -84,6 +85,12 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -143,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/banned': typeof AuthenticatedBannedRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/outbox': typeof AuthenticatedOutboxRoute
   '/send': typeof AuthenticatedSendRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/banned': typeof AuthenticatedBannedRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/outbox': typeof AuthenticatedOutboxRoute
   '/send': typeof AuthenticatedSendRoute
@@ -187,6 +196,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/banned': typeof AuthenticatedBannedRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/outbox': typeof AuthenticatedOutboxRoute
   '/_authenticated/send': typeof AuthenticatedSendRoute
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/banned'
     | '/home'
+    | '/notifications'
     | '/onboarding'
     | '/outbox'
     | '/send'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/banned'
     | '/home'
+    | '/notifications'
     | '/onboarding'
     | '/outbox'
     | '/send'
@@ -253,6 +265,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/banned'
     | '/_authenticated/home'
+    | '/_authenticated/notifications'
     | '/_authenticated/onboarding'
     | '/_authenticated/outbox'
     | '/_authenticated/send'
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -424,6 +444,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedBannedRoute: typeof AuthenticatedBannedRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedOutboxRoute: typeof AuthenticatedOutboxRoute
   AuthenticatedSendRoute: typeof AuthenticatedSendRoute
@@ -440,6 +461,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBannedRoute: AuthenticatedBannedRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedOutboxRoute: AuthenticatedOutboxRoute,
   AuthenticatedSendRoute: AuthenticatedSendRoute,
