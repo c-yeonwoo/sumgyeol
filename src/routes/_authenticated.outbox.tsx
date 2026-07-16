@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyState } from "@/components/empty-state";
+import { Pill, type PillTone } from "@/components/status-pill";
 import {
   fetchOutbox,
   formatCountdown,
@@ -73,6 +74,16 @@ function statusLabel(d: MissionDelivery): string {
   return "답장 기다리는 중";
 }
 
+function statusTone(d: MissionDelivery): PillTone {
+  if (d.unlocked_at) return "new"; // unlock = the warm win
+  if (d.sender_verdict === "pass" || d.receiver_verdict === "pass") return "muted";
+  if (d.reply_body && d.sender_verdict === "pending") return "warm"; // reply arrived → evaluate
+  if (d.reply_body) return "warm";
+  if (d.status === "expired") return "alert";
+  if (d.expires_at && msUntil(d.expires_at) <= 0) return "alert";
+  return "tide"; // drifting / awaiting reply
+}
+
 function OutboxCard({ delivery }: { delivery: MissionDelivery }) {
   const expiredNoReply = delivery.status === "expired" && !delivery.reply_body;
 
@@ -81,11 +92,15 @@ function OutboxCard({ delivery }: { delivery: MissionDelivery }) {
       <Link
         to={expiredNoReply ? "/waiting/$deliveryId" : "/delivery/$deliveryId"}
         params={{ deliveryId: String(delivery.id) }}
-        className="block rounded-2xl border border-border bg-surface px-4 py-4"
+        className="block rounded-2xl bg-surface px-4 py-4 transition-shadow duration-150 hover:shadow-[var(--shadow-md)]"
       >
-        <div className="flex justify-between text-xs text-muted-foreground mb-2">
-          <span>{statusLabel(delivery)}</span>
-          <span>{new Date(delivery.created_at).toLocaleDateString("ko-KR")}</span>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <Pill tone={statusTone(delivery)} ping={!!delivery.reply_body && !delivery.unlocked_at}>
+            {statusLabel(delivery)}
+          </Pill>
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {new Date(delivery.created_at).toLocaleDateString("ko-KR")}
+          </span>
         </div>
         <p className="font-serif text-lg leading-snug">
           {delivery.mission?.body ?? "미션"}

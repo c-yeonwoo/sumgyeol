@@ -215,8 +215,8 @@ function DeliveryPage() {
                     setReply("");
                   }}
                   className={
-                    "rounded-full border px-3 py-1.5 text-sm " +
-                    (chip === c ? "border-foreground bg-foreground text-background" : "border-border")
+                    "rounded-full px-4 py-2 text-sm font-medium transition-colors " +
+                    (chip === c ? "bg-tide-mid text-white" : "bg-secondary text-foreground")
                   }
                 >
                   {c}
@@ -232,8 +232,8 @@ function DeliveryPage() {
             }}
             rows={3}
             maxLength={200}
-            placeholder="한 줄로 답해 보세요"
-            className="w-full rounded-xl border border-border px-3 py-3 text-[15px] resize-none"
+            placeholder="편하게 답해 보세요. 두세 문장도 좋아요."
+            className="w-full rounded-2xl bg-secondary px-4 py-3 text-[15px] resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <button
             type="button"
@@ -247,7 +247,7 @@ function DeliveryPage() {
       )}
 
       {delivery.reply_body && (
-        <section className="mt-8 rounded-2xl border border-border px-4 py-4">
+        <section className="mt-8 rounded-2xl bg-secondary px-4 py-4">
           <p className="text-xs text-muted-foreground mb-1">답장</p>
           <p className="text-[15px] leading-relaxed">{delivery.reply_body}</p>
         </section>
@@ -259,7 +259,7 @@ function DeliveryPage() {
             type="button"
             disabled={verdictMut.isPending}
             onClick={() => verdictMut.mutate("ok")}
-            className="flex-1 rounded-full bg-foreground text-background py-3 text-sm"
+            className="flex-1 rounded-full bg-warm text-warm-foreground py-3 text-sm font-bold"
           >
             괜찮았어요 (OK)
           </button>
@@ -267,7 +267,7 @@ function DeliveryPage() {
             type="button"
             disabled={verdictMut.isPending}
             onClick={() => verdictMut.mutate("pass")}
-            className="flex-1 rounded-full border border-border py-3 text-sm"
+            className="flex-1 rounded-full bg-secondary text-foreground py-3 text-sm font-medium"
           >
             패스
           </button>

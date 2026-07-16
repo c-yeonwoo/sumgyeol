@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyState } from "@/components/empty-state";
+import { Pill } from "@/components/status-pill";
 import {
   fetchInbox,
   fetchMyMissionProfile,
@@ -126,19 +127,22 @@ function InboxCard({ delivery }: { delivery: MissionDelivery }) {
       <Link
         to="/delivery/$deliveryId"
         params={{ deliveryId: String(delivery.id) }}
-        className="block rounded-2xl border border-border bg-surface px-4 py-4 hover:border-foreground/30 transition-colors"
+        className="block rounded-2xl bg-surface px-4 py-4 transition-shadow duration-150 hover:shadow-[var(--shadow-md)]"
       >
         <div className="flex items-center justify-between gap-2 mb-2">
-          <span className="text-xs text-muted-foreground">
-            {expired ? "만료" : needsAccept ? "도착 · 수락 대기" : waiting ? "답장 대기" : "답장함"}
-          </span>
+          {expired ? (
+            <Pill tone="alert">만료</Pill>
+          ) : needsAccept ? (
+            <Pill tone="new" ping>새 미션 도착</Pill>
+          ) : waiting ? (
+            <Pill tone="tide">답장 대기</Pill>
+          ) : (
+            <Pill tone="tide">답장함</Pill>
+          )}
           {waiting && !expired && delivery.accepted_at && delivery.expires_at && (
-            <span className="text-xs font-medium tabular-nums text-foreground/80">
+            <span className="text-xs font-bold tabular-nums text-warm-foreground">
               ⏱ {formatCountdown(delivery.expires_at)}
             </span>
-          )}
-          {needsAccept && (
-            <span className="text-xs font-medium text-accent">새 미션</span>
           )}
         </div>
         <p className="font-serif text-lg leading-snug">{body}</p>

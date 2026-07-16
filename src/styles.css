@@ -378,7 +378,15 @@ body.app-ready #boot-splash {
   50% { transform: translateY(-8px) rotate(4deg); }
 }
 .animate-floatie-bob { animation: floatie-bob 5s ease-in-out infinite; }
+
+/* Peach ping for fresh arrivals */
+@keyframes floatie-ping {
+  0% { transform: scale(1); opacity: 0.7; }
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+.animate-floatie-ping { animation: floatie-ping 1.8s cubic-bezier(0,0,0.2,1) infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-floatie-bob { animation: none; }
+  .animate-floatie-bob, .animate-floatie-ping { animation: none; }
 }
 
