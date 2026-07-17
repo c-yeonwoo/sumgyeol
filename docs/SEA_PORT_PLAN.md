@@ -71,3 +71,9 @@
 
 ## 진행 로그
 - 2026-07-17: 코드베이스 매핑(UI 완료). 데이터층 대기 → Stage 1 착수 예정.
+
+## 실행 결과 (2026-07-17)
+- remote 마이그레이션 3개 적용 완료 (supabase db push)
+- Edge Function generate-profile 배포 완료 (ANTHROPIC_API_KEY 미설정 → 템플릿 폴백)
+- **E2E 14/14 통과** (여자·남자 계정: 온보딩→띄우기→발견→수락→답장→신원카드(비대칭)→마음에들어요→unlock→알림→매칭→티켓차감→스레드)
+- 남은 것: ANTHROPIC_API_KEY 설정(사용자), main 머지, (선택) CF 재배포·capacitor server.url, E2E 테스트데이터 정리
