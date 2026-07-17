@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { stripExifAndCompress } from "@/lib/image-utils";
 import type { IntroAnswersV2 } from "@/lib/interview-chips";
+import { formatIntroSections, type IntroSection } from "@/lib/intro-story";
 
 /** S1–S3 free-text questions (S4 is a chip — see interview-chips). */
 export const PROFILE_QUESTIONS: { q: string; ph: string }[] = [
@@ -25,12 +26,14 @@ const TAG_WORDS: [string, string][] = [
 function templateDraft(answers: string[], ideal?: IdealInput): ProfileDraft {
   const clip = (s: string) => s.trim().replace(/[.。!?~\s]+$/, "");
   const [a0, a1, a2, a3] = answers.map(clip);
-  const parts: string[] = [];
-  if (a0) parts.push(`${a0}, 그때 가장 마음이 편해지는 사람이에요`);
-  if (a1) parts.push(`요즘은 ${a1}에 마음이 가 있어요`);
-  if (a2) parts.push(`${a2}, 그런 대화를 좋아해요`);
-  if (a3) parts.push(`주말엔 ${a3} 쪽이에요`);
-  const intro = parts.length ? parts.join(". ") + "." : "";
+  const sections: IntroSection[] = [];
+  if (a0) sections.push({ heading: "마음이 편해질 때", body: `${a0}, 그때 가장 마음이 편해지는 사람이에요.` });
+  if (a1) sections.push({ heading: "요즘의 나", body: `요즘은 ${a1}에 마음이 가 있어요.` });
+  if (a2 || a3) {
+    const bits = [a2 && `${a2}, 그런 대화를 좋아해요`, a3 && `주말엔 ${a3} 쪽이에요`].filter(Boolean);
+    sections.push({ heading: "함께할 때", body: bits.join(". ") + "." });
+  }
+  const intro = formatIntroSections(sections);
 
   const text = answers.join(" ");
   const found: string[] = [];
@@ -58,17 +61,27 @@ export async function generateProfileDraft(
     const { data, error } = await supabase.functions.invoke("generate-profile", {
       body: { answers, ideal: ideal ?? null },
     });
-    if (
-      !error &&
-      data &&
-      typeof data.intro === "string" &&
-      Array.isArray(data.tags)
-    ) {
-      return {
-        intro: data.intro,
-        idealLine: typeof data.ideal_line === "string" ? data.ideal_line : "",
-        tags: data.tags.slice(0, 6),
-      };
+    if (!error && data && Array.isArray(data.tags)) {
+      let intro = "";
+      if (Array.isArray(data.sections) && data.sections.length) {
+        const sections: IntroSection[] = data.sections
+          .filter((s: unknown) => s && typeof s === "object")
+          .map((s: { heading?: string; body?: string }) => ({
+            heading: typeof s.heading === "string" ? s.heading : "",
+            body: typeof s.body === "string" ? s.body : "",
+          }))
+          .filter((s: IntroSection) => s.body.trim());
+        intro = formatIntroSections(sections);
+      } else if (typeof data.intro === "string") {
+        intro = data.intro;
+      }
+      if (intro) {
+        return {
+          intro,
+          idealLine: typeof data.ideal_line === "string" ? data.ideal_line : "",
+          tags: data.tags.filter((t: unknown) => typeof t === "string").slice(0, 6),
+        };
+      }
     }
   } catch {
     /* fall through */
@@ -95,6 +108,8 @@ export type OnboardingData = {
   heightCm: number | null;
   jobChip: string;
   smoke: string;
+  drink: string;
+  tattoo: string;
   selfAnswers: string[]; // s1–s3 text + s4 chip
   ideal: IdealInput;
   intro: string;
@@ -107,7 +122,7 @@ export function buildIntroAnswersV2(d: OnboardingData): IntroAnswersV2 {
     version: 2,
     self: d.selfAnswers,
     ideal: d.ideal,
-    facts: { job_chip: d.jobChip, smoke: d.smoke },
+    facts: { job_chip: d.jobChip, smoke: d.smoke, drink: d.drink, tattoo: d.tattoo },
   };
 }
 
@@ -124,6 +139,8 @@ export async function saveOnboarding(uid: string, d: OnboardingData): Promise<vo
       height_cm: d.heightCm,
       job_chip: d.jobChip,
       smoke: d.smoke,
+      drink: d.drink,
+      tattoo: d.tattoo,
       photos: d.photos,
       avatar_url: d.photos[0] ?? null,
       intro_answers: buildIntroAnswersV2(d),

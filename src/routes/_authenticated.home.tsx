@@ -27,7 +27,7 @@ import {
   type PersonCard,
   type UnlockedPeer,
 } from "@/lib/mission";
-import { qaFromIntroAnswers, uploadReplyPhoto } from "@/lib/profile-ai";
+import { uploadReplyPhoto } from "@/lib/profile-ai";
 import { profileMetaLine } from "@/lib/interview-chips";
 import { SeaWaves } from "@/components/sea/waves";
 import { ParchmentNote, type NoteContent } from "@/components/sea/parchment-note";
@@ -80,10 +80,11 @@ type MeProfile = {
   height_cm: number | null;
   job_chip: string | null;
   smoke: string | null;
+  drink: string | null;
+  tattoo: string | null;
   ai_intro: string | null;
   ai_ideal_line: string | null;
   ai_tags: string[] | null;
-  intro_answers: { version?: number; self?: string[]; answers?: string[] } | null;
 };
 
 type NoteState =
@@ -104,7 +105,6 @@ function peerCard(p: UnlockedPeer, ageOf: (y: number | null) => string): Profile
     intro: p.ai_intro ?? p.bio ?? "",
     idealLine: p.ai_ideal_line ?? "",
     tags: p.ai_tags ?? [],
-    qa: qaFromIntroAnswers(p.intro_answers),
   };
 }
 
@@ -135,7 +135,7 @@ function SeaHome() {
       const { data } = await (supabase as any)
         .from("profiles")
         .select(
-          "id, gender, display_name, ticket_balance, photos, birth_year, region, height_cm, job_chip, smoke, ai_intro, ai_ideal_line, ai_tags, intro_answers",
+          "id, gender, display_name, ticket_balance, photos, birth_year, region, height_cm, job_chip, smoke, drink, tattoo, ai_intro, ai_ideal_line, ai_tags",
         )
         .eq("id", uid)
         .maybeSingle();
@@ -279,7 +279,6 @@ function SeaHome() {
         intro: me.ai_intro ?? "",
         idealLine: me.ai_ideal_line ?? "",
         tags: me.ai_tags ?? [],
-        qa: qaFromIntroAnswers(me.intro_answers),
       },
       delivery: null,
     });

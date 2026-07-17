@@ -304,18 +304,19 @@ export type UnlockedPeer = {
   height_cm: number | null;
   job_chip: string | null;
   smoke: string | null;
+  drink: string | null;
+  tattoo: string | null;
   photos: string[] | null;
   ai_intro: string | null;
   ai_ideal_line: string | null;
   ai_tags: string[] | null;
-  intro_answers: { version?: number; self?: string[]; answers?: string[] } | null;
 };
 
 export async function fetchUnlockedPeer(peerId: string): Promise<UnlockedPeer | null> {
   const { data, error } = await db
     .from("profiles")
     .select(
-      "id, display_name, handle, bio, avatar_url, birth_year, region, gender, height_cm, job_chip, smoke, photos, ai_intro, ai_ideal_line, ai_tags, intro_answers",
+      "id, display_name, handle, bio, avatar_url, birth_year, region, gender, height_cm, job_chip, smoke, drink, tattoo, photos, ai_intro, ai_ideal_line, ai_tags",
     )
     .eq("id", peerId)
     .maybeSingle();

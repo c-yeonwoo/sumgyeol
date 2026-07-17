@@ -2,13 +2,16 @@
 
 export const PROFILE_REGIONS = ["서울", "경기", "인천", "부산", "대구", "대전", "광주", "기타"] as const;
 export const NICK_MAX = 12;
-export const INTRO_MAX = 220;
+export const INTRO_MAX = 480;
 export const IDEAL_LINE_MAX = 160;
 export const HEIGHT_MIN = 120;
 export const HEIGHT_MAX = 230;
 
-export const JOB_CHIPS = ["직장인", "학생", "프리랜서", "창업", "기타"] as const;
-export const SMOKE_CHIPS = ["안 함", "가끔", "함", "비공개"] as const;
+export const JOB_CHIPS = ["직장인", "전문직", "학생", "프리랜서", "창업", "기타"] as const;
+export const SMOKE_CHIPS = ["안 함", "가끔", "함"] as const;
+export const DRINK_CHIPS = ["안 마심", "가끔", "자주"] as const;
+export const TATTOO_CHIPS = ["없어요", "있어요"] as const;
+
 export const WEEKEND_CHIPS = [
   "집에서 충전",
   "나가서 충전",
@@ -44,12 +47,22 @@ export type IntroAnswersV2 = {
   version: 2;
   self: string[]; // [s1, s2, s3, s4_chip]
   ideal: { vibes: string[]; pace: string };
-  facts: { job_chip: string; smoke: string };
+  facts: { job_chip: string; smoke: string; drink?: string; tattoo?: string };
 };
 
 export function smokeLabel(smoke: string | null | undefined): string | null {
   if (!smoke || smoke === "비공개") return null;
-  return smoke;
+  return `흡연 ${smoke}`;
+}
+
+export function drinkLabel(drink: string | null | undefined): string | null {
+  if (!drink) return null;
+  return `음주 ${drink}`;
+}
+
+export function tattooLabel(tattoo: string | null | undefined): string | null {
+  if (!tattoo) return null;
+  return tattoo === "있어요" ? "타투 있어요" : "타투 없어요";
 }
 
 export function parseHeightCm(raw: string): number | null {
@@ -63,8 +76,16 @@ export function profileMetaLine(p: {
   height_cm?: number | null;
   job_chip?: string | null;
   smoke?: string | null;
+  drink?: string | null;
+  tattoo?: string | null;
 }): string {
-  return [p.height_cm ? `${p.height_cm}cm` : null, p.job_chip || null, smokeLabel(p.smoke)]
+  return [
+    p.height_cm ? `${p.height_cm}cm` : null,
+    p.job_chip || null,
+    smokeLabel(p.smoke),
+    drinkLabel(p.drink),
+    tattooLabel(p.tattoo),
+  ]
     .filter(Boolean)
     .join(" · ");
 }

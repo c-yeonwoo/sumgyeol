@@ -23,7 +23,7 @@ function MePage() {
       const { data: profile } = await (supabase as any)
         .from("profiles")
         .select(
-          "display_name, bio, avatar_url, birth_year, region, gender, photos, height_cm, job_chip, smoke, ai_intro, ai_ideal_line",
+          "display_name, bio, avatar_url, birth_year, region, gender, photos, height_cm, job_chip, smoke, drink, tattoo, ai_intro, ai_ideal_line",
         )
         .eq("id", uid)
         .maybeSingle();
@@ -62,6 +62,8 @@ function MePage() {
     height_cm: p?.height_cm,
     job_chip: p?.job_chip,
     smoke: p?.smoke,
+    drink: p?.drink,
+    tattoo: p?.tattoo,
   });
 
   return (
