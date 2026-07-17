@@ -82,8 +82,8 @@ export function ParchmentNote({ content, onClose }: { content: NoteContent | nul
 function ReportLink({ onReport }: { onReport?: () => void }) {
   if (!onReport) return null;
   return (
-    <button type="button" className="fl-note-link" onClick={onReport} style={{ marginTop: 10 }}>
-      신고하기
+    <button type="button" className="fl-note-report" onClick={onReport}>
+      신고
     </button>
   );
 }

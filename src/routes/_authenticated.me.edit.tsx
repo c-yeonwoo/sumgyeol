@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { StorageImg } from "@/components/storage-img";
 import { AutoGrowTextarea } from "@/components/auto-grow-textarea";
+import { ConfirmModal, type ConfirmOpts } from "@/components/sea/confirm-modal";
 import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
 import {
   PROFILE_QUESTIONS,
@@ -94,6 +95,7 @@ function EditProfilePage() {
   const [regenLeft, setRegenLeft] = useState(2);
   const [saving, setSaving] = useState(false);
   const [regenBusy, setRegenBusy] = useState(false);
+  const [confirm, setConfirm] = useState<ConfirmOpts | null>(null);
 
   useEffect(() => {
     const p = data?.profile;
@@ -177,13 +179,7 @@ function EditProfilePage() {
     vibes.length <= 2 &&
     !!pace;
 
-  const onRegen = async () => {
-    if (!interviewOk()) {
-      return toast.error("인터뷰 답변을 먼저 채워 주세요.");
-    }
-    if (regenLeft <= 0) {
-      return toast.error("오늘은 AI 정리를 다 썼어요. 내일 다시 시도해 주세요.");
-    }
+  const runRegen = async () => {
     setRegenBusy(true);
     try {
       const draft = await generateProfileDraft([...answers, weekend], { vibes, pace });
@@ -207,6 +203,25 @@ function EditProfilePage() {
     } finally {
       setRegenBusy(false);
     }
+  };
+
+  const onRegenClick = () => {
+    if (!interviewOk()) {
+      return toast.error("인터뷰 답변을 먼저 채워 주세요.");
+    }
+    if (regenLeft <= 0) {
+      return toast.error("오늘은 AI 정리를 다 썼어요. 내일 다시 시도해 주세요.");
+    }
+    setConfirm({
+      em: "✨",
+      title: "소개를 다시 만들까요?",
+      body: `지금 적어 둔 인터뷰로 AI가 「이런 사람이에요」「끌리는 사람」「관심사」를 새로 써요. 오늘 ${regenLeft}회 남았어요.`,
+      yes: "다시 만들기",
+      no: "취소",
+      onOk: () => {
+        void runRegen();
+      },
+    });
   };
 
   const onSave = async () => {
@@ -290,7 +305,7 @@ function EditProfilePage() {
 
       <div className="fl-me-body">
         <h5 className="fl-onb-label first">프로필 사진 3장</h5>
-        <p className="fl-me-hint">첫 장이 대표예요. 열리기 전에는 상대에게 안 보여요.</p>
+        <p className="fl-me-hint">정사각(1:1)으로 맞춰 보여요. 첫 장이 대표예요.</p>
         <div className="fl-photos3">
           {[0, 1, 2].map((k) => {
             const s = slots[k];
@@ -439,15 +454,15 @@ function EditProfilePage() {
           ))}
         </div>
 
-        <div className="fl-me-regen-row">
-          <span className="fl-onb-sec" style={{ margin: 0 }}>AI 소개</span>
+        <div className="fl-me-regen-block">
+          <span className="fl-onb-sec">AI 소개</span>
           <button
             type="button"
             className="fl-regen"
             disabled={regenBusy || regenLeft <= 0}
-            onClick={onRegen}
+            onClick={onRegenClick}
           >
-            {regenBusy ? "정리 중…" : `소개 다시 만들기 · ${regenLeft}/2`}
+            {regenBusy ? "정리 중…" : `소개 다시 만들기 · 오늘 ${regenLeft}/2`}
           </button>
         </div>
         <p className="fl-me-hint">인터뷰를 바꾼 뒤 누르면 AI가 소개·관심사를 다시 써요. 하루 2회.</p>
@@ -473,6 +488,7 @@ function EditProfilePage() {
         <p className="fl-me-count">{idealLine.length}/{IDEAL_LINE_MAX}</p>
 
         <h5 className="fl-onb-label">관심사</h5>
+        <p className="fl-me-hint">인터뷰·소개 문장에서 AI가 자동으로 뽑아요. ✕로 지울 수 있어요.</p>
         <div className="fl-chipgrid">
           {tags.map((t) => (
             <span key={t} className="fl-etag">
@@ -480,9 +496,13 @@ function EditProfilePage() {
               <span className="rm" onClick={() => setTags((ts) => ts.filter((x) => x !== t))}>✕</span>
             </span>
           ))}
-          {tags.length === 0 && <p className="fl-me-hint" style={{ margin: 0 }}>AI로 다시 만들면 채워져요.</p>}
+          {tags.length === 0 && (
+            <p className="fl-me-hint" style={{ margin: 0 }}>아직 없어요. 「소개 다시 만들기」로 채워 보세요.</p>
+          )}
         </div>
       </div>
+
+      <ConfirmModal opts={confirm} onClose={() => setConfirm(null)} />
     </main>
   );
 }
