@@ -42,27 +42,25 @@
 - 탭바 제거(full-bleed home/onboarding), 바다 홈(병+mood+FAB+아바타메뉴), ParchmentNote(compose/floatie)+AvatarMenu, lib/sea.ts
 - FAB→createAndDeliverMission 연결. 아바타 메뉴 항목은 임시로 기존 라우트(/me,/outbox)로 (Stage 7/8에서 교체)
 
-### Stage 5 — 쪽지 흐름 (compose/read/reply) — ⬜ (다음)
-- 남자: 발견 시트→읽기(쪽지)→수락→답장(사진 옵션). recall RPC(회수) 마이그레이션
-- 여자: 답장 확인 쪽지→마음에 들어요(verdict)
-- ParchmentNote에 read/reply 모드 추가
+### Stage 5–6 — 쪽지 흐름 + 남자 바다 — ✅ (bdf47d6)
+- 마이그레이션 20260717010000_sea_flow: recall / sender_card·receiver_card(비대칭) / photo_answer / reply_photo / set_reply_photo
+- ParchmentNote read/reply 모드, 남자 발견→읽기→수락→답장(+사진), 여자 답장확인→마음에들어요, 회수, 사진답변 토글
 
-### Stage 5 — 쪽지 흐름 (compose/read/reply)
-- ParchmentNote 실제 RPC 연결 (mission.ts): 띄우기/읽기/수락/답장/사진답변/포기(패널티)
-- 상태: ⬜
+### Stage 7 — 프로필 + 양방향 잠금해제 + 매칭 — ✅ (468f78f)
+- 마이그레이션 20260717020000_sea_match: unlock=여자OK시 오픈+남자알림(스레드 자동생성 제거), start_match(티켓1장→thread), profile_opened/matched 알림
+- ProfileOverlay(아쿠아), verdict→프로필 직행, opened/match→상대 프로필→매칭 CTA→thread
 
-### Stage 6 — 남자 바다 + 발견/수락
-- 받은 플로티 병, 발견→신원카드(잠김)→열기→읽기→수락→답장, 프로필 잠금
-- 상태: ⬜
+### Stage 8 — 이력·상점·수정 — ✅ (7922f4a)
+- 플로티 이력 오버레이(상태 pill + 드릴다운), 티켓 상점 오버레이, 내 프로필/수정
+- (follow-up) 섹션 편집+재생성 UI는 regenerate_intro RPC 준비됨 → me/edit 대체 예정, 죽은 라우트(/send,/outbox) 정리
 
-### Stage 7 — 프로필 페이지 + 양방향 잠금해제 + 이력
-- ProfileCard, 마음에 들어요→verdict→프로필, 매칭 CTA→thread, 남자 알림/잠금해제
-- 플로티 이력 페이지 + 상태 pill + 쪽지 드릴다운
-- 상태: ⬜
-
-### Stage 8 — 티켓 상점 + 프로필 수정 + 정리
-- 티켓 상점, 섹션 편집+재생성(2/day), 죽은 라우트 제거, 카피 정리, capacitor server.url, 배포
-- 상태: ⬜
+## 최종 남은 것 (사용자 확인 필요)
+1. remote `supabase db push` — 마이그레이션 3개 일괄 적용
+   - 20260717000000_profile_ai_sea / 20260717010000_sea_flow / 20260717020000_sea_match
+2. Edge Function 배포 + `ANTHROPIC_API_KEY` 시크릿 (AI 소개; 없어도 템플릿 폴백 동작)
+3. E2E: 여자·남자 테스트 계정으로 온보딩→띄우기→발견→답장→마음에들어요→매칭 전체 검증
+4. capacitor server.url → floatie.pages.dev, 배포
+5. main 머지
 
 ## 재사용 자산 (UI 매핑 결과)
 - 컴포넌트: `BottleGlyph`(병 마스코트, drift/open), `SeaBanner`(파도 배너), `BottleDriftScene`(표류 장면), `EmptyState`, `StatusPill`, `StorageImg`(answers 버킷 signed URL)
