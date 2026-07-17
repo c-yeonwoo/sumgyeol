@@ -390,6 +390,7 @@ function SeaHome() {
         busy: reply.isPending || forfeit.isPending,
         onSubmit: (body, photo) => reply.mutate({ d: note.d, body, photo }),
         onGiveUp: () => forfeit.mutate(note.d),
+        // Subtle report — never for own outbox (handled in floatie branch)
         onReport: () => openReport(note.d),
       };
     const d = note.d;
@@ -441,7 +442,8 @@ function SeaHome() {
           : undefined,
       action: act,
       secondary,
-      onReport: () => openReport(d),
+      // Own outbox with no reply yet: nothing to report. After a reply, report the peer.
+      onReport: isWoman && !d.reply_body ? undefined : () => openReport(d),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
