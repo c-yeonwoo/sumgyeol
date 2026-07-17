@@ -1,0 +1,55 @@
+# Cloudflare Pages — deploy on every push to main.
+# Project is Direct Upload (no Git Provider). This workflow replaces CF's
+# "Connect to Git" integration.
+#
+# Required repo secrets:
+#   CLOUDFLARE_API_TOKEN   — Account → API Tokens → Edit Cloudflare Workers
+#   CLOUDFLARE_ACCOUNT_ID  — 86723a5c873a8660fb654694ccf68d93
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_PUBLISHABLE_KEY
+#   SUPABASE_URL           — same as VITE_ (SSR worker build-time fallback)
+#   SUPABASE_PUBLISHABLE_KEY
+
+name: Deploy Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build web (SSR)
+        env:
+          DEPLOY_TARGET: cloudflare
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: npm run build:web
+
+      - name: Deploy to Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name floatie --commit-dirty=true

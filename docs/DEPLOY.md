@@ -27,29 +27,33 @@ Supabase(백엔드) ──┬── Cloudflare Pages (SSR 웹/PWA)
 | `npm run build:web` | Cloudflare (SSR) | `dist/` (`_worker.js` + `_routes.json` + 정적) |
 | `npm run build` | Capacitor(모바일) | `dist/client/` |
 
-### A. 대시보드로 (권장, Git 연동)
-1. Cloudflare → **Workers & Pages → Create → Pages → Connect to Git** → `c-yeonwoo/sumgyeol` 선택
-2. 빌드 설정:
-   - **Build command:** `npm run build:web`
-   - **Build output directory:** `dist`
-   - **Node version:** 20 (환경변수 `NODE_VERSION=20`)
-3. **환경변수** (Production & Preview 모두):
-   ```
-   SUPABASE_URL=https://psrlbanwvmnhacgyrgvl.supabase.co
-   SUPABASE_PUBLISHABLE_KEY=sb_publishable_mmGLw3hDiVcl7JFxxDSRZQ_nI-HME2x
-   VITE_SUPABASE_URL=https://psrlbanwvmnhacgyrgvl.supabase.co
-   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_mmGLw3hDiVcl7JFxxDSRZQ_nI-HME2x
-   DEPLOY_TARGET=cloudflare
-   ```
-   (`VITE_*`는 빌드 타임에 박히고, `SUPABASE_*`는 SSR 워커 런타임에서 읽음)
-4. Deploy → `https://<project>.pages.dev` 발급
+### 현황 (2026-07-17)
+
+- 프로젝트: **floatie** → https://floatie.pages.dev  
+- **Git Provider: No** (Direct Upload). main 머지만으로는 CF가 안 뜸.  
+- 자동 배포: GitHub Actions [`.github/workflows/deploy-pages.yml`](../.github/workflows/deploy-pages.yml) (`push` → `main`)
+
+### A. 자동 배포 (권장)
+
+Repo **Settings → Secrets and variables → Actions** 에 등록:
+
+| Secret | 값 |
+|--------|-----|
+| `CLOUDFLARE_API_TOKEN` | CF → My Profile → API Tokens → **Edit Cloudflare Workers** |
+| `CLOUDFLARE_ACCOUNT_ID` | `86723a5c873a8660fb654694ccf68d93` |
+| `VITE_SUPABASE_URL` | `.env` 와 동일 |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `.env` 와 동일 |
+| `SUPABASE_URL` | `VITE_SUPABASE_URL` 과 동일 |
+| `SUPABASE_PUBLISHABLE_KEY` | `VITE_…` 과 동일 |
+
+Pages **프로젝트 Settings → Environment variables** (Production) 에도 SSR 런타임용으로 `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` 유지.
+
+시크릿 넣은 뒤 Actions → **Deploy Cloudflare Pages** → Run workflow 로 한 번 검증.
 
 ### B. CLI로 (수동)
 ```bash
-npm i -g wrangler
-wrangler login                 # 브라우저 인증
-npm run build:web
-wrangler pages deploy dist --project-name floatie
+wrangler login
+npm run deploy:pages   # build:web + pages deploy → floatie
 ```
 
 ### C. Supabase Auth 리다이렉트 (필수)
