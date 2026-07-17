@@ -22,25 +22,26 @@
 - ⚠️ remote `db push`는 사용자 확인 후 (additive라 저위험이나 live 변경)
 
 ### 발견된 백엔드 모델 변경점 (해당 스테이지에서 마이그레이션으로)
-- **매칭=과금**: 현재 상호 OK시 `trg_mission_try_unlock`이 스레드 자동 생성. 새 스펙은 OK→프로필 오픈(스레드 X)→티켓 결제 시 `start_match` RPC로 스레드 생성. (Stage 7)
-- **신원 선노출**: 남자가 열기 전 발신자 닉/나이/지역 노출. 현재 RLS는 unlock 후에만. delivered 상태에서 제한 필드 노출 RPC/뷰 필요. (Stage 6)
-- **사진 peer 열람**: `answers` 버킷 signed URL — unlock 후 상대 사진 열람 정책 확인 필요. (Stage 6/7)
+- **매칭=과금** [결정됨]: 상호 OK → 프로필 오픈(스레드 X). `trg_mission_try_unlock`에서 스레드 자동생성 제거하고 `unlocked_at`만 세팅. 새 `start_match(delivery_id)` RPC = **매칭 누른 쪽 ticket_balance -1 → mission_threads 생성**. (Stage 7)
+- **신원 선노출**: 남자가 열기 전 발신자 닉/나이/지역 노출. 현재 RLS는 unlock 후에만. delivered 상태 receiver에게 제한 필드(display_name·birth_year·region, 사진 X) 노출 RPC/뷰. (Stage 6)
+- **사진 peer 열람**: `answers` 버킷 signed URL — unlock 후 상대 사진 열람 정책. (Stage 6/7)
 
-### Stage 2 — 디자인 토큰 & 공용 컴포넌트
-- styles.css/@theme: parchment note, sea/waves, 아쿠아 프로필, identity card, confirm modal, stepper
-- 컴포넌트: SeaScene, Bottle, ParchmentNote(모드), ConfirmModal, IdentityCard, ProfileCard
-- 상태: ⬜
+### 운영 결정 [사용자 확인됨]
+- DB 마이그레이션은 **마지막에 일괄 remote push + 머지 확인**. 그 전까지 브랜치에서 파일로만.
+- 매칭 결제: 먼저 누른 쪽 티켓 1장.
 
-### Stage 3 — 온보딩 스텝퍼 + AI 생성
-- `_authenticated.onboarding.tsx` 재작성 (스텝퍼)
-- 사진 3장 업로드 → storage
-- AI 소개 생성: Edge Function `generate-profile`(Claude haiku) or 템플릿 fallback
-- 상태: ⬜
+### Stage 2 — 디자인 토큰 & 공용 컴포넌트 — ✅ (119fa1f)
+- `src/styles/sea.css` (fl- 네임스페이스) + styles.css import
+- SeaWaves, IdentityCard, ConfirmModal
+
+### Stage 3 — 온보딩 스텝퍼 + AI 생성 — ✅ (9ababb4)
+- onboarding 스텝퍼 재작성, 사진 3장 업로드(answers 버킷)
+- lib/profile-ai.ts + Edge Function generate-profile(Claude Haiku, 템플릿 폴백)
 
 ### Stage 4 — 여자 바다 홈 + 탭바 제거
 - `_authenticated.tsx` 탭바 제거
 - `home.tsx` → SeaScene(내 플로티 병) + FAB + mood + 아바타 메뉴
-- 상태: ⬜
+- 상태: ⬜ (다음)
 
 ### Stage 5 — 쪽지 흐름 (compose/read/reply)
 - ParchmentNote 실제 RPC 연결 (mission.ts): 띄우기/읽기/수락/답장/사진답변/포기(패널티)
