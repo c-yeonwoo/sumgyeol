@@ -1,9 +1,7 @@
-// Supabase Edge Function — AI profile draft from interview answers (v2).
+// Supabase Edge Function — AI profile draft (story sections + ideal + tags).
 //
 // Input:  { answers: string[], ideal?: { vibes: string[], pace: string } }
-// Output: { intro: string, ideal_line: string, tags: string[] }
-//
-// Client falls back to a local template if this errors.
+// Output: { sections: [{heading, body}], ideal_line, tags }  (+ intro flat for compat)
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -16,12 +14,14 @@ const MODEL = "claude-haiku-4-5-20251001";
 const SYSTEM = `너는 라이트 소셜 앱 "플로티"의 프로필 작가야.
 사용자가 "나"에 대한 답(~70%)과 "끌리는 사람" 칩(~30%)을 줬어. JSON만 출력해:
 
-- "intro": 따뜻하고 담백한 3인칭 소개 2~3문장 (한국어, "~이에요/~해요", 과장·이모지·해시태그 금지, 100자 내외). 나 중심.
-- "ideal_line": 끌리는 사람 한 문장. 「이런 사람과 잘 맞을 것 같아요」톤. 단정·평가·조건 강제 금지. 칩이 없으면 빈 문자열.
-- "tags": 관심사/성향 태그 3~6개 (각 "#단어", 한국어). 나 중심.
+- "sections": 짧은 이야기 챕터 2~3개. 각 항목은 {"heading":"짧은 제목(6자 내)","body":"2~3문장"}.
+  톤: 따뜻·담백, 한국어 존댓말("~이에요/~해요"), 과장·이모지·해시태그 금지.
+  흐름 예: 마음이 편해질 때 → 요즘의 나 → 함께할 때. 답변에 없는 내용은 지어내지 마.
+- "ideal_line": 끌리는 사람 한 문장. 「~랑 잘 맞을 것 같아요」톤. 단정·조건 강제 금지. 칩 없으면 "".
+- "tags": 관심사 태그 3~6개 (각 "#단어").
 
-답변이 비어 있으면 지어내지 마.
-반드시 JSON만: {"intro":"...","ideal_line":"...","tags":["#.."]}`;
+반드시 JSON만:
+{"sections":[{"heading":"...","body":"..."}],"ideal_line":"...","tags":["#.."]}`;
 
 const SELF_LABELS = [
   "가장 마음이 편해지는 순간",
@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 500,
+        max_tokens: 700,
         system: SYSTEM,
         messages: [{ role: "user", content: selfBlock + idealBlock }],
       }),
@@ -76,12 +76,29 @@ Deno.serve(async (req) => {
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) return json({ error: "no json in response" }, 502);
     const parsed = JSON.parse(match[0]);
-    const intro = typeof parsed.intro === "string" ? parsed.intro : "";
+
+    const sections = Array.isArray(parsed.sections)
+      ? parsed.sections
+          .filter((s: unknown) => s && typeof s === "object")
+          .map((s: { heading?: string; body?: string }) => ({
+            heading: typeof s.heading === "string" ? s.heading : "",
+            body: typeof s.body === "string" ? s.body : "",
+          }))
+          .filter((s: { body: string }) => s.body.trim())
+          .slice(0, 3)
+      : [];
+
     const ideal_line = typeof parsed.ideal_line === "string" ? parsed.ideal_line : "";
     const tags = Array.isArray(parsed.tags)
       ? parsed.tags.filter((t: unknown) => typeof t === "string").slice(0, 6)
       : [];
-    return json({ intro, ideal_line, tags });
+
+    // Flat intro for older clients / textarea edit
+    const intro = sections
+      .map((s: { heading: string; body: string }) => `## ${s.heading || "소개"}\n${s.body}`)
+      .join("\n\n");
+
+    return json({ sections, intro, ideal_line, tags });
   } catch (e) {
     return json({ error: String(e) }, 500);
   }

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { pickPhoto, validatePickedPhoto } from "@/lib/native-photo";
+import { ImageCropModal } from "@/components/image-crop-modal";
 import {
   PROFILE_QUESTIONS,
   generateProfileDraft,
@@ -12,6 +13,8 @@ import {
 import {
   JOB_CHIPS,
   SMOKE_CHIPS,
+  DRINK_CHIPS,
+  TATTOO_CHIPS,
   WEEKEND_CHIPS,
   VIBE_CHIPS,
   PACE_CHIPS,
@@ -58,6 +61,8 @@ function OnboardingPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [jobChip, setJobChip] = useState("");
   const [smoke, setSmoke] = useState("");
+  const [drink, setDrink] = useState("");
+  const [tattoo, setTattoo] = useState("");
   const [height, setHeight] = useState("");
   const [answers, setAnswers] = useState<string[]>(["", "", ""]);
   const [weekend, setWeekend] = useState("");
@@ -67,6 +72,7 @@ function OnboardingPage() {
   const [idealLine, setIdealLine] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const photosRef = useRef<Photo[]>([]);
   photosRef.current = photos;
 
@@ -94,7 +100,8 @@ function OnboardingPage() {
     if (step === "basic") return /^\d{4}$/.test(year) && +year >= 1940 && +year <= 2008 && !!gender;
     if (step === "region") return !!region;
     if (step === "photo") return photos.length >= 3;
-    if (step === "facts") return !!jobChip && !!smoke && parseHeightCm(height) != null;
+    if (step === "facts")
+      return !!jobChip && !!smoke && !!drink && !!tattoo && parseHeightCm(height) != null;
     if (step[0] === "q") return answers[+step[1]].trim().length >= 2;
     if (step === "s4") return !!weekend;
     if (step === "bridge") return true;
@@ -148,7 +155,13 @@ function OnboardingPage() {
     if (!f) return;
     const err = validatePickedPhoto(f);
     if (err) return toast.error(err);
-    setPhotos((p) => [...p, { file: f, url: URL.createObjectURL(f) }]);
+    if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+    setCropSrc(URL.createObjectURL(f));
+  };
+  const applyCrop = (file: File) => {
+    setPhotos((p) => [...p, { file, url: URL.createObjectURL(file) }]);
+    if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
   };
   const rmPhoto = (idx: number) =>
     setPhotos((p) => {
@@ -177,6 +190,8 @@ function OnboardingPage() {
         heightCm,
         jobChip,
         smoke,
+        drink,
+        tattoo,
         selfAnswers: [...answers, weekend],
         ideal: { vibes, pace },
         intro,
@@ -254,9 +269,7 @@ function OnboardingPage() {
         {step === "photo" && (
           <>
             <h2>프로필 사진 3장을 올려요</h2>
-            <p className="desc">
-              정사각(1:1)으로 맞춰 보여요. 열기 전에는 상대에게 안 보이고, 첫 장이 대표예요.
-            </p>
+            <p className="desc">열기 전에는 상대에게 안 보여요. 첫 장이 대표예요.</p>
             <div className="fl-photos3">
               {[0, 1, 2].map((k) => {
                 const p = photos[k];
@@ -278,27 +291,42 @@ function OnboardingPage() {
           <>
             <h2>조금만 더 알려주세요</h2>
             <p className="desc">프로필에 짧게 보여요.</p>
-            <h5 className="fl-onb-label">하는 일</h5>
-            <div className="fl-chipgrid" style={{ marginBottom: 18 }}>
+            <p className="fl-field-label">하는 일</p>
+            <div className="fl-chipgrid">
               {JOB_CHIPS.map((c) => (
                 <button key={c} type="button" className={"fl-selchip" + (jobChip === c ? " on" : "")} onClick={() => setJobChip(c)}>{c}</button>
               ))}
             </div>
-            <h5 className="fl-onb-label">흡연</h5>
-            <div className="fl-chipgrid" style={{ marginBottom: 18 }}>
+            <p className="fl-field-label">흡연</p>
+            <div className="fl-chipgrid">
               {SMOKE_CHIPS.map((c) => (
                 <button key={c} type="button" className={"fl-selchip" + (smoke === c ? " on" : "")} onClick={() => setSmoke(c)}>{c}</button>
               ))}
             </div>
-            <h5 className="fl-onb-label">키</h5>
-            <input
-              className="fl-in"
-              inputMode="numeric"
-              maxLength={3}
-              placeholder="170"
-              value={height}
-              onChange={(e) => setHeight(e.target.value.replace(/[^0-9]/g, ""))}
-            />
+            <p className="fl-field-label">음주</p>
+            <div className="fl-chipgrid">
+              {DRINK_CHIPS.map((c) => (
+                <button key={c} type="button" className={"fl-selchip" + (drink === c ? " on" : "")} onClick={() => setDrink(c)}>{c}</button>
+              ))}
+            </div>
+            <p className="fl-field-label">타투</p>
+            <div className="fl-chipgrid">
+              {TATTOO_CHIPS.map((c) => (
+                <button key={c} type="button" className={"fl-selchip" + (tattoo === c ? " on" : "")} onClick={() => setTattoo(c)}>{c}</button>
+              ))}
+            </div>
+            <p className="fl-field-label">키</p>
+            <div className="fl-in-cm">
+              <input
+                className="fl-in fl-in-compact"
+                inputMode="numeric"
+                maxLength={3}
+                placeholder="170"
+                value={height}
+                onChange={(e) => setHeight(e.target.value.replace(/[^0-9]/g, ""))}
+              />
+              <span>cm</span>
+            </div>
           </>
         )}
 
@@ -374,8 +402,8 @@ function OnboardingPage() {
             <span className="fl-rev-ai">✨ AI 초안 · 자유롭게 고쳐요</span>
             <h2 style={{ marginBottom: 14 }}>{name || "나"}님의 프로필</h2>
             <div className="fl-rev-card">
-              <h5>이런 사람이에요</h5>
-              <textarea maxLength={220} value={intro} onChange={(e) => setIntro(e.target.value)} />
+              <h5>이야기</h5>
+              <textarea maxLength={480} value={intro} onChange={(e) => setIntro(e.target.value)} />
             </div>
             <div className="fl-rev-card">
               <h5>이런 사람에게 끌려요</h5>
@@ -410,6 +438,17 @@ function OnboardingPage() {
                     : "다음"}
           </button>
         </div>
+      )}
+
+      {cropSrc && (
+        <ImageCropModal
+          src={cropSrc}
+          onCancel={() => {
+            URL.revokeObjectURL(cropSrc);
+            setCropSrc(null);
+          }}
+          onDone={applyCrop}
+        />
       )}
     </div>
   );
