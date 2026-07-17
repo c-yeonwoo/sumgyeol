@@ -28,6 +28,7 @@ import { SeaWaves } from "@/components/sea/waves";
 import { ParchmentNote, type NoteContent } from "@/components/sea/parchment-note";
 import { ConfirmModal, type ConfirmOpts } from "@/components/sea/confirm-modal";
 import { ProfileOverlay, type ProfileCardData } from "@/components/sea/profile-overlay";
+import { SubPageOverlay } from "@/components/sea/sub-page";
 import { AvatarMenu } from "@/components/sea/avatar-menu";
 import { BottleGlyph } from "@/components/bottle-glyph";
 import {
@@ -35,6 +36,7 @@ import {
   isGlow,
   manState,
   womanState,
+  stateLabel,
   MISSION_PRESETS_FALLBACK,
   type FloatieState,
 } from "@/lib/sea";
@@ -98,6 +100,7 @@ function SeaHome() {
   const [note, setNote] = useState<NoteState>(null);
   const [confirm, setConfirm] = useState<ConfirmOpts | null>(null);
   const [profile, setProfile] = useState<{ data: ProfileCardData; delivery: MissionDelivery | null } | null>(null);
+  const [page, setPage] = useState<null | "history" | "shop">(null);
   const ageOf = (y: number | null) => (y ? ageBand(y) : "") ?? "";
 
   const { data: me } = useQuery({
@@ -345,8 +348,8 @@ function SeaHome() {
 
   const menuItems = [
     { key: "profile", label: "내 프로필", onClick: openMyProfile },
-    { key: "history", label: "플로티 이력", onClick: () => navigate({ to: "/outbox" }) },
-    { key: "shop", label: "티켓 상점", onClick: () => toast("티켓 상점", { description: "곧 만나요 🎟️" }) },
+    { key: "history", label: "플로티 이력", onClick: () => setPage("history") },
+    { key: "shop", label: "티켓 상점", onClick: () => setPage("shop") },
     { key: "settings", label: "설정", onClick: () => navigate({ to: "/me" }) },
     {
       key: "logout",
@@ -430,10 +433,63 @@ function SeaHome() {
                 busy: match.isPending,
                 onClick: () => match.mutate(profile.delivery!),
               }
-            : null
+            : profile
+              ? { label: "프로필 수정", onClick: () => navigate({ to: "/me/edit" }) }
+              : null
         }
         onBack={() => setProfile(null)}
       />
+
+      <SubPageOverlay open={page === "history"} title="플로티 이력" onBack={() => setPage(null)}>
+        <p style={{ fontWeight: 800, color: "#5a6f6c", fontSize: 13, margin: "2px 2px 12px" }}>
+          {isWoman ? "내가 띄운 플로티" : "내가 받은 플로티"}
+        </p>
+        {all.length === 0 && <p className="fl-page-note">아직 이력이 없어요.</p>}
+        {all.map(({ d, s }) => {
+          const lab = stateLabel(s);
+          return (
+            <div
+              key={d.id}
+              className="fl-hrow tap"
+              onClick={() => {
+                setPage(null);
+                tapBottle(d, s);
+              }}
+            >
+              <div className="bq">
+                <div className="qq">{d.mission?.body ?? "플로티"}</div>
+                <div className="sub2">{SUBTITLE[s]}</div>
+              </div>
+              <span className={"fl-hst " + lab.c}>{lab.t}</span>
+              <span className="fl-chev">›</span>
+            </div>
+          );
+        })}
+      </SubPageOverlay>
+
+      <SubPageOverlay open={page === "shop"} title="티켓 상점" onBack={() => setPage(null)}>
+        {[
+          { n: 1, price: "₩1,900", sub: "플로티를 더 띄우거나 매칭에 사용" },
+          { n: 5, price: "₩7,900", sub: "가장 인기 · 장당 1,580원" },
+          { n: 12, price: "₩15,900", sub: "가장 알뜰 · 장당 1,325원" },
+        ].map((t) => (
+          <div key={t.n} className="fl-tk">
+            <div className="big">{t.n}</div>
+            <div className="t">
+              <b>티켓 {t.n}장</b>
+              <span>{t.sub}</span>
+            </div>
+            <button className="buy" onClick={() => toast("티켓 구매", { description: "실제 앱에선 결제로 이어져요 🎟️" })}>
+              {t.price}
+            </button>
+          </div>
+        ))}
+        <p className="fl-page-note">
+          지금 보유 티켓 {me?.ticket_balance ?? 0}장.
+          <br />
+          무료로는 하루 하나의 플로티만 띄울 수 있어요.
+        </p>
+      </SubPageOverlay>
     </div>
   );
 }

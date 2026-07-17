@@ -31,6 +31,20 @@ export function isGlow(s: FloatieState): boolean {
   return s === "replied" || s === "arrived";
 }
 
+/** History status pill (class suffix + label). */
+export function stateLabel(s: FloatieState): { c: string; t: string } {
+  switch (s) {
+    case "drift": return { c: "drift", t: "표류 중" };
+    case "replied": return { c: "reply", t: "답장 도착" };
+    case "answered": return { c: "reply", t: "답장 보냄" };
+    case "opened": return { c: "open", t: "프로필 열림" };
+    case "match": return { c: "match", t: "매칭됨" };
+    case "arrived": return { c: "drift", t: "발견" };
+    case "expired": return { c: "done", t: "표류 끝" };
+    default: return { c: "done", t: "종료" };
+  }
+}
+
 /** Deterministic pseudo-random bottle position within the sea band. */
 export function bottlePos(id: number): { left: string; top: string } {
   const h1 = (id * 2654435761) >>> 0;
