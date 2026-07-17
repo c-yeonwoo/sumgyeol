@@ -4,15 +4,26 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  acceptDelivery,
+  ageBand,
   countSendsToday,
   createAndDeliverMission,
   fetchInbox,
   fetchOutbox,
   fetchPresets,
+  fetchReceiverCard,
+  fetchSenderCard,
+  recallDelivery,
+  replyToDelivery,
+  setReplyPhoto,
+  setVerdict,
   type MissionDelivery,
+  type PersonCard,
 } from "@/lib/mission";
+import { uploadReplyPhoto } from "@/lib/profile-ai";
 import { SeaWaves } from "@/components/sea/waves";
 import { ParchmentNote, type NoteContent } from "@/components/sea/parchment-note";
+import { ConfirmModal, type ConfirmOpts } from "@/components/sea/confirm-modal";
 import { AvatarMenu } from "@/components/sea/avatar-menu";
 import { BottleGlyph } from "@/components/bottle-glyph";
 import {
@@ -29,25 +40,29 @@ export const Route = createFileRoute("/_authenticated/home")({
   component: SeaHome,
 });
 
-function floatieSubtitle(s: FloatieState): string {
-  return (
-    {
-      drift: "아직 표류 중이에요",
-      replied: "답장이 도착했어요",
-      opened: "프로필이 열린 플로티",
-      match: "매칭된 플로티",
-      arrived: "발견한 플로티",
-      answered: "내가 답장했어요",
-      expired: "표류가 끝났어요",
-      done: "종료된 플로티",
-    } as Record<FloatieState, string>
-  )[s];
-}
+const SUBTITLE: Record<FloatieState, string> = {
+  drift: "아직 표류 중이에요",
+  replied: "답장이 도착했어요",
+  opened: "프로필이 열린 플로티",
+  match: "매칭된 플로티",
+  arrived: "발견한 플로티",
+  answered: "내가 답장했어요",
+  expired: "표류가 끝났어요",
+  done: "종료된 플로티",
+};
+
+type NoteState =
+  | null
+  | { kind: "compose" }
+  | { kind: "floatie"; d: MissionDelivery; from?: PersonCard | null; act?: "like" | "recall" }
+  | { kind: "read"; d: MissionDelivery }
+  | { kind: "reply"; d: MissionDelivery };
 
 function SeaHome() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [note, setNote] = useState<null | { kind: "compose" } | { kind: "floatie"; d: MissionDelivery }>(null);
+  const [note, setNote] = useState<NoteState>(null);
+  const [confirm, setConfirm] = useState<ConfirmOpts | null>(null);
 
   const { data: me } = useQuery({
     queryKey: ["sea-me"],
@@ -89,43 +104,167 @@ function SeaHome() {
     return (bodies.length ? bodies : MISSION_PRESETS_FALLBACK).slice(0, 5);
   }, [presetRows]);
 
+  const refresh = () => qc.invalidateQueries();
+
   const send = useMutation({
-    mutationFn: (body: string) => createAndDeliverMission({ kind: "question", body, useTicket: !canFree }),
+    mutationFn: ({ body, photoAnswer }: { body: string; photoAnswer: boolean }) =>
+      createAndDeliverMission({ kind: "question", body, useTicket: !canFree, photoAnswer }),
     onSuccess: () => {
       setNote(null);
       toast.success("플로티를 바다 위로 띄웠어요", { description: "어떤 멋진 분께 닿을지 행운을 빌어요 🍀" });
-      qc.invalidateQueries();
+      refresh();
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "티켓이 필요해요."),
   });
 
-  const states = useMemo(
+  const accept = useMutation({
+    mutationFn: async (d: MissionDelivery) => {
+      if (!d.accepted_at) await acceptDelivery(d.id);
+      return d;
+    },
+    onSuccess: (d) => setNote({ kind: "reply", d }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "열지 못했어요."),
+  });
+
+  const reply = useMutation({
+    mutationFn: async ({ d, body, photo }: { d: MissionDelivery; body: string; photo: File | null }) => {
+      await replyToDelivery(d.id, body);
+      if (photo && uid) {
+        const path = await uploadReplyPhoto(uid, d.id, photo);
+        await setReplyPhoto(d.id, path);
+      }
+    },
+    onSuccess: () => {
+      setNote(null);
+      toast.success("답장을 병에 담아 보냈어요", { description: "상대가 좋다고 하면 프로필이 열려요 💌" });
+      refresh();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "답장을 보내지 못했어요."),
+  });
+
+  const verdict = useMutation({
+    mutationFn: (id: number) => setVerdict(id, "sender", "ok"),
+    onSuccess: () => {
+      setNote(null);
+      toast.success("마음을 전했어요", { description: "서로 좋으면 프로필이 열려요 💛" });
+      refresh();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "실패했어요."),
+  });
+
+  const recall = useMutation({
+    mutationFn: (id: number) => recallDelivery(id),
+    onSuccess: () => {
+      setNote(null);
+      toast("플로티를 회수했어요", { description: "다시 새로 띄울 수 있어요" });
+      refresh();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "회수하지 못했어요."),
+  });
+
+  const all = useMemo(
     () => floaties.map((d) => ({ d, s: isWoman ? womanState(d) : manState(d) })),
     [floaties, isWoman],
   );
+  const bottles = useMemo(() => all.filter((x) => x.s !== "done" && x.s !== "expired"), [all]);
 
   const mood = useMemo(() => {
     if (isWoman) {
-      const replied = states.filter((x) => x.s === "replied").length;
-      const drift = states.filter((x) => x.s === "drift").length;
-      if (replied) return "답장이 도착했어요. 확인해볼까요?";
-      if (drift) return "띄운 플로티가 누군가에게 닿는 중…";
+      if (bottles.some((x) => x.s === "replied")) return "답장이 도착했어요. 확인해볼까요?";
+      if (bottles.some((x) => x.s === "drift")) return "띄운 플로티가 누군가에게 닿는 중…";
       return "오늘은 어떤 답장이 올까요?";
     }
-    const arrived = states.filter((x) => x.s === "arrived").length;
-    return arrived ? "플로티를 발견했어요. 확인해볼까요?" : "오늘은 어떤 안부가 닿을까요?";
-  }, [states, isWoman]);
+    return bottles.some((x) => x.s === "arrived")
+      ? "플로티를 발견했어요. 확인해볼까요?"
+      : "오늘은 어떤 안부가 닿을까요?";
+  }, [bottles, isWoman]);
+
+  async function tapBottle(d: MissionDelivery, s: FloatieState) {
+    if (isWoman) {
+      if (s === "drift") setNote({ kind: "floatie", d, act: "recall" });
+      else if (s === "replied") {
+        const from = await fetchReceiverCard(d.id).catch(() => null);
+        setNote({ kind: "floatie", d, from, act: "like" });
+      } else setNote({ kind: "floatie", d });
+      return;
+    }
+    // man
+    if (s === "arrived") {
+      const from = await fetchSenderCard(d.id).catch(() => null);
+      const name = from?.display_name ?? "누군가";
+      const meta = [from?.birth_year ? ageBand(from.birth_year) : "", from?.region].filter(Boolean).join(" · ");
+      setConfirm({
+        em: "✨",
+        title: `‘${name}’님이 띄운 플로티를 발견했어요`,
+        body: `${meta ? meta + " · " : ""}열어서 질문을 확인해볼까요?`,
+        yes: "열어보기",
+        onOk: () => setNote({ kind: "read", d }),
+      });
+    } else {
+      setNote({ kind: "floatie", d });
+    }
+  }
 
   const content: NoteContent | null = useMemo(() => {
     if (!note) return null;
-    if (note.kind === "compose") {
-      return { kind: "compose", presets: presetBodies, canFree, sending: send.isPending, onSend: (b) => send.mutate(b) };
-    }
+    if (note.kind === "compose")
+      return {
+        kind: "compose",
+        presets: presetBodies,
+        canFree,
+        sending: send.isPending,
+        onSend: (body, photoAnswer) => send.mutate({ body, photoAnswer }),
+      };
+    if (note.kind === "read")
+      return {
+        kind: "read",
+        question: note.d.mission?.body ?? "플로티",
+        busy: accept.isPending,
+        onAccept: () => accept.mutate(note.d),
+      };
+    if (note.kind === "reply")
+      return {
+        kind: "reply",
+        requirePhoto: !!note.d.mission?.photo_answer,
+        busy: reply.isPending,
+        onSubmit: (body, photo) => reply.mutate({ d: note.d, body, photo }),
+        onGiveUp: () => {
+          setNote(null);
+          toast("답장을 포기했어요", { description: "하루 동안 새 플로티를 만날 수 없어요 🕐" });
+        },
+      };
+    // floatie (read-only or with an action)
     const d = note.d;
     const s = isWoman ? womanState(d) : manState(d);
-    return { kind: "floatie", question: d.mission?.body ?? "플로티", subtitle: floatieSubtitle(s), reply: d.reply_body };
+    const act =
+      note.act === "recall"
+        ? { label: "회수", variant: "warn" as const, busy: recall.isPending, onClick: () => recall.mutate(d.id) }
+        : note.act === "like"
+          ? {
+              label: "마음에 들어요",
+              busy: verdict.isPending,
+              onClick: () =>
+                setConfirm({
+                  em: "💛",
+                  title: "마음을 전할까요?",
+                  body: "상대에게도 알림이 가고, 서로 좋으면 프로필이 열려요.",
+                  yes: "마음 전하기",
+                  onOk: () => verdict.mutate(d.id),
+                }),
+            }
+          : undefined;
+    return {
+      kind: "floatie",
+      question: d.mission?.body ?? "플로티",
+      subtitle: SUBTITLE[s],
+      reply: d.reply_body,
+      replyPhoto: d.reply_photo,
+      from: note.from ?? undefined,
+      hint: s === "replied" ? "답장이 마음에 들면, 서로의 프로필이 열려요 💛" : undefined,
+      action: act,
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note, presetBodies, canFree, send.isPending, isWoman]);
+  }, [note, presetBodies, canFree, send.isPending, accept.isPending, reply.isPending, verdict.isPending, recall.isPending, isWoman]);
 
   const menuItems = [
     { key: "profile", label: "내 프로필", onClick: () => navigate({ to: "/me" }) },
@@ -143,7 +282,7 @@ function SeaHome() {
   ];
 
   const empty =
-    states.length === 0
+    bottles.length === 0
       ? isWoman
         ? { b: "바다가 고요해요", s: "플로티를 하나 띄워 볼까요?" }
         : { b: "잔잔한 바다예요", s: "곧 누군가의 플로티가 떠오를지 몰라요" }
@@ -161,14 +300,14 @@ function SeaHome() {
       )}
 
       <div className="fl-bottles">
-        {states.map(({ d, s }) => {
+        {bottles.map(({ d, s }) => {
           const pos = bottlePos(d.id);
           return (
             <button
               key={d.id}
               className={"fl-bottle" + (isGlow(s) ? " glow" : "")}
               style={{ left: pos.left, top: pos.top, animationDelay: `${-(d.id % 5) * 0.8}s` }}
-              onClick={() => setNote({ kind: "floatie", d })}
+              onClick={() => tapBottle(d, s)}
               aria-label="플로티"
             >
               <BottleGlyph state="drift" className="w-full h-auto" />
@@ -201,6 +340,7 @@ function SeaHome() {
       )}
 
       <ParchmentNote content={content} onClose={() => setNote(null)} />
+      <ConfirmModal opts={confirm} onClose={() => setConfirm(null)} />
     </div>
   );
 }

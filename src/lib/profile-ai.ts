@@ -110,3 +110,14 @@ export async function regenerateIntro(intro: string, tags: string[]): Promise<nu
   if (error) throw error;
   return typeof data === "number" ? data : 0;
 }
+
+/** Upload a man's reply photo to the `answers` bucket; return its path. */
+export async function uploadReplyPhoto(uid: string, deliveryId: number, file: File): Promise<string> {
+  const cleaned = await stripExifAndCompress(file);
+  const path = `${uid}/reply-${deliveryId}-${Date.now()}.jpg`;
+  const { error } = await supabase.storage
+    .from("answers")
+    .upload(path, cleaned, { upsert: true, contentType: cleaned.type });
+  if (error) throw error;
+  return path;
+}
