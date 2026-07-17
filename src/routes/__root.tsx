@@ -101,7 +101,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         <div id="boot-splash" aria-hidden="true">
-          <img src="/app-icon.png" alt="" width={88} height={88} />
+          <img src="/icon-192.png" alt="" width={88} height={88} />
           <span>플로티</span>
         </div>
         {children}
