@@ -106,8 +106,8 @@ function createIndexHtml(mainScriptName) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumgyeol</title>
-    <meta name="theme-color" content="#F9F8F6" />
+    <title>Floatie</title>
+    <meta name="theme-color" content="#F1F7F5" />
 ${cssLinks ? `${cssLinks}\n` : ""}
 ${bootstrapScript}
   </head>

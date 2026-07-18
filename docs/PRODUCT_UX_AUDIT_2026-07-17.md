@@ -128,7 +128,7 @@ Sea가 주 표면이면 **홈의 병/쪽지로 딥링크**해야 함.
 
 - 앱 UI 본체: 플로티 위주 (양호).
 - 루트 모바일 문서(`IOS_BUILD.md`, `MOBILE_*`): 여전히 **「결」**.
-- Capacitor `server.url`: `sumgyeol.lovable.app` — 스토어 전 교체 필요.
+- Capacitor `server.url`: `https://floatie.pages.dev` (교체 완료).
 - `.lovable/plan.md` 등 내부 계획: 레거시 허용이나 혼동 유발.
 
 ---

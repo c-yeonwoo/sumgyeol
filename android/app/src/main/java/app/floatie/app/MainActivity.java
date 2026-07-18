@@ -1,4 +1,4 @@
-package app.gyeol.client;
+package app.floatie.app;
 
 import com.getcapacitor.BridgeActivity;
 

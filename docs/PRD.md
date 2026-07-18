@@ -1,9 +1,9 @@
 # 익명 미션 앱 — Product Requirements Document
 
-> **작업 레포:** `~/dev-private/sumgyeol` (`c-yeonwoo/sumgyeol`)  
+> **작업 레포:** `~/dev-private/floatie` (`c-yeonwoo/floatie`)  
 > **한 줄:** 여자가 보낸 익명 미션에 남자가 답하고, 서로 OK하면 프로필이 열리는 **소소한 도파민** 앱.  
 > **상태:** PRD v0.4 · 2026-07-17 (Sea 구현 = SSOT)  
-> **브랜드:** **플로티** (표기 KR) / **Floatie** (EN·스토어). 레포명 `sumgyeol`은 인프라 유지.
+> **브랜드:** **플로티** (표기 KR) / **Floatie** (EN·스토어)  
 > **컨셉 키워드:** 단순 · 직관 · 설렘 · 랜덤 뽑기 · 일일 한 번
 
 ---
@@ -155,7 +155,7 @@
 
 **Out (초기)**
 
-- 공개 피드·팔로우·AI 결 (숨결 레거시)
+- 공개 피드·팔로우·AI 유사도 (레거시)
 - 장소 집합 미션
 - 이상형 필터
 - Palette 강제 연동
@@ -174,7 +174,7 @@
 
 ## 11. 스택
 
-`sumgyeol` + Supabase + Capacitor.  
+`floatie` + Supabase + Capacitor.  
 → [`decisions/0005-stack-supabase-capacitor.md`](./decisions/0005-stack-supabase-capacitor.md)
 
 ---
