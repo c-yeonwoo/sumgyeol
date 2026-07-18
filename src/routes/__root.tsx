@@ -225,6 +225,9 @@ function RootComponent() {
       <Toaster
         position="top-center"
         visibleToasts={1}
+        // Below status bar / notch — default top-center sits under the island.
+        offset={{ top: "calc(env(safe-area-inset-top, 0px) + 72px)" }}
+        mobileOffset={{ top: "calc(env(safe-area-inset-top, 0px) + 72px)" }}
         toastOptions={{ style: { fontFamily: "var(--font-sans)" } }}
       />
     </QueryClientProvider>
