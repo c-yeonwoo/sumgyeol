@@ -70,19 +70,21 @@ Supabase 대시보드 → Authentication → URL Configuration:
 
 ### 배포 전 체크리스트
 - [x] `server.url` → `https://floatie.pages.dev`
-- [x] `appId` → `app.floatie.app` (스토어 등록 전 최종 확인)
-- [ ] 앱 아이콘 / 스플래시 (Floatie 디자인)
+- [x] `appId` / Bundle ID → `app.floatie.app`
+- [x] 표시명 플로티 · 아이콘/스플래시 생성 스크립트 (`icons:ios`)
 - [x] **인앱 회원 탈퇴** — `/me` `deleteAccount` (Apple 5.1.1(v))
-- [ ] 푸시(FCM/APNs) — 스토어 필수는 아니나 루프상 사실상 필요, Apple 4.2 통과에도 유리
-- [ ] 신고/차단/EULA 노출 확인 — Apple 1.2 (기능은 이미 있음)
-- [ ] 연령 등급 17+, 18+ 게이트(생년 게이트 있음)
-- [ ] ⚠️ **4.2 최소기능**: 순수 원격 URL 웹뷰는 리젝 위험 → 네이티브 기능(카메라·푸시·햅틱) 보강
+- [ ] 푸시(APNs) — TestFlight 전 Xcode capability + `.p8` (선택이나 권장)
+- [ ] 신고/차단/EULA 노출 · App Review Notes
+- [ ] 연령 등급 17+ (Connect) · 앱 내 18+ 게이트 있음
+- [ ] ⚠️ **4.2**: 카메라·햅틱 플러그인 유지 · Notes에 명시
+
+**iOS 상세:** [`IOS_DEPLOY.md`](./IOS_DEPLOY.md)
 
 ### 빌드 흐름
 ```bash
-npm run build            # dist/client (모바일 셸)
-npx cap sync ios         # / android
-npx cap open ios         # Xcode → Archive → App Store Connect
+npm run icons:ios
+npm run release:ios      # preflight + build + cap sync ios
+npm run cap:open:ios     # Xcode → Archive → TestFlight
 ```
 
 ---

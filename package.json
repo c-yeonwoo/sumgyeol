@@ -9,6 +9,7 @@
     "build:web": "DEPLOY_TARGET=cloudflare vite build",
     "deploy:pages": "npm run build:web && wrangler pages deploy dist --project-name floatie",
     "icons:generate": "node scripts/generate-icons.mjs",
+    "icons:ios": "npm run icons:generate && npx capacitor-assets generate --ios --iconBackgroundColor '#F1F7F5' --splashBackgroundColor '#F1F7F5'",
     "start": "vite",
     "build:dev": "vite build --mode development",
     "build:mobile:assets": "node scripts/generate-mobile-web-index.mjs",
