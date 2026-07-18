@@ -102,6 +102,24 @@ try {
 }
 
 const warnings = [];
+const nativeErrors = [];
+
+try {
+  const pbx = fs.readFileSync(
+    path.join(root, "ios/App/App.xcodeproj/project.pbxproj"),
+    "utf8",
+  );
+  if (pbx.includes("app.sumgyeol.client") || pbx.includes("app.gyeol.client")) {
+    nativeErrors.push("iOS Bundle ID가 레거시입니다. app.floatie.app 로 맞추세요.");
+  }
+  const plist = fs.readFileSync(path.join(root, "ios/App/App/Info.plist"), "utf8");
+  if (plist.includes(">결<") || plist.includes("sumgyeol")) {
+    nativeErrors.push("Info.plist 표시명/식별자에 레거시 브랜드가 남아 있습니다.");
+  }
+} catch {
+  warnings.push("ios/ 프로젝트를 읽지 못했습니다. cap add ios 후 다시 확인하세요.");
+}
+
 if (!fs.existsSync(path.join(root, "dist"))) {
   warnings.push("dist 디렉터리가 아직 없습니다. 릴리스 전 npm run build를 실행하세요.");
 }
@@ -135,6 +153,12 @@ if (missingEnv.length > 0) {
   hasError = true;
   lines.push("[오류] 환경변수 미설정(빌드/실행 시 필요):");
   for (const item of missingEnv) lines.push(`- ${item}`);
+}
+
+if (nativeErrors.length > 0) {
+  hasError = true;
+  lines.push("[오류] iOS 네이티브 식별자:");
+  for (const item of nativeErrors) lines.push(`- ${item}`);
 }
 
 if (warnings.length > 0) {

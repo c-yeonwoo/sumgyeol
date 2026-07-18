@@ -29,14 +29,14 @@
 
 ### Should (같은 주)
 
-- [ ] Edge **`expire-stale` cron** 15분 (Dashboard 스케줄 또는 `CRON_SECRET` + 외부 cron)  
+- [x] **`expire_stale_deliveries` Cron** 15분 (`pg_cron` 활성 후 Integrations → Cron · SQL Job)  
 - [ ] `FCM_SERVER_KEY` (푸시) — 없어도 웹 MVP 가능, 리텐션에 유리  
 - [ ] Capacitor `server.url` → `https://floatie.pages.dev` (네이티브 셸 쓸 때)  
 
 ### Later (Soft open / 스토어)
 
 - [ ] Chat-first 홈 (Epic B)  
-- [ ] appId/아이콘 polish · TestFlight  
+- [ ] **iOS TestFlight** — [`IOS_DEPLOY.md`](./IOS_DEPLOY.md)  
 - [ ] `dev_otp` off · 본인인증 강화  
 - [ ] IAP · `ticket_grant_mode` → 2장  
 - [ ] 약관/개인정보 법률 확정  
