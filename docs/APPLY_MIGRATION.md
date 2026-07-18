@@ -6,7 +6,7 @@
 4. `20260715020000_reports_ban_identity.sql` — 신고 검토·영구제명·휴대폰 본인인증
 
 ```bash
-cd ~/dev-private/sumgyeol
+cd ~/dev-private/floatie
 npx supabase db push
 ```
 

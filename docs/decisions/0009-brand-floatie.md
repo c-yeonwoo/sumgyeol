@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-07-15
+- Updated: 2026-07-18
 
 ## Context
 
@@ -11,11 +12,12 @@ Working names included bottlenote, 쪽지, 표류. Product needs a light, cute t
 
 - **KR display name:** 플로티
 - **EN / mascot / store secondary:** Floatie
-- **Rejected:** bottlenote (translation feel), 표류 (too serious), 둥실-only (weak product description)
+- **App ID:** `app.floatie.app`
+- **Repo:** `c-yeonwoo/floatie`
+- **Rejected:** bottlenote, 표류, 둥실-only, 숨결, 결, sumgyeol/gyeol (user-facing)
 
 ## Consequences
 
 - UI, manifest, Capacitor `appName`, store copy use 플로티
 - Code SSOT: `src/lib/brand.ts`
-- Repo folder remains `sumgyeol`; `appId` migration to `app.floatie.*` deferred until store submit
-- Legacy 숨결/쪽지 user-facing strings removed
+- Native targets/products named Floatie — no legacy brand strings in repo

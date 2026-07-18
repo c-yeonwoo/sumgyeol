@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "app.gyeol.client"
+    namespace = "app.floatie.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "app.gyeol.client"
+        applicationId "app.floatie.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
